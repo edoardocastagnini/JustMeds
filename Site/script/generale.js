@@ -3,3 +3,4 @@ function showRegistrationForm() {
     document.getElementById("loginform").style.display = "none";
     document.getElementById("registerpopup").style.display = "none";
 }
+
