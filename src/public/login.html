@@ -74,56 +74,57 @@
                             <h5 class="card-title">Modulo di registrazione</h5>
                             <form onsubmit="return validateForm()" action="/sign_up" method="post">
                                 <div class="mb-3">
-                                    <label for="nome"  class="form-label">Nome</label>
-                                    <input type="text" class="form-control" id="nome" required>
+                                    <label for="nome" class="form-label">Nome</label>
+                                    <input type="text" class="form-control" id="nome" name="nome" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="cognome"  class="form-label">Cognome</label>
-                                    <input type="text" class="form-control" id="cognome" required>
+                                    <label for="cognome" class="form-label">Cognome</label>
+                                    <input type="text" class="form-control" id="cognome" name="cognome" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="email"  class="form-label">Indirizzo email</label>
-                                    <input type="email" class="form-control" id="email" aria-describedby="emailHelp" required>
+                                    <label for="email" class="form-label">Indirizzo email</label>
+                                    <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="password"  class="form-label">Password</label>
-                                    <input type="password" class="form-control" id="password" required>
+                                    <label for="password" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="dataDiNascita"  class="form-label">Data di nascita</label>
-                                    <input type="date" class="form-control" id="dataDiNascita" required>
+                                    <label for="dataDiNascita" class="form-label">Data di nascita</label>
+                                    <input type="date" class="form-control" id="dataDiNascita" name="dataDiNascita" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="CF" id="CF" class="form-label">Codice fiscale</label>
-                                    <input type="text" class="form-control" id="CF" required>
+                                    <label for="CF" class="form-label">Codice fiscale</label>
+                                    <input type="text" class="form-control" id="CF" name="CF" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="paese"  class="form-label">Paese di nascita</label>
-                                    <input type="text" class="form-control" id="paese" required>
+                                    <label for="paese" class="form-label">Paese di nascita</label>
+                                    <input type="text" class="form-control" id="paese" name="paese" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="città"  class="form-label">Città residenza</label>
-                                    <input type="text" class="form-control" id="città" required>
+                                    <label for="città" class="form-label">Città residenza</label>
+                                    <input type="text" class="form-control" id="città" name="città" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="via" class="form-label">Via residenza</label>
-                                    <input type="text" class="form-control" id="via" required>
+                                    <input type="text" class="form-control" id="via" name="via" required>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="rider">
-                                    <label class="form-check-label" for="flexRadioDefault1">
-                                      Account Rider consegna farmaci
+                                    <input class="form-check-input" type="radio" name="type" id="rider" value="rider">
+                                    <label class="form-check-label" for="rider">
+                                        Account Rider consegna farmaci
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="ricevente" checked>
-                                    <label class="form-check-label" for="flexRadioDefault2">
-                                      Account ordina farmaci
+                                    <input class="form-check-input" type="radio" name="type" id="ricevente" value="ricevente" checked>
+                                    <label class="form-check-label" for="ricevente">
+                                        Account ordina farmaci
                                     </label>
                                 </div>
                                 <a class="nav-link" href="contattaci.html" style="color: blue; text-decoration: underline;">Sei una farmacia? Richiedi il tuo utente speciale</a>
                                 <button type="submit" class="btn btn-primary" id="registrati">Registrati</button>
                             </form>
+                            
                         </div>
                     </div>
                 </div>

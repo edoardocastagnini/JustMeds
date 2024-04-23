@@ -25,7 +25,8 @@ app.post('/sign_up', (req, res) => {
     var paese = req.body.paese;
     var città = req.body.città;
     var via = req.body.via;
-    var type = req.body.type;
+    var type = req.body.flexRadioDefault; //value of the selected radio button (pallino)
+
 
     var data = {
         "nome": nome,
