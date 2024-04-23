@@ -2,3 +2,12 @@
     height: 50vh;
 }
 
+footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: gray;
+    text-align: center;
+    padding: 10px 0; /* Aggiungi spaziatura al padding sopra e sotto */
+}
