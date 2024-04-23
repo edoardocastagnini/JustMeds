@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Just Meds</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     
 </head>
 
@@ -32,6 +32,7 @@
     </header>
 
     <!-- Your content goes here -->
+    <h2>Flashcard Farmaci</h2>
     <main>
         <div class="container">
             <div class="row">
@@ -44,35 +45,11 @@
             </div>
         </div>
         <div class="container">
-            <h2>Flashcard Farmaci</h2>
             <div class="row">
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Farmaco 1</h5>
-                            <p class="card-text">Descrizione del farmaco 1.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Farmaco 2</h5>
-                            <p class="card-text">Descrizione del farmaco 2.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Farmaco 3</h5>
-                            <p class="card-text">Descrizione del farmaco 3.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Add more cards as needed -->
+                <!-- Le cards saranno generate qui dallo script JavaScript -->
             </div>
         </div>
+        
     </main>
     </main>
 
@@ -85,7 +62,33 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/drugs')
+            .then(response => response.json())
+            .then(drugs => {
+                const container = document.querySelector('.row');
+                container.innerHTML = ''; // Pulisci il contenuto preesistente
+                drugs.forEach(drug => {
+                    container.innerHTML += `
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">${drug.nomeFarmaco}</h5>
+                                    <p class="card-text">${drug.confezione}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            })
+            .catch(error => console.error('Error loading the drugs:', error));
+        });
+    </script>
+    
     <!-- Bootstrap JS -->
+    
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 </body>

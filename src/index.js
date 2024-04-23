@@ -1,10 +1,14 @@
-var express = require("express")
+const express = require('express');
 const session = require('express-session');
-var bodyParser = require("body-parser")
-var mongoose = require("mongoose")
-const e = require("express")
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const app = express();
 
-const app = express()
+const drugRoutes = require('./public/order/farmaci'); // Il percorso deve essere corretto
+
+
+// Usare il router dei farmaci
+app.use(drugRoutes);
 
 app.use(session({
     secret: '2024', // Chiave segreta per firmare l'ID di sessione, sostituiscila con una chiave sicura
