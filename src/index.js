@@ -1,9 +1,17 @@
 var express = require("express")
+const session = require('express-session');
 var bodyParser = require("body-parser")
 var mongoose = require("mongoose")
 const e = require("express")
 
 const app = express()
+
+app.use(session({
+    secret: '2024', // Chiave segreta per firmare l'ID di sessione, sostituiscila con una chiave sicura
+    resave: false,
+    saveUninitialized: true
+}));
+
 
 app.use(bodyParser.json())
 app.use(express.static("public"))
@@ -25,8 +33,7 @@ app.post('/sign_up', (req, res) => {
     var paese = req.body.paese;
     var città = req.body.città;
     var via = req.body.via;
-    var type = req.body.flexRadioDefault; //value of the selected radio button (pallino)
-
+    var type = req.body.type; //value of the selected radio button (pallino)
 
     var data = {
         "nome": nome,
@@ -40,14 +47,45 @@ app.post('/sign_up', (req, res) => {
         "via": via,
         "type": type
     }
+
     db.collection('users').insertOne(data, (err, collection) => {
         if (err) {
             throw err;
         }
         console.log("Record inserted successfully");
-    })
-    return res.redirect('loginOK.html')
-}) 
+
+        // Delay redirection based on account type
+        setTimeout(() => {
+           res.redirect('login.html');
+        }, 2000); // Delay for 2 seconds (2000 milliseconds)
+    });
+});
+
+app.post('/login', (req, res) => {
+    var email = req.body.email;
+    var password = req.body.password;
+
+    db.collection('users').findOne({ email: email, password: password }, (err, user) => {
+        if (err) {
+            throw err;
+        }
+        if (user) {
+            // Utente trovato nel database, reindirizza in base al tipo di account
+            if (user.type === 'rider') {
+                res.redirect('/delivery/delivery.html');
+            }
+            if (user.type === 'ricevente') {
+                res.redirect('/order/order.html');
+            } 
+        } else {
+           
+            res.redirect('/loginFail.html');
+        }
+    });
+});
+
+
+
 
 app.get("/", (req, res) => {
     res.set({
