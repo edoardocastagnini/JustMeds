@@ -8,7 +8,7 @@ const drugSchema = new mongoose.Schema({
     NomeFarmaco: String,
     Confezione: String,
     Ditta: String,
-    PrezzoRiferimentoSSN: Number,
+    PrezzoRiferimentoSSN: String,
     CodiceGruppoEquivalenza: String
 }, { timestamps: true });
 
