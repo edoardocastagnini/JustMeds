@@ -24,7 +24,7 @@
                 <div class="navbar-nav">
                   <a class="nav-link active" aria-current="page" href="#">Home</a>
                   <a class="nav-link" href="#">Chi siamo</a>
-                  <a class="nav-link" href="#">Prodotti</a>
+                  <a class="nav-link" href="order.html">Lista Farmaci</a>
                 </div>
               </div>
             </div>
@@ -37,16 +37,19 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6 offset-md-3 mt-4">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Cerca farmaco...">
-                        <button class="btn btn-primary" type="button">Cerca</button>
-                    </div>
+                    <form id="searchForm">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Cerca farmaco...">
+                            <button class="btn btn-primary" type="submit">Cerca</button>
+                        </div>
+                    </form>
                 </div>
             </div> <br><br>
             <div class="row" id="card-container">
                 <!-- Le cards saranno generate qui dallo script JavaScript -->
             </div>
         </div>
+        
     </main>
     
     </main>
@@ -60,14 +63,16 @@
             </div>
         </div>
     </footer>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const searchButton = document.querySelector('.btn-primary');
+            const searchForm = document.getElementById('searchForm');
             const searchInput = document.querySelector('input[type="text"]');
         
-            searchButton.addEventListener('click', function() {
+            searchForm.addEventListener('submit', function(event) {
+                event.preventDefault();
                 const searchTerm = searchInput.value;
-                fetch(`/api/drugs/search?farmaco=${searchTerm}`)
+                fetch(`/api/drugs/search?farmaco=${encodeURIComponent(searchTerm)}`)
                 .then(response => response.json())
                 .then(drugs => {
                     const container = document.querySelector('#card-container');
@@ -78,7 +83,7 @@
                                 <div class="col-md-4">
                                     <div class="card mb-4 shadow">
                                         <div class="card-header bg-primary text-white">
-                                            <h4 class="my-0">${drug.Farmaco}</h4>
+                                            <h4 class="my-0">${drug.Farmaco}</h4>  
                                         </div>
                                         <div class="card-body">
                                             <h5 class="card-title">${drug.PrezzoRiferimentoSSN} €</h5>
@@ -96,14 +101,16 @@
                                 </div>
                             `;
                         });
+                        
                     } else {
-                        container.innerHTML = '<p>Nessun farmaco trovato per la ricerca: "' + searchTerm + '".</p>';
+                        container.innerHTML = `<p>Nessun farmaco trovato per la ricerca: "${searchTerm}".</p>`;
                     }
                 })
                 .catch(error => console.error('Error loading the drugs:', error));
             });
         });
         </script>
+           
         
     <script>
         document.addEventListener('DOMContentLoaded', function() {
