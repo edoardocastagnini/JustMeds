@@ -41,31 +41,6 @@ router.get('/api/drugs/search', async (req, res) => {
 });
 
 
-// Aggiungi un articolo al carrello
-router.post('/api/cart/add', async (req, res) => {
-    const { userId, productId, quantity } = req.body;
-  
-    try {
-      let cart = await Cart.findOne({ userId: userId });
-      if (!cart) {
-        // Crea un nuovo carrello se non esiste
-        cart = new Cart({ userId, products: [] });
-      }
-      // Aggiungi o aggiorna il prodotto nel carrello
-      const productIndex = cart.products.findIndex(item => item.productId.toString() === productId);
-      if (productIndex > -1) {
-        cart.products[productIndex].quantity += quantity;
-      } else {
-        cart.products.push({ productId, quantity });
-      }
-      await cart.save();
-      res.status(201).json(cart);
-    } catch (error) {
-      console.error('Error updating the cart:', error);
-      res.status(500).json({ message: error.message });
-    }
-  });
-  
 
 // Esporta il router alla fine del file
 module.exports = router;

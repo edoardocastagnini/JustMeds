@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const drugSchema = new mongoose.Schema({
-    _id: String,
     PrincipioAttivo: String,
     ConfezioneDiRiferimento: String,
     ATC: String,
