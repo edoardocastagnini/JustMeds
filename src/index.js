@@ -1,3 +1,4 @@
+
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
@@ -11,10 +12,11 @@ const drugRoutes = require('./public/order/farmaci'); // Il percorso deve essere
 app.use(drugRoutes);
 
 app.use(session({
-    secret: '2024', // Chiave segreta per firmare l'ID di sessione, sostituiscila con una chiave sicura
-    resave: false,
-    saveUninitialized: true
-}));
+    secret: 'supersecret', // Chiave segreta utilizzata per firmare il cookie di sessione (puoi generare una stringa casuale)
+    resave: false, // Imposta su false per evitare il salvataggio della sessione se non ci sono modifiche
+    saveUninitialized: false, // Imposta su false per evitare di salvare sessioni vuote
+    cookie: { secure: false } // Configura le opzioni del cookie, ad esempio secure: true per richiedere una connessione HTTPS
+  }));
 
 
 app.use(bodyParser.json())
@@ -37,20 +39,22 @@ app.post('/sign_up', (req, res) => {
     var paese = req.body.paese;
     var città = req.body.città;
     var via = req.body.via;
-    var type = req.body.type; //value of the selected radio button (pallino)
+    var type = req.body.type; //valore del pulsante radio selezionato
 
     var data = {
+        "_id": CF,
         "nome": nome,
         "cognome": cognome,
         "email": email,
         "password": password,
         "dataDiNascita": dataDiNascita,
-        "CF": CF,
         "paese": paese,
         "città": città,
         "via": via,
         "type": type
-    }
+    };
+
+
 
     db.collection('users').insertOne(data, (err, collection) => {
         if (err) {
@@ -75,11 +79,22 @@ app.post('/login', (req, res) => {
         }
         if (user) {
             // Utente trovato nel database, reindirizza in base al tipo di account
+            
+             // Se l'autenticazione ha successo, impostiamo i dati della sessione
+            req.session.user = {
+                CF: req.body.CF, // Codice fiscale
+                nome: req.body.nome // Nome utente
+             // Altri dati dell'utente...
+  };
+
             if (user.type === 'rider') {
                 res.redirect('/delivery/delivery.html');
             }
             if (user.type === 'ricevente') {
                 res.redirect('/order/order.html');
+            } 
+            if (user.type === 'admin') {
+                res.redirect('/admin/admin.html');
             } 
         } else {
            
@@ -88,14 +103,17 @@ app.post('/login', (req, res) => {
     });
 });
 
+app.get('/profile', (req, res) => {
+    if (req.session && req.session.user) {
+        const { email, nome, CF } = req.session.user;
+        // Utilizza le informazioni dell'utente per eseguire operazioni desiderate
+        res.send(`Benvenuto ${nome}, il tuo indirizzo email è ${email} e il tuo codice fiscale è ${CF}`);
+    } else {
+        res.redirect('/login'); // Reindirizza se l'utente non è autenticato
+    }
+});
 
 
 
-app.get("/", (req, res) => {
-    res.set({
-        "Allow-access-Allow-Origin": "*"
-    })
-    return res.redirect('index.html');
-}).listen(3000);
 
-console.log("Listening on port 3000")
+module.exports = router;
