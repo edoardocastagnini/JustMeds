@@ -70,19 +70,15 @@
             .then(drugs => {
                 const container = document.querySelector('.row');
                 container.innerHTML = ''; // Pulisci il contenuto preesistente
-                drugs.forEach(drug => {
-                    container.innerHTML += `
-                        <div class="col-md-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">${drug.nomeFarmaco}</h5>
-                                    <p class="card-text">${drug.confezione}</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
+                if (drugs && drugs.length > 0) {
+                    drugs.forEach(drug => {
+                        container.innerHTML += `<div class="col-md-4"><div class="card"><div class="card-body"><h5 class="card-title">${drug.nomeFarmaco || 'Nome non disponibile'}</h5><p class="card-text">${drug.confezione || 'Confezione non disponibile'}</p></div></div></div>`;
+                    });
+                } else {
+                    container.innerHTML = '<p>Nessun farmaco trovato.</p>';
+                }
             })
+            
             .catch(error => console.error('Error loading the drugs:', error));
         });
     </script>

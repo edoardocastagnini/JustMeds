@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router(); // Crea un'istanza del router
 const mongoose = require('mongoose');
-const Drug = require('../../models/Drug.js'); // Assicurati che il percorso del modello sia corretto
+const Drug = require('../models/Drug.js'); // Assicurati che il percorso del modello sia corretto
 
 // Assicurati di connetterti a MongoDB (se non lo fai altrove)
 mongoose.connect('mongodb://localhost:27017/Database', { 
@@ -14,12 +14,15 @@ mongoose.connect('mongodb://localhost:27017/Database', {
 router.get('/api/drugs', async (req, res) => {
     try {
         const drugs = await Drug.find({})
-            .sort({ nomeFarmaco: 1 }) // Ordina alfabeticamente per nome del farmaco, usa -1 per ordine decrescente
-            .limit(10); // Limita a 10 i risultati
+            .sort({ nomeFarmaco: 1 })
+            .limit(10);
+        console.log(drugs); // Aggiungi questo log per vedere l'output
         res.json(drugs);
     } catch (error) {
-        res.status(500).json({ message: error.message }).catch(error => console.error('Error loading the drugs:', error));
+        console.error('Error loading the drugs:', error);
+        res.status(500).json({ message: error.message });
     }
 });
+
 // Esporta il router alla fine del file
 module.exports = router;
