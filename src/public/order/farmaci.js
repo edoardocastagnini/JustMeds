@@ -24,3 +24,4 @@ router.get('/api/drugs', async (req, res) => {
 
 // Esporta il router alla fine del file
 module.exports = router;
+

@@ -43,14 +43,12 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="container">
-            <div class="row">
+            <div class="row" id="card-container">
                 <!-- Le cards saranno generate qui dallo script JavaScript -->
             </div>
         </div>
-        
     </main>
+    
     </main>
 
     <footer style="background-color: rgb(101, 255, 211);">
@@ -68,41 +66,39 @@
             fetch('/api/drugs')
             .then(response => response.json())
             .then(drugs => {
-                const container = document.querySelector('.row');
+                const container = document.querySelector('#card-container');
                 container.innerHTML = ''; // Pulisci il contenuto preesistente
                 if (drugs && drugs.length > 0) {
                     drugs.forEach(drug => {
                         container.innerHTML += `
-                        <div class="col-md-4">
-                            <div class="card mb-4 shadow">
-                                <div class="card-header bg-primary text-white">
-                                    <h4 class="my-0">${drug.Farmaco}</h4>
-                                </div>
-                                <div class="card-body">
-                                    <h5 class="card-title">${drug.PrezzoRiferimentoSSN} €</h5>
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item">Principio Attivo: ${drug.PrincipioAttivo}</li>
-                                        <li class="list-group-item">Confezione: ${drug.Confezione}</li>
-                                        <li class="list-group-item">Ditta: ${drug.Ditta}</li>
-                                        <li class="list-group-item">ATC: ${drug.ATC}</li>
-                                        <li class="list-group-item">AIC: ${drug.AIC}</li>
-                                        <li class="list-group-item">Codice Equivalenza: ${drug.CodiceGruppoEquivalenza}</li>
-                                    </ul>
-                                    <button type="button" class="btn btn-primary mt-3">Dettagli</button>
+                            <div class="col-md-4">
+                                <div class="card mb-4 shadow">
+                                    <div class="card-header bg-primary text-white">
+                                        <h4 class="my-0">${drug.Farmaco}</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title">${drug.PrezzoRiferimentoSSN} €</h5>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">Principio Attivo: ${drug.PrincipioAttivo}</li>
+                                            <li class="list-group-item">Confezione: ${drug.Confezione}</li>
+                                            <li class="list-group-item">Ditta: ${drug.Ditta}</li>
+                                            <li class="list-group-item">ATC: ${drug.ATC}</li>
+                                            <li class="list-group-item">AIC: ${drug.AIC}</li>
+                                            <li class="list-group-item">Codice Equivalenza: ${drug.CodiceGruppoEquivalenza}</li>
+                                        </ul>
+                                        <button type="button" class="btn btn-primary mt-3">Dettagli</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
                         `;
                     });
-                    
                 } else {
                     container.innerHTML = '<p>Nessun farmaco trovato.</p>';
                 }
             })
-            
             .catch(error => console.error('Error loading the drugs:', error));
         });
+        
     </script>
     
     <!-- Bootstrap JS -->
