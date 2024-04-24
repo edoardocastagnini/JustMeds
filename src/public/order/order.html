@@ -73,14 +73,26 @@
                 if (drugs && drugs.length > 0) {
                     drugs.forEach(drug => {
                         container.innerHTML += `
-                            <div class="col-md-4">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">${drug.Farmaco || 'Nome non disponibile'}</h5>
-                                        <p class="card-text">${drug.Confezione || 'Confezione non disponibile'}</p>
-                                    </div>
+                        <div class="col-md-4">
+                            <div class="card mb-4 shadow">
+                                <div class="card-header bg-primary text-white">
+                                    <h4 class="my-0">${drug.Farmaco}</h4>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">${drug.PrezzoRiferimentoSSN} €</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">Principio Attivo: ${drug.PrincipioAttivo}</li>
+                                        <li class="list-group-item">Confezione: ${drug.Confezione}</li>
+                                        <li class="list-group-item">Ditta: ${drug.Ditta}</li>
+                                        <li class="list-group-item">ATC: ${drug.ATC}</li>
+                                        <li class="list-group-item">AIC: ${drug.AIC}</li>
+                                        <li class="list-group-item">Codice Equivalenza: ${drug.CodiceGruppoEquivalenza}</li>
+                                    </ul>
+                                    <button type="button" class="btn btn-primary mt-3">Dettagli</button>
                                 </div>
                             </div>
+                        </div>
+                        
                         `;
                     });
                     

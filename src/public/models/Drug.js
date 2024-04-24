@@ -1,19 +1,17 @@
 const mongoose = require('mongoose');
 
 const drugSchema = new mongoose.Schema({
-    principioAttivo: String,
-    confezioneDiRiferimento: String,
+    PrincipioAttivo: String,
+    ConfezioneDiRiferimento: String,
     ATC: String,
     AIC: String,
-    nomeFarmaco: String,
-    confezione: String,
-    ditta: String,
-    prezzoRiferimentoSSN: Number,
-    prezzoPubblico: Number,
-    differenzaPrezzo: Number,
-    codiceGruppoEquivalenza: String
+    NomeFarmaco: String,
+    Confezione: String,
+    Ditta: String,
+    PrezzoRiferimentoSSN: Number,
+    CodiceGruppoEquivalenza: String
 }, { timestamps: true });
 
-const Drug = mongoose.model('Drug', drugSchema, 'ListaFarmaci'); // 'ListaFarmaci' è il nome della collezione
+const Drug = mongoose.model('Drug', drugSchema, 'ListaFarmaci');
 
 module.exports = Drug;

@@ -13,9 +13,7 @@ mongoose.connect('mongodb://localhost:27017/Database', {
 // Endpoint per ottenere i primi 10 farmaci
 router.get('/api/drugs', async (req, res) => {
     try {
-        const drugs = await Drug.find({})
-            .sort({ nomeFarmaco: 1 })
-            .limit(10);
+        const drugs = await Drug.find({}).sort({ NomeFarmaco: 1 }).limit(10);
         console.log(drugs); // Aggiungi questo log per vedere l'output
         res.json(drugs);
     } catch (error) {
