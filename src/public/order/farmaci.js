@@ -32,7 +32,7 @@ router.get('/api/drugs/search', async (req, res) => {
                 { NomeFarmaco: { $regex: `^${searchTerm}`, $options: 'i' } },  // Cerca i farmaci che iniziano con searchTerm
                 { PrincipioAttivo: { $regex: `^${searchTerm}`, $options: 'i' } }
             ]
-        }).sort({ NomeFarmaco: 1 }).limit(10);
+        }).sort({ NomeFarmaco: 1 }).limit(20);
         res.json(drugs);
     } catch (error) {
         console.error('Error loading the drugs:', error);
