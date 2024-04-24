@@ -19,3 +19,31 @@ main {
 .container {
     padding-bottom: 50px; /* Oppure aggiungi spazio al fondo del contenitore */
 }
+
+body {
+    font-family: 'Arial', sans-serif; /* Scegli un font moderno e leggibile */
+    background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+}
+
+
+.navbar {
+    background-color: #f8f9fa; /* Usa colori chiari e freschi per la navbar */
+}
+
+.main {
+    padding: 20px;
+    background-color: #e9ecef; /* Uno sfondo neutro per il contenuto */
+}
+
+.btn-info, .btn-primary {
+    transition: all 0.3s ease; /* Aggiungi transizioni per un effetto hover fluido */
+}
+
+.btn-info:hover, .btn-primary:hover {
+    transform: scale(1.05); /* Leggero ingrandimento al hover */
+}
+
+.footer {
+    background-color: #343a40; /* Piede di pagina scuro per contrasto */
+    color: white;
+}
