@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 
 const drugSchema = new mongoose.Schema({
-    principioAttivo: { type: String, required: true },
+    principioAttivo: String,
     confezioneDiRiferimento: String,
     ATC: String,
     AIC: String,
-    nomeFarmaco: { type: String, required: true },
+    nomeFarmaco: String,
     confezione: String,
     ditta: String,
-    prezzoRiferimentoSSN: { type: Number, required: true },
+    prezzoRiferimentoSSN: Number,
     prezzoPubblico: Number,
     differenzaPrezzo: Number,
     codiceGruppoEquivalenza: String

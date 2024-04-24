@@ -72,8 +72,18 @@
                 container.innerHTML = ''; // Pulisci il contenuto preesistente
                 if (drugs && drugs.length > 0) {
                     drugs.forEach(drug => {
-                        container.innerHTML += `<div class="col-md-4"><div class="card"><div class="card-body"><h5 class="card-title">${drug.nomeFarmaco || 'Nome non disponibile'}</h5><p class="card-text">${drug.confezione || 'Confezione non disponibile'}</p></div></div></div>`;
+                        container.innerHTML += `
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${drug.Farmaco || 'Nome non disponibile'}</h5>
+                                        <p class="card-text">${drug.Confezione || 'Confezione non disponibile'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
                     });
+                    
                 } else {
                     container.innerHTML = '<p>Nessun farmaco trovato.</p>';
                 }
