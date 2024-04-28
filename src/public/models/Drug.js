@@ -13,7 +13,7 @@ const drugSchema = new mongoose.Schema({
     CodiceGruppoEquivalenza: String
 }, { timestamps: true });
 
-const Drug = mongoose.model('Drug', drugSchema);
+const Drug = mongoose.model('Drug', drugSchema, 'ListaFarmaci');
 
 module.exports = Drug;
 
