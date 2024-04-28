@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true })); // Supporto per il corpo delle 
 // La tua stringa di connessione Atlas
 const DbURI = 'mongodb+srv://adminuser:adminuser@justmedsdata.d6avjw7.mongodb.net/Data?retryWrites=true&w=majority&appName=JustMedsData';
 
-mongoose.connect(DbURI)
+mongoose.connect(DbURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB Atlas connected'))
     .catch((err) => console.error('Error connecting to MongoDB Atlas:', err));
 
