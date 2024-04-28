@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const drugSchema = new mongoose.Schema({
+    _id: String,
     PrincipioAttivo: String,
     ConfezioneDiRiferimento: String,
     ATC: String,
@@ -12,6 +13,7 @@ const drugSchema = new mongoose.Schema({
     CodiceGruppoEquivalenza: String
 }, { timestamps: true });
 
-const Drug = mongoose.model('Drug', drugSchema, 'ListaFarmaci');
+const Drug = mongoose.model('Drug', drugSchema);
 
 module.exports = Drug;
+

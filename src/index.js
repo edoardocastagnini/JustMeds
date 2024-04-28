@@ -1,101 +1,91 @@
 const express = require('express');
-const session = require('express-session');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const morgan = require('morgan');
 const app = express();
 
-const drugRoutes = require('./public/order/farmaci'); // Il percorso deve essere corretto
+
+// Middleware per il parsing del corpo delle richieste POST
+app.use(express.json()); // Supporto per il corpo delle richieste in formato JSON
+app.use(express.urlencoded({ extended: true })); // Supporto per il corpo delle richieste URL-encoded
 
 
-// Usare il router dei farmaci
+// La tua stringa di connessione Atlas
+const DbURI = 'mongodb+srv://adminuser:adminuser@justmedsdata.d6avjw7.mongodb.net/Data?retryWrites=true&w=majority&appName=JustMedsData';
+
+mongoose.connect(DbURI)
+    .then(() => console.log('MongoDB Atlas connected'))
+    .catch((err) => console.error('Error connecting to MongoDB Atlas:', err));
+
+app.set('view engine', 'ejs');
+app.use(express.static('public'));
+app.use(morgan('dev'));
+
+const drugRoutes = require('./public/order/farmaci'); // Verifica il percorso
 app.use(drugRoutes);
 
-app.use(session({
-    secret: '2024', // Chiave segreta per firmare l'ID di sessione, sostituiscila con una chiave sicura
-    resave: false,
-    saveUninitialized: true
-}));
+// Definisci lo schema e il modello per gli utenti
+const userSchema = new mongoose.Schema({
+    nome: String,
+    cognome: String,
+    email: { type: String, unique: true, required: true },
+    password: { type: String, required: true },
+    dataDiNascita: Date,
+    CF: String,
+    paese: String,
+    città: String,
+    via: String,
+    type: String
+});
 
+const User = mongoose.model('User', userSchema, 'users');
 
-app.use(bodyParser.json())
-app.use(express.static("public"))
-app.use(bodyParser.urlencoded({
-    extended: true
-}))
-mongoose.connect('mongodb://localhost:27017/Database')
-var db = mongoose.connection
-db.on('error', () => console.log("Error in connecting to database"))
-db.once('open', () => console.log("Connected to database"))
-
-app.post('/sign_up', (req, res) => {
-    var nome = req.body.nome;
-    var cognome = req.body.cognome;
-    var email = req.body.email;
-    var password = req.body.password;
-    var dataDiNascita = req.body.dataDiNascita;
-    var CF = req.body.CF;
-    var paese = req.body.paese;
-    var città = req.body.città;
-    var via = req.body.via;
-    var type = req.body.type; //value of the selected radio button (pallino)
-
-    var data = {
-        "nome": nome,
-        "cognome": cognome,
-        "email": email,
-        "password": password,
-        "dataDiNascita": dataDiNascita,
-        "CF": CF,
-        "paese": paese,
-        "città": città,
-        "via": via,
-        "type": type
-    }
-
-    db.collection('users').insertOne(data, (err, collection) => {
-        if (err) {
-            throw err;
-        }
+// Ora usa User per interagire con la collezione users
+app.post('/sign_up', async (req, res) => {
+    try {
+        const user = new User(req.body);
+        await user.save();
         console.log("Record inserted successfully");
-
-        // Delay redirection based on account type
         setTimeout(() => {
-           res.redirect('login.html');
-        }, 2000); // Delay for 2 seconds (2000 milliseconds)
-    });
+            res.redirect('login.html');
+        }, 2000);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send(err.message);
+    }
 });
 
-app.post('/login', (req, res) => {
-    var email = req.body.email;
-    var password = req.body.password;
-
-    db.collection('users').findOne({ email: email, password: password }, (err, user) => {
-        if (err) {
-            throw err;
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    console.log("Login request body:", req.body);
+    
+    try {
+        const user = await User.findOne({ email: email });
+        if (!user) {
+            console.log("User with email not found:", email);
+            return res.redirect('/loginFail.html');
         }
-        if (user) {
-            // Utente trovato nel database, reindirizza in base al tipo di account
-            if (user.type === 'rider') {
-                res.redirect('/delivery/delivery.html');
-            }
-            if (user.type === 'ricevente') {
-                res.redirect('/order/order.html');
-            } 
+
+        console.log("User found in database with email:", email, "User object:", user);
+
+        // Qui aggiungi il controllo della password, considerando se è criptata o meno
+        if (user.password === password) {
+            console.log("Password matches. User authenticated successfully.");
+            // Prosegui con la logica di login...
         } else {
-           
-            res.redirect('/loginFail.html');
+            console.log("Password does not match.");
+            return res.redirect('/loginFail.html');
         }
-    });
+    } catch (err) {
+        console.error("Error during login:", err);
+        res.status(500).send(err.message);
+    }
 });
-
-
 
 
 app.get("/", (req, res) => {
-    res.set({
-        "Allow-access-Allow-Origin": "*"
-    })
-    return res.redirect('index.html');
-}).listen(3000);
+    res.redirect('index.html');
+});
 
-console.log("Listening on port 3000")
+app.listen(3000, () => {
+    console.log("Server running on port 3000");
+});
