@@ -12,19 +12,39 @@
     />
   </head>
   <body>
-    <nav class="navbar bg-body-tertiary">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-          <img
-            src="../images/Logo.png"
-            alt="Logo"
-            width="30"
-            class="d-inline-block align-text-top"
-          />
-          Chi siamo
-        </a>
-      </div>
-    </nav>
+    <header>
+      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a href="index.html"
+            ><img
+              src="../images/Logo.png"
+              alt="Logo"
+              width="40"
+              height="40"
+              href="index.html"
+          /></a>
+          <a class="navbar-brand" href="index.html">JustMeds</a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+              <a class="nav-link" href="#">Chi siamo</a>
+              <a class="nav-link" href="order/order.html">Lista Farmaci</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
 
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -32,4 +52,9 @@
       crossorigin="anonymous"
     ></script>
   </body>
+  <footer class="bg-dark text-white text-center p-3 mt-4">
+    <div class="container">
+      <p>&copy; 2024 Just Meds. All rights reserved.</p>
+    </div>
+  </footer>
 </html>
