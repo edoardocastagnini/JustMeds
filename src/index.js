@@ -70,7 +70,7 @@ app.post('/login', async (req, res) => {
         // Qui aggiungi il controllo della password, considerando se è criptata o meno
         if (user.password === password) {
             console.log("Password matches. User authenticated successfully.");
-            // Prosegui con la logica di login...
+            return res.redirect('/order/order.html');
         } else {
             console.log("Password does not match.");
             return res.redirect('/loginFail.html');

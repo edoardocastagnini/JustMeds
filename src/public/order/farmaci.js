@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router(); // Crea un'istanza del router
 // Assicurati di usare il percorso corretto per importare mongoose dal file di configurazione della connessione
-const mongoose = require('../../index'); // Ad esempio '../../index.js' o '../../database.js'
-
+const mongoose = require('../../index'); 
 const Drug = require('../models/Drug.js'); // Assicurati che il percorso del modello sia corretto
 
 // Endpoint per ottenere i primi 10 farmaci
