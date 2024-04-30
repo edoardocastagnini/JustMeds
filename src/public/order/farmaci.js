@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router(); // Crea un'istanza del router
 // Assicurati di usare il percorso corretto per importare mongoose dal file di configurazione della connessione
 const mongoose = require('../../index'); 
-const Drug = require('../models/Drug.js'); // Assicurati che il percorso del modello sia corretto
+const Drug = require('../models/Drug.js'); 
 
 // Endpoint per ottenere i primi 10 farmaci
 router.get('/api/drugs', async (req, res) => {
     try {
-        const drugs = await Drug.find({}).sort({ NomeFarmaco: 1 }).limit(10);
+        const drugs = await Drug.aggregate([{ $sample: { size: 10 } }]).sort({ NomeFarmaco: 1 }); // Ottieni 10 farmaci in modo casuale
         console.log("Drugs fetched:", drugs); // Mostra l'output nel log
         res.json(drugs);
     } catch (error) {

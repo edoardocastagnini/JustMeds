@@ -23,21 +23,8 @@ app.use(morgan('dev'));
 const drugRoutes = require('./public/order/farmaci'); // Verifica il percorso
 app.use(drugRoutes);
 
-// Definisci lo schema e il modello per gli utenti
-const userSchema = new mongoose.Schema({
-    nome: String,
-    cognome: String,
-    email: { type: String, unique: true, required: true },
-    password: { type: String, required: true },
-    dataDiNascita: Date,
-    CF: String,
-    paese: String,
-    città: String,
-    via: String,
-    type: String
-});
+const User = require('./public/models/User'); 
 
-const User = mongoose.model('User', userSchema, 'users');
 
 // Ora usa User per interagire con la collezione users
 app.post('/sign_up', async (req, res) => {
