@@ -5,6 +5,6 @@ const carrelloSchema = new mongoose.Schema({
     Prodotti: Array,
 });
 
-const Carrello = mongoose.model('Carrello', userSchema, 'carrello');
+const Carrello = mongoose.model('Carrello', carrelloSchema, 'carrello');
 
 module.exports = Carrello;
