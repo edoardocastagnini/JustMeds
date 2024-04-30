@@ -24,9 +24,9 @@ router.get('/api/drugs/search', async (req, res) => {
         const drugs = await Drug.find({
             $or: [
                 { PrincipioAttivo: { $regex: `^${searchTerm}`, $options: 'i' } },  // Cerca i farmaci che iniziano con searchTerm
-                { NomeFarmaco: { $regex: `^${searchTerm}`, $options: 'i' } }
+                { Farmaco: { $regex: `^${searchTerm}`, $options: 'i' } }
             ]
-        }).sort({ NomeFarmaco: 1 }).limit(20);
+        }).sort({ Farmaco: 1 }).limit(20);
         res.json(drugs);
     } catch (error) {
         console.error('Error loading the drugs:', error);

@@ -5,7 +5,7 @@ const drugSchema = new mongoose.Schema({
     ConfezioneDiRiferimento: String,
     ATC: String,
     AIC: String,
-    NomeFarmaco: String,
+    Farmaco: String,
     Confezione: String,
     Ditta: String,
     PrezzoRiferimentoSSN: String,
