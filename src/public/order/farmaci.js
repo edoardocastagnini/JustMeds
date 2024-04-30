@@ -23,8 +23,8 @@ router.get('/api/drugs/search', async (req, res) => {
     try {
         const drugs = await Drug.find({
             $or: [
-                { NomeFarmaco: { $regex: `^${searchTerm}`, $options: 'i' } },  // Cerca i farmaci che iniziano con searchTerm
-                { PrincipioAttivo: { $regex: `^${searchTerm}`, $options: 'i' } }
+                { PrincipioAttivo: { $regex: `^${searchTerm}`, $options: 'i' } },  // Cerca i farmaci che iniziano con searchTerm
+                { NomeFarmaco: { $regex: `^${searchTerm}`, $options: 'i' } }
             ]
         }).sort({ NomeFarmaco: 1 }).limit(20);
         res.json(drugs);
