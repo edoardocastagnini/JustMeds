@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const carrelloSchema = new mongoose.Schema({
     ClienteID: String,
     Prodotti: Array,
-});
+},{versionKey: false });
 
 const Carrello = mongoose.model('Carrello', userSchema, 'carrello');
 
