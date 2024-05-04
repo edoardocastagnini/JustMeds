@@ -2,6 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const app = express();
+require('dotenv').config();    // Carica le variabili d'ambiente dal file .env
+const tokenChecker = require('./public/middlewares/tokenChecker');
+
 
 
 // Middleware per il parsing del corpo delle richieste POST
@@ -40,33 +43,34 @@ app.post('/sign_up', async (req, res) => {
         res.status(500).send(err.message);
     }
 });
+const jwt = require('jsonwebtoken');
 
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
-    console.log("Login request body:", req.body);
-    
     try {
         const user = await User.findOne({ email: email });
         if (!user) {
-            console.log("User with email not found:", email);
-            return res.redirect('/loginFail.html');
+            return res.status(404).json({ message: 'User not found' });
         }
-
-        console.log("User found in database with email:", email, "User object:", user);
-
-        // Qui aggiungi il controllo della password, considerando se è criptata o meno
-        if (user.password === password) {
-            console.log("Password matches. User authenticated successfully.");
-            return res.redirect('/order/order.html');
-        } else {
-            console.log("Password does not match.");
-            return res.redirect('/loginFail.html');
+        // Confronto diretto delle password in chiaro (NON raccomandato)
+        if (password !== user.password) {
+            return res.status(401).json({ message: 'Invalid credentials' });
         }
+        const payload = { id: user._id, email: user.email };
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, { expiresIn: '1h' });
+        res.json({ success: true, token: 'Bearer ' + token });
+        // Dopo aver ottenuto una risposta positiva dal server con il token
+        const token1 = response.data.token;  // Assicurati di utilizzare il percorso corretto per il token nella risposta
+        localStorage.setItem('token', token1);
+
     } catch (err) {
-        console.error("Error during login:", err);
+        console.error(err);
         res.status(500).send(err.message);
     }
 });
+
+
+
 
 
 app.get("/", (req, res) => {
