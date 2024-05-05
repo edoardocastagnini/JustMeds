@@ -15,19 +15,21 @@
     <header>
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
-              <img src="../images/Logo.png" alt="Logo" width="40" height="40" href="../index.html">
-              <a class="navbar-brand" href="../index.html">JustMeds</a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-              <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav">
-                  <a class="nav-link" href="../about/about.html">Chi siamo</a>
-                  <a class="nav-link" href="order.html">Lista Farmaci</a>
+                <a href="../index.html"><img src="../images/Logo.png" alt="Logo" width="40" height="40"></a>
+                <a class="navbar-brand" href="../index.html">JustMeds</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                        <a class="nav-link" href="../about/about.html">Chi siamo</a>
+                        <a class="nav-link" href="order.html">Lista Farmaci</a>
+                        <!-- Logout link will be dynamically inserted here if user is logged in -->
+                    </div>
                 </div>
-              </div>
             </div>
-          </nav>
+        </nav>
+        
     </header>
 
     <!-- Your content goes here -->
@@ -106,88 +108,98 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const token = localStorage.getItem('token');
-            console.log('Recovered token:', token); // Stampa il token recuperato
-            if (!token) {
-                console.error('No token stored');
-                alert('Please log in to view drugs');
-                return;
-            }
-    
-            const headers = {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            };
-    
-            fetchDrugs(headers);
-    
+            fetchDrugs();
+            updateNavigation(); 
             const searchForm = document.getElementById('searchForm');
             searchForm.addEventListener('submit', function(event) {
                 event.preventDefault();
                 const searchTerm = document.querySelector('input[type="text"]').value;
-                searchDrugs(searchTerm, headers);
+                searchDrugs(searchTerm);
             });
         });
+        
+        function updateNavigation() {
+            fetch('/api/check-login', { method: 'GET', credentials: 'include' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.isLoggedIn) {
+                        const navBar = document.querySelector('#navbarNavAltMarkup .navbar-nav');
+                        const logoutLink = document.createElement('a');
+                        logoutLink.className = 'nav-link';
+                        logoutLink.href = '/logout';
+                        logoutLink.textContent = 'Logout';
+                        navBar.appendChild(logoutLink);
+                    }
+                })
+                .catch(error => console.error('Error checking login status:', error));
+        }
     
-        function fetchDrugs(headers) {
-            fetch('/api/drugs', { method: 'GET', headers: headers })
+        function fetchDrugs() {
+            fetch('/api/drugs', { method: 'GET', credentials: 'include' }) // Assicurati di includere le credenziali per gestire la sessione
             .then(response => {
                 if (!response.ok) {
                     throw new Error('HTTP error, status = ' + response.status);
                 }
                 return response.json();
             })
-            .then(drugs => {
-                updateDrugCards(drugs);
+            .then(data => {
+                const isLoggedIn = data.isLoggedIn; // Assumi che il backend invii questa informazione
+                updateDrugCards(data.drugs, isLoggedIn);
             })
             .catch(error => {
                 console.error('Error loading the drugs:', error);
                 alert('Error loading drugs: ' + error.message);
             });
         }
-        function updateDrugCards(drugs) {
-            console.log("Drugs received:", drugs);  // Check the actual data received
+        
+        
+        function updateDrugCards(drugs, isLoggedIn) {
             const container = document.querySelector('#card-container');
             container.innerHTML = '';
             drugs.forEach(drug => {
-                container.innerHTML += generateDrugCard(drug);
+                container.innerHTML += generateDrugCard(drug, isLoggedIn);
             });
         }
         
         
         
+        
     
-        function searchDrugs(searchTerm, headers) {
-            fetch(`/api/drugs/search?farmaco=${encodeURIComponent(searchTerm)}`, { headers })
+        function searchDrugs(searchTerm) {
+            fetch(`/api/drugs/search?farmaco=${encodeURIComponent(searchTerm)}`, { method: 'GET', credentials: 'include' })
                 .then(handleResponse)
-                .then(drugs => updateDrugCards(drugs, searchTerm))
+                .then(data => updateDrugCards(data.drugs, data.isLoggedIn, searchTerm)) // Pass searchTerm here
                 .catch(error => {
                     console.error('Error searching the drugs:', error);
                     alert('Error searching drugs: ' + error.message);
                 });
         }
-    
+        
         function handleResponse(response) {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
         }
-    
-        function updateDrugCards(drugs, searchTerm = '') {
+        
+        function updateDrugCards(drugs, isLoggedIn, searchTerm) { // Accept searchTerm as a parameter
             const container = document.querySelector('#card-container');
-            container.innerHTML = '';  // Clear previous results
+            container.innerHTML = '';
         
             if (drugs.length > 0) {
                 drugs.forEach(drug => {
-                    container.innerHTML += generateDrugCard(drug);
+                    container.innerHTML += generateDrugCard(drug, isLoggedIn);
                 });
             } else {
-                container.innerHTML = `<p>No drugs found for the search term: "${searchTerm}".</p>`;
+                container.innerHTML = `<p>No drugs found for the search term: "${searchTerm}".</p>`; // Use searchTerm correctly here
             }
         }
         
-        function generateDrugCard(drug) {
+        function generateDrugCard(drug, isLoggedIn) {
+            let addToCartButton = '';
+            if (isLoggedIn) {
+                addToCartButton = `<button type="button" class="btn btn-primary mt-3 add-to-cart" data-id="${drug._id}">Aggiungi al Carrello</button>`;
+            }
             return `
                 <div class="col-md-4">
                     <div class="card mb-4 shadow">
@@ -204,12 +216,13 @@
                                 <li class="list-group-item">AIC: ${drug.AIC}</li>
                                 <li class="list-group-item">Codice Equivalenza: ${drug.CodiceGruppoEquivalenza}</li>
                             </ul>
-                            <button type="button" class="btn btn-primary mt-3 add-to-cart" data-id="${drug._id}">Aggiungi al Carrello</button>
+                            ${addToCartButton}
                         </div>
                     </div>
                 </div>
             `;
         }
+        
     </script>
     
 </body>

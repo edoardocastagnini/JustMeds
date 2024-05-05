@@ -21,7 +21,7 @@
               class="navbar-brand img-fluid"
               style="width: 40px"
           /></a>
-          <a class="navbar-brand" href="../index.html">JustMeds</a>
+          <a class="navbar-brand" href="index.html">JustMeds</a>
           <button
             class="navbar-toggler"
             type="button"
@@ -36,7 +36,10 @@
           <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
               <a class="nav-link" href="about/about.html">Chi siamo</a>
-              <a class="nav-link" href="order/order.html">Lista Farmaci</a>
+              <a class="nav-link" href="order/order.html" id="orderLink"
+                >Lista Farmaci</a
+              >
+              <!-- Logout link will be dynamically inserted here if user is logged in -->
             </div>
           </div>
         </div>
@@ -51,7 +54,9 @@
             <div class="p-4 shadow rounded bg-primary text-white text-center">
               <h2>Ordina Farmaci</h2>
               <p>Accesso rapido ai tuoi farmaci essenziali online.</p>
-              <a href="login.html" class="btn btn-info btn-lg">Ordina Ora</a>
+              <button class="btn btn-info btn-lg" id="orderNowButton">
+                Ordina Ora
+              </button>
             </div>
           </div>
           <div
@@ -60,9 +65,9 @@
             <div class="p-4 shadow rounded bg-info text-white text-center">
               <h2>Consegna a Domicilio</h2>
               <p>Farmaci consegnati direttamente a casa tua con facilità.</p>
-              <a href="login.html" class="btn btn-primary btn-lg"
-                >Scopri di più</a
-              >
+              <button class="btn btn-primary btn-lg" id="deliveryButton">
+                Guadagna con le consegne
+              </button>
             </div>
           </div>
         </div>
@@ -83,5 +88,72 @@
       integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
       crossorigin="anonymous"
     ></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        fetchLoginStatus()
+          .then((data) => {
+            if (data.isLoggedIn) {
+              setupLogoutLink();
+              setupButtons(data.userRole); // Assicurati che il ruolo utente sia passato correttamente
+            } else {
+              setupUnauthenticatedButtons(); // Setup per utenti non autenticati
+            }
+          })
+          .catch((error) => {
+            console.error("Error checking login status:", error);
+          });
+      });
+
+      function setupButtons(userRole) {
+        const orderNowButton = document.getElementById("orderNowButton");
+        const deliveryButton = document.getElementById("deliveryButton");
+
+        if (!userRole) {
+          // Se non c'è un ruolo utente definito, reindirizza alla pagina di login
+          orderNowButton.onclick = () => (window.location.href = "/login.html");
+          deliveryButton.onclick = () => (window.location.href = "/login.html");
+        } else if (userRole === "rider") {
+          deliveryButton.onclick = () =>
+            (window.location.href = "/delivery/delivery.html");
+          orderNowButton.onclick = () => alert("Accesso non autorizzato."); // O reindirizza dove desiderato
+        } else if (userRole === "ricevente") {
+          orderNowButton.onclick = () =>
+            (window.location.href = "/order/order.html");
+          deliveryButton.onclick = () => alert("Accesso non autorizzato."); // O reindirizza dove desiderato
+        } else {
+          // Gestisci altri ruoli o impostazioni di default
+          orderNowButton.onclick = () => alert("Ruolo non autorizzato.");
+          deliveryButton.onclick = () => alert("Ruolo non autorizzato.");
+        }
+      }
+
+      function setupUnauthenticatedButtons() {
+        const orderNowButton = document.getElementById("orderNowButton");
+        const deliveryButton = document.getElementById("deliveryButton");
+        orderNowButton.onclick = () => (window.location.href = "/login.html");
+        deliveryButton.onclick = () => (window.location.href = "/login.html");
+      }
+
+      function setupLogoutLink() {
+        const navBar = document.querySelector(".navbar-nav");
+        const logoutLink = document.createElement("a");
+        logoutLink.className = "nav-link";
+        logoutLink.href = "/logout";
+        logoutLink.textContent = "Logout";
+        navBar.appendChild(logoutLink);
+      }
+
+      function fetchLoginStatus() {
+        return fetch("/api/check-login", { credentials: "include" })
+          .then((response) => response.json())
+          .then((data) => {
+            return data; // Assicurati che data sia l'oggetto che include isLoggedIn e userRole
+          })
+          .catch((error) => {
+            console.error("Error fetching login status:", error);
+            throw error;
+          });
+      }
+    </script>
   </body>
 </html>
