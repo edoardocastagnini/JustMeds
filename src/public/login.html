@@ -74,7 +74,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Modulo di registrazione</h5>
-                            <form onsubmit="return validateForm()" action="/sign_up" method="post">
+                            <form  action="/sign_up" method="post">
                                 <div class="mb-3">
                                     <label for="nome" class="form-label">Nome</label>
                                     <input type="text" class="form-control" id="nome" name="nome" required>
@@ -153,31 +153,34 @@
     <!-- Assicurati che questo script sia incluso nel tuo file HTML dove gestisci il login -->
 <script>
     function login(event) {
-        event.preventDefault(); // Impedisce il comportamento di invio del modulo standard
+        event.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
     
         fetch('/login', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ email, password })
         })
-        .then(response => response.json())
+        .then(response => response.json())  // Process the JSON data in any case
         .then(data => {
             if (data.success) {
-                localStorage.setItem('token', data.token);
-                window.location.href = '/order/order.html'; // Redirezione dopo il login riuscito
+                // Correct handling of the token storage (splitting if it comes with 'Bearer ' prefix)
+                const token = data.token.startsWith('Bearer ') ? data.token.split(' ')[1] : data.token;
+                localStorage.setItem('token', token);  // Store the token in localStorage
+                console.log('Token stored:', token); // Log the token for debugging
+                window.location.href = '/order/order.html'; // Redirect to the drugs page
             } else {
-                alert('Login failed: ' + data.message);
+                throw new Error('Login failed: ' + data.message); // Throw an error if login is not successful
             }
         })
         .catch(error => {
             console.error('Error during login:', error);
-            alert('Login error: ' + error.message);
+            alert('Login error: ' + error.message); // Display a meaningful error message
         });
     }
+    
+
     </script>
     
 </body>

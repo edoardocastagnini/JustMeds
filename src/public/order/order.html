@@ -39,7 +39,7 @@
             const productId = this.getAttribute('data-id');
             const quantity = 1; // Puoi modificare questo se hai un input per la quantità
 
-            fetch('/api/cart/add', {
+            fetch('cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -105,95 +105,113 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const token = localStorage.getItem('token'); 
-        if (!token) {
-            console.error('No token stored');
-            // Potresti voler reindirizzare al login o mostrare un messaggio
-            alert('Please log in to view drugs');
-            return; // Non procedere oltre se non c'è un token
-        }
-        
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        };
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            console.log('Recovered token:', token); // Stampa il token recuperato
+            if (!token) {
+                console.error('No token stored');
+                alert('Please log in to view drugs');
+                return;
+            }
     
-        // Caricamento iniziale dei farmaci con il token
-        fetch('/api/drugs', { headers })
-        .then(handleResponse)
-        .then(drugs => {
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+    
+            fetchDrugs(headers);
+    
+            const searchForm = document.getElementById('searchForm');
+            searchForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const searchTerm = document.querySelector('input[type="text"]').value;
+                searchDrugs(searchTerm, headers);
+            });
+        });
+    
+        function fetchDrugs(headers) {
+            fetch('/api/drugs', { method: 'GET', headers: headers })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error, status = ' + response.status);
+                }
+                return response.json();
+            })
+            .then(drugs => {
+                updateDrugCards(drugs);
+            })
+            .catch(error => {
+                console.error('Error loading the drugs:', error);
+                alert('Error loading drugs: ' + error.message);
+            });
+        }
+        function updateDrugCards(drugs) {
+            console.log("Drugs received:", drugs);  // Check the actual data received
             const container = document.querySelector('#card-container');
             container.innerHTML = '';
+            drugs.forEach(drug => {
+                container.innerHTML += generateDrugCard(drug);
+            });
+        }
+        
+        
+        
+    
+        function searchDrugs(searchTerm, headers) {
+            fetch(`/api/drugs/search?farmaco=${encodeURIComponent(searchTerm)}`, { headers })
+                .then(handleResponse)
+                .then(drugs => updateDrugCards(drugs, searchTerm))
+                .catch(error => {
+                    console.error('Error searching the drugs:', error);
+                    alert('Error searching drugs: ' + error.message);
+                });
+        }
+    
+        function handleResponse(response) {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        }
+    
+        function updateDrugCards(drugs, searchTerm = '') {
+            const container = document.querySelector('#card-container');
+            container.innerHTML = '';  // Clear previous results
+        
             if (drugs.length > 0) {
                 drugs.forEach(drug => {
                     container.innerHTML += generateDrugCard(drug);
                 });
             } else {
-                container.innerHTML = '<p>Nessun farmaco trovato.</p>';
+                container.innerHTML = `<p>No drugs found for the search term: "${searchTerm}".</p>`;
             }
-        })
-        .catch(error => {
-            console.error('Error loading the drugs:', error);
-            alert('Error loading drugs: ' + error.message);
-        });
-    
-        // Aggiungi un listener per il form di ricerca
-        const searchForm = document.getElementById('searchForm');
-        searchForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            const searchTerm = document.querySelector('input[type="text"]').value;
-            fetch(`/api/drugs/search?farmaco=${encodeURIComponent(searchTerm)}`, { headers })
-            .then(handleResponse)
-            .then(drugs => {
-                const container = document.querySelector('#card-container');
-                container.innerHTML = '';
-                if (drugs.length > 0) {
-                    drugs.forEach(drug => {
-                        container.innerHTML += generateDrugCard(drug);
-                    });
-                } else {
-                    container.innerHTML = `<p>Nessun farmaco trovato per la ricerca: "${searchTerm}".</p>`;
-                }
-            })
-            .catch(error => {
-                console.error('Error searching the drugs:', error);
-                alert('Error searching drugs: ' + error.message);
-            });
-        });
-    });
-    
-    function handleResponse(response) {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return response.json();
-    }
-    
-    function generateDrugCard(drug) {
-        return `
-            <div class="col-md-4">
-                <div class="card mb-4 shadow">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="my-0">${drug.Farmaco}</h4>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">${drug.PrezzoRiferimentoSSN} €</h5>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Principio Attivo: ${drug.PrincipioAttivo}</li>
-                            <li class="list-group-item">Confezione: ${drug.Confezione}</li>
-                            <li class="list-group-item">Ditta: ${drug.Ditta}</li>
-                            <li class="list-group-item">ATC: ${drug.ATC}</li>
-                            <li class="list-group-item">AIC: ${drug.AIC}</li>
-                            <li class="list-group-item">Codice Equivalenza: ${drug.CodiceGruppoEquivalenza}</li>
-                        </ul>
-                        <button type="button" class="btn btn-primary mt-3 add-to-cart" data-id="${drug._id}">Aggiungi al Carrello</button>
+        
+        function generateDrugCard(drug) {
+            return `
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="my-0">${drug.Farmaco}</h4>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">${drug.PrezzoRiferimentoSSN} €</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Principio Attivo: ${drug.PrincipioAttivo}</li>
+                                <li class="list-group-item">Confezione: ${drug.Confezione}</li>
+                                <li class="list-group-item">Ditta: ${drug.Ditta}</li>
+                                <li class="list-group-item">ATC: ${drug.ATC}</li>
+                                <li class="list-group-item">AIC: ${drug.AIC}</li>
+                                <li class="list-group-item">Codice Equivalenza: ${drug.CodiceGruppoEquivalenza}</li>
+                            </ul>
+                            <button type="button" class="btn btn-primary mt-3 add-to-cart" data-id="${drug._id}">Aggiungi al Carrello</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
-    }
-    </script>    
+            `;
+        }
+    </script>
+    
 </body>
 
 </html>

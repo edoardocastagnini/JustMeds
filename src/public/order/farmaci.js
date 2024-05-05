@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('../../index'); 
+const mongoose = require('../../index.js'); 
 const Drug = require('../models/Drug.js');
-require('dotenv').config();    // Carica le variabili d'ambiente dal file .env
 const tokenChecker = require('../middlewares/tokenChecker');
 const jwt = require('jsonwebtoken');
 
+
 // Endpoint protetto per ottenere i primi 10 farmaci
-router.get('/api/drugs', tokenChecker, async (req, res) => {
+router.get('/drugs', tokenChecker, async (req, res) => {
     try {
         const drugs = await Drug.aggregate([{ $sample: { size: 10 } }]).sort({ NomeFarmaco: 1 });
         console.log("Drugs fetched:", drugs);
@@ -19,7 +19,7 @@ router.get('/api/drugs', tokenChecker, async (req, res) => {
 });
 
 // Endpoint protetto per la ricerca di farmaci
-router.get('/api/drugs/search', tokenChecker, async (req, res) => {
+router.get('/drugs/search', tokenChecker, async (req, res) => {
     const searchTerm = req.query.farmaco;
     try {
         const drugs = await Drug.find({

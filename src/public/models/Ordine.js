@@ -10,5 +10,5 @@ const ordineSchema = new mongoose.Schema({
 
 const Ordine = mongoose.model('Ordine', ordineSchema, 'ordini');
 
-module.exports = Drug;
+module.exports = Ordine;
 
