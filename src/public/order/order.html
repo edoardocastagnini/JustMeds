@@ -26,7 +26,7 @@
                         <a class="nav-link" href="../about/about.html">Chi siamo</a>
                         <a class="nav-link" href="order.html">Lista Farmaci</a>
                         <!-- Icona del carrello -->                   
-                        <a class="nav-link" id="cartIcon" href="/cart" style="display: none;">
+                        <a class="nav-link" id="cartIcon" href="javascript:void(0);" style="display: none;">
                             <i class="fas fa-shopping-cart"></i>
                         </a>
                         <!-- Logout link will be dynamically inserted here if user is logged in -->
@@ -36,7 +36,7 @@
             </div>
         </nav>
         
-    </header>
+    </header>  
 
     <!-- Your content goes here -->
    <script>document.addEventListener('DOMContentLoaded', function() {
@@ -68,6 +68,26 @@
     });
 });
 </script>
+
+    <!-- Modal -->
+    <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="cartModalLabel">Il Tuo Carrello</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <!-- Qui verranno inseriti i dettagli del carrello -->
+              Contenuto del carrello viene caricato qui...
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+              <button type="button" class="btn btn-primary" id="checkoutButton">Procedi al checkout</button>
+            </div>
+          </div>
+        </div>
+      </div>
     
     <div class="container">
         <div class="row">
@@ -179,8 +199,6 @@
         }
         
         
-        
-        
     
         function searchDrugs(searchTerm) {
             fetch(`/api/drugs/search?farmaco=${encodeURIComponent(searchTerm)}`, { method: 'GET', credentials: 'include' })
@@ -239,6 +257,21 @@
                 </div>
             `;
         }
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const cartIcon = document.getElementById('cartIcon');
+    const cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
+
+    cartIcon.addEventListener('click', function() {
+        cartModal.show();
+    });
+
+    // Aggiunta del listener per il bottone "Procedi al checkout"
+    const checkoutButton = document.getElementById('checkoutButton');
+    checkoutButton.addEventListener('click', function() {
+        window.location.href = 'cart.html'; // Reindirizza l'utente alla pagina del carrello
+    });
+});
         
     </script>
     
