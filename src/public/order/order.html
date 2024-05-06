@@ -69,7 +69,7 @@
 });
 </script>
 
-    <!-- Modal -->
+    <!-- POP-UP MODAL CARRELLO-->
     <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -78,8 +78,7 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <!-- Qui verranno inseriti i dettagli del carrello -->
-              Contenuto del carrello viene caricato qui...
+              <!-- I dettagli del carrello verranno inseriti qui -->
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
@@ -257,6 +256,8 @@
                 </div>
             `;
         }
+
+    //COMPORTAMENTO POP-UP
 
     document.addEventListener('DOMContentLoaded', function() {
     const cartIcon = document.getElementById('cartIcon');
