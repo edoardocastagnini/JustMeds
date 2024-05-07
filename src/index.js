@@ -53,9 +53,13 @@ app.post("/sign_up", async (req, res) => {
     await user.save();
     console.log("Record inserted successfully");
 
-    // Create a new cart for the user
-    const cart = new Carrello({ ClienteID: user._id, Prodotti: [] });
+    const cart = new Carrello({
+      clienteId: user._id, // Utilizzo del codice fiscale
+      prodotti: [],
+      totale: 0
+    });
     await cart.save();
+
     console.log("Cart created successfully");
 
     setTimeout(() => {
