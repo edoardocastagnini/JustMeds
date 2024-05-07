@@ -32,6 +32,7 @@ const drugRoutes = require("./public/order/farmaci");
 app.use("/api", drugRoutes);
 
 const User = require("./public/models/User");
+const Carrello = require("./public/models/Carrello");
 
 // La tua stringa di connessione Atlas
 const DbURI =
@@ -51,6 +52,12 @@ app.post("/sign_up", async (req, res) => {
     const user = new User(req.body);
     await user.save();
     console.log("Record inserted successfully");
+
+    // Create a new cart for the user
+    const cart = new Carrello({ ClienteID: user._id, Prodotti: [] });
+    await cart.save();
+    console.log("Cart created successfully");
+
     setTimeout(() => {
       res.redirect("login.html");
     }, 2000);
