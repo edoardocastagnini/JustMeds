@@ -166,6 +166,43 @@ app.get(
   }
 );
 
+
+app.post('/api/cart/add', async (req, res) => {
+  const { productId, quantity, price } = req.body;
+  const clienteId = req.session.user.id; // Utilizzo del codice fiscale
+  console.log("productId:", productId, "quantity:", quantity, "clienteId:", clienteId)
+  try {
+      const cart = await Carrello.findOne({ _id: clienteId });
+      console.log("Carrello:", cart);
+      // Se il carrello non esiste, restituisci un errore
+      if (!cart) {
+          return res.status(404).json({ message: 'Carrello non trovato' });
+      }
+        // Trova l'indice del prodotto nel carrello
+        const productIndex = cart.prodotti.findIndex(p => p._id.toString() === productId);
+        let priceCorrect = price.replace(',', '.');
+        let priceNumber = parseFloat(priceCorrect);
+        console.log("priceNumber:", priceNumber);
+        if (productIndex !== -1) {
+            // Prodotto esiste, aggiorna la quantità
+            cart.prodotti[productIndex].quantita += quantity;
+            cart.prodotti[productIndex].prezzo = priceNumber*quantity;
+            console.log("Prodotto esiste, aggiorna la quantità")
+        } else {
+            // Prodotto non esiste, aggiungilo
+            cart.prodotti.push({ productId, quantita: quantity, prezzo: priceNumber});
+            console.log("Prodotto non esiste, aggiungilo")
+        }
+      cart.totale += quantity * priceNumber;  // Aggiorna il totale
+      await cart.save();
+      res.status(200).json({ success: true, message: 'Prodotto aggiunto al carrello', carrello: cart });
+  } catch (error) {
+      console.error('Errore aggiunta al carrello:', error);
+      res.status(500).json({ success: false, message: 'Errore durante l\'aggiunta al carrello', error });
+  }
+});
+
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
+

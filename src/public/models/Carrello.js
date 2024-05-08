@@ -2,10 +2,11 @@ const mongoose = require('mongoose');
 
 // Schema per un singolo prodotto nel carrello
 const prodottoSchema = new mongoose.Schema({
-    productId: {
+    _id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Drug',  // Assicurati che 'Drug' sia il nome corretto del modello del prodotto
-        required: true
+        ref: 'Drug',   
+        required: true,
+        alias: 'productId'
     },
     quantita: {
         type: Number,
@@ -14,15 +15,17 @@ const prodottoSchema = new mongoose.Schema({
     },
     prezzo: {
         type: Number,
-        required: true
+        required: true,
+        min: 0
     }
-});
+},{id: false, versionKey: false});
 
 // Schema per il carrello
 const carrelloSchema = new mongoose.Schema({
-    clienteId: {
+    _id: {
         type: String,  //l'id del cliente, ovvero il suo CF
-        required: true
+        required: true,
+        alias: 'clienteId'
     },
     prodotti: [prodottoSchema],
     totale: {
@@ -30,7 +33,7 @@ const carrelloSchema = new mongoose.Schema({
         required: true,
         default: 0
     }
-},{versionKey: false});
+},{id:false, versionKey: false});
 
 const Carrello = mongoose.model('Carrello', carrelloSchema, 'carrello');
 
