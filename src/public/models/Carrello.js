@@ -14,7 +14,7 @@ const prodottoSchema = new mongoose.Schema({
         min: 1
     },
     prezzo: {
-        type: Number,
+        type: Number,   
         required: true,
         min: 0
     }
