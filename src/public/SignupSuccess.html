@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account creato correttamente</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        body {
+            background-color: rgb(0, 255, 34);
+        }
+        .container {
+            margin-top: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container animate__animated animate__shakeX"> <!-- Aggiunta delle classi animate__animated e animate__shakeX -->
+        <h1 class="text-center text-white">Account creato correttamente</h1>
+        <p class="text-center text-white">Effettua il login per continuare.</p>
+    </div>
+    <script>
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 2000); // Ritardo di 2 secondi prima del reindirizzamento alla pagina di login
+    </script>
+</body>
+</html>

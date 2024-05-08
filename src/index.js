@@ -63,7 +63,7 @@ app.post("/sign_up", async (req, res) => {
     console.log("Cart created successfully");
 
     setTimeout(() => {
-      res.redirect("login.html");
+      res.redirect("SignupSuccess.html");
     }, 2000);
   } catch (err) {
     console.error(err);
