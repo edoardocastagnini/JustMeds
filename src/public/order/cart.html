@@ -47,6 +47,13 @@
       </nav>
     </header>
 
+
+    <div class="container mt-4">
+      <h2>Il tuo carrello</h2>
+      <div id="cartItems" class="row"></div>
+    </div>
+  
+
     <footer class="bg-dark text-white text-center p-3 mt-4">
       <div class="container">
         <p>&copy; 2024 JustMeds. All rights reserved.</p>
@@ -91,6 +98,82 @@
             throw error;
           });
       }
+
+      //CODICE PER VISUALIZZARE IL CARRELLO (da rifare anche questo mi sa)
+      document.addEventListener('DOMContentLoaded', function() {
+      fetchCartItems();
+      });
+
+          function fetchCartItems() {
+              fetch('/api/cart', { credentials: 'include' })
+                  .then(response => {
+                      if (!response.ok) {
+                          throw new Error('Network response was not ok');
+                      }
+                      return response.json();
+                  })
+                  .then(data => {
+                      console.log(data); // Log dei dati per verificare la struttura
+                      if (data && data.items && data.items.length > 0) {
+                          updateCartUI(data.items);
+                      } else {
+                          document.getElementById('cartItems').innerHTML = '<p>Il tuo carrello è vuoto.</p>';
+                      }
+                  })
+                  .catch(error => {
+                      console.error('Errore nel caricare gli articoli del carrello:', error);
+                      document.getElementById('cartItems').innerHTML = `<p>Errore nel caricare gli articoli del carrello: ${error.message}</p>`;
+                  });
+}
+
+          function updateCartUI(items) {
+              const container = document.getElementById('cartItems');
+              container.innerHTML = '';
+              items.forEach(item => {
+                  container.innerHTML += generateCartItemHTML(item);
+              });
+          }
+
+          function generateCartItemHTML(item) {
+              return `
+                  <div class="col-md-4">
+                      <div class="card mb-3">
+                          <div class="card-body">
+                              <h5 class="card-title">${item.name}</h5>
+                              <p class="card-text">Quantità: ${item.quantity}</p>
+                              <p class="card-text">Prezzo: ${item.price} €</p>
+                              <button class="btn btn-danger" onclick="removeFromCart('${item.id}')">Rimuovi</button>
+                          </div>
+                      </div>
+                  </div>
+              `;
+          }
+
+          function removeFromCart(id) {
+              fetch('/api/cart/remove', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ id: id })
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      alert('Articolo rimosso dal carrello!');
+                      fetchCartItems(); // Aggiorna la visualizzazione del carrello
+                  } else {
+                      alert('Errore nella rimozione dell\'articolo.');
+                  }
+              })
+              .catch(error => {
+                  console.error('Errore nella rimozione dell\'articolo:', error);
+                  alert('Errore nella rimozione dell\'articolo.');
+              });
+          }
+
+
+
     </script>
   </body>
 </html>

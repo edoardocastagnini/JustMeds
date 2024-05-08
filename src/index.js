@@ -205,6 +205,40 @@ app.post('/api/cart/add', async (req, res) => {
   }
 });
 
+// ENDPOINT PER VISUALIZZAZIONE DEL CARRELLO  (probabilmente da rifare da zero)
+app.get('/api/cart', isAuthenticated, async (req, res) => {
+  const clienteId = req.session.user.id; // Assume che l'ID dell'utente sia salvato nella sessione al login
+  try {
+      // Popola i dettagli del prodotto nel carrello usando il modello Drug
+      const cart = await Carrello.findOne({ clienteId: clienteId })
+          .populate({
+              path: 'prodotti.productId',
+              model: 'Drug',
+              select: 'Farmaco PrezzoRiferimentoSSN'  // Seleziona solo i campi necessari per il frontend
+          });
+
+      if (!cart || cart.prodotti.length === 0) {
+          return res.status(200).json({ success: true, items: [] });
+      }
+
+      // Mappa gli articoli del carrello per il frontend
+      const items = cart.prodotti.map(item => ({
+          id: item.productId._id,
+          name: item.productId.Farmaco,         // Nome del farmaco
+          quantity: item.quantita,              // Quantità
+          price: item.prezzo                    // Prezzo per unità
+      }));
+
+      res.status(200).json({ success: true, items: items });
+  } catch (error) {
+      console.error('Errore nel recuperare il carrello:', error);
+      res.status(500).json({ success: false, message: 'Errore durante il recupero del carrello', error });
+  }
+});
+
+
+
+
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
