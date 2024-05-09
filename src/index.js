@@ -261,20 +261,25 @@ app.post('/api/cart/remove', isAuthenticated, async (req, res) => {
 
 
 app.post('/api/cart/change', isAuthenticated, async (req, res) => {
-  const { productId, change } = req.body;
+  const { productId, change } = req.body; // change è il delta, può essere 1 o -1
   const userId = req.session.user.id;
 
   try {
-      const cart = await Carrello.findOne({ clienteId: userId });
+      const cart = await Carrello.findOne({ _id: userId });
+      if (!cart) {
+          return res.status(404).json({ success: false, message: 'Carrello non trovato' });
+      }
+
       const itemIndex = cart.prodotti.findIndex(item => item.productId.toString() === productId);
 
-      if(itemIndex >= 0) {
+      if (itemIndex > -1) {
+          // Aggiorna la quantità, ma non permettere che diventi meno di 1
           cart.prodotti[itemIndex].quantita += change;
-          if (cart.prodotti[itemIndex].quantita <= 0) {
-              cart.prodotti.splice(itemIndex, 1); // Rimuovi l'articolo se la quantità è 0
+          if (cart.prodotti[itemIndex].quantita < 1) {
+              cart.prodotti.splice(itemIndex, 1);
           }
           await cart.save();
-          res.json({ success: true, message: 'Quantità aggiornata' });
+          res.json({ success: true, message: 'Quantità aggiornata', cart: cart });
       } else {
           res.status(404).json({ success: false, message: 'Prodotto non trovato nel carrello' });
       }
@@ -283,6 +288,7 @@ app.post('/api/cart/change', isAuthenticated, async (req, res) => {
       res.status(500).json({ success: false, message: 'Errore tecnico nel modificare la quantità' });
   }
 });
+
 
 
 
