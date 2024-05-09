@@ -294,28 +294,66 @@
         });
 
 
-        function changeItemQuantity(productId, change) {
-            fetch(`/api/cart/change`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ productId, change })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    fetchCartItems(); // Aggiorna l'elenco dei prodotti nel carrello nel popup
-                } else {
-                    console.error('Failed to change product quantity:', data.message);
-                    alert('Errore nella modifica della quantità dell\'articolo.');
-                }
-            })
-            .catch(error => {
-                console.error('Error changing product quantity:', error);
-                alert('Errore nella modifica della quantità dell\'articolo.');
-            });
-        }
+        function removeFromCart(id) {
+              fetch('/api/cart/remove', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ id: id })
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      alert('Articolo rimosso dal carrello!');
+                      fetchCartItems(); // Aggiorna la visualizzazione del carrello
+                  } else {
+                      alert('Errore nella rimozione dell\'articolo.');
+                  }
+                  
+              })
+              .catch(error => {
+                  console.error('Errore nella rimozione dell\'articolo:', error);
+                  alert('Errore nella rimozione dell\'articolo.');
+              });
+          }
+
+         function changeItemQuantity(productId, change) {
+            fetch(`/api/cart`, { method: 'GET', credentials: 'include' }) // Ottieni i dettagli correnti del carrello
+              .then(response => response.json())
+              .then(cart => {
+                  const item = cart.items.find(item => item.id === productId);
+                  if (!item) {
+                      throw new Error('Articolo non trovato nel carrello.');
+                  }
+
+                  // Controlla se la quantità è 1 e il change è -1, quindi rimuovi l'articolo
+                  if (item.quantity === 1 && change === -1) {
+                      removeFromCart(productId); // Chiama una funzione per rimuovere l'articolo
+                  } else {
+              fetch(`/api/cart/change`, {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ productId, change })
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      fetchCartItems();  // Ricarica gli articoli del carrello per visualizzare la quantità aggiornata
+                  } else {
+                      alert('Errore nella modifica della quantità dell\'articolo.');
+                  }
+                });
+              }
+                  
+              })
+              .catch(error => {
+                  console.error('Errore nella modifica della quantità dell\'articolo:', error);
+                  alert('Errore nella modifica della quantità dell\'articolo.');
+              });
+          }
 
 
 

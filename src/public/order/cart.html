@@ -122,6 +122,7 @@
                       if (data && data.items && data.items.length > 0) {
                           updateCartUI(data.items);
                       } else {
+                          updateCartUI([]);  // Se non ci sono articoli nel carrello, passa un array vuoto
                           document.getElementById('cartItems').innerHTML = '<p>Il tuo carrello è vuoto.</p>';
                       }
                   })
@@ -140,7 +141,10 @@
                   total += itemTotal;  // Aggiungi al totale generale
                   container.innerHTML += generateCartItemHTML(item, itemTotal);  // Aggiorna il HTML
               });
-              document.getElementById('cartTotal').textContent = total.toFixed(2);  // Visualizza il totale
+              if(total > 0){
+                document.getElementById('cartTotal').textContent = total.toFixed(2);  // Visualizza il totale
+              }else{
+                document.getElementById('cartTotal').textContent = 0;}
           }
 
 function generateCartItemHTML(item) {
@@ -191,6 +195,18 @@ function generateCartItemHTML(item) {
           }
 
           function changeItemQuantity(productId, change) {
+            fetch(`/api/cart`, { method: 'GET', credentials: 'include' }) // Ottieni i dettagli correnti del carrello
+              .then(response => response.json())
+              .then(cart => {
+                  const item = cart.items.find(item => item.id === productId);
+                  if (!item) {
+                      throw new Error('Articolo non trovato nel carrello.');
+                  }
+
+                  // Controlla se la quantità è 1 e il change è -1, quindi rimuovi l'articolo
+                  if (item.quantity === 1 && change === -1) {
+                      removeFromCart(productId); // Chiama una funzione per rimuovere l'articolo
+                  } else {
               fetch(`/api/cart/change`, {
                   method: 'POST',
                   headers: {
@@ -205,6 +221,9 @@ function generateCartItemHTML(item) {
                   } else {
                       alert('Errore nella modifica della quantità dell\'articolo.');
                   }
+                });
+              }
+                  
               })
               .catch(error => {
                   console.error('Errore nella modifica della quantità dell\'articolo:', error);
