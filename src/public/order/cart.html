@@ -104,7 +104,7 @@
           });
       }
 
-      //CODICE PER VISUALIZZARE IL CARRELLO 
+      // CODICE PER VISUALIZZARE IL CARRELLO 
       document.addEventListener('DOMContentLoaded', function() {
       fetchCartItems();
       });
@@ -129,7 +129,7 @@
                       console.error('Errore nel caricare gli articoli del carrello:', error);
                       document.getElementById('cartItems').innerHTML = `<p>Errore nel caricare gli articoli del carrello: ${error.message}</p>`;
                   });
-}
+          }
 
           function updateCartUI(items) {
               const container = document.getElementById('cartItems');
