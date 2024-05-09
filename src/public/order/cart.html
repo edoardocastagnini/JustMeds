@@ -143,21 +143,25 @@
               document.getElementById('cartTotal').textContent = total.toFixed(2);  // Visualizza il totale
           }
 
-          function generateCartItemHTML(item) {
-            return `
-                <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
-                    <div>
-                        <h6 class="my-0">${item.name}</h6>
-                        <div class="quantity-controls">
-                          <button class="btn btn-sm btn-outline-secondary" onclick="changeItemQuantity('${item.id}', -1)">-</button>
+function generateCartItemHTML(item) {
+    return `
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">${item.name}</h5>
+                    <p class="card-text">Prezzo: €${item.price}</p>
+                    <p class="card-text">Quantità: 
+                      <button class="btn btn-sm btn-outline-secondary" onclick="changeItemQuantity('${item.id}', -1)">-</button>
                           <span class="mx-2" id="qty-${item.id}">${item.quantity}</span>
                           <button class="btn btn-sm btn-outline-secondary" onclick="changeItemQuantity('${item.id}', 1)">+</button>
-                        </div>
-                    </div>
-                    <span class="text-muted">€${(item.price * item.quantity).toFixed(2)}</span>
+                    </p>
+                    <button class="btn btn-danger" onclick="removeFromCart('${item.id}')">Rimuovi</button>
                 </div>
-            `;
-        }
+            </div>
+        </div>
+    `;
+}
+
 
 
 
