@@ -149,7 +149,8 @@ function generateCartItemHTML(item) {
             <div class="card mb-3">
                 <div class="card-body">
                     <h5 class="card-title">${item.name}</h5>
-                    <p class="card-text">Prezzo: €${item.price}</p>
+                    <p class="card-text">Prezzo unitario: €${item.price}</p>
+                    <p class="card-text">Totale: €${item.price * item.quantity}</p>
                     <p class="card-text">Quantità: 
                       <button class="btn btn-sm btn-outline-secondary" onclick="changeItemQuantity('${item.id}', -1)">-</button>
                           <span class="mx-2" id="qty-${item.id}">${item.quantity}</span>
@@ -181,6 +182,7 @@ function generateCartItemHTML(item) {
                   } else {
                       alert('Errore nella rimozione dell\'articolo.');
                   }
+                  
               })
               .catch(error => {
                   console.error('Errore nella rimozione dell\'articolo:', error);

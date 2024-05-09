@@ -249,7 +249,7 @@ app.post('/api/cart/remove', isAuthenticated, async (req, res) => {
 
       // Rimuovi l'articolo dal carrello
       cart.prodotti = cart.prodotti.filter(item => item.productId.toString() !== id);
-      cart.totale = cart.prodotti.reduce((total, item) => total + item.prezzo, 0);
+      cart.totale = cart.prodotti.reduce((acc, item) => acc + item.prezzo, 0);
       await cart.save();
 
       res.json({ success: true, message: 'Articolo rimosso dal carrello' });
@@ -273,7 +273,6 @@ app.post('/api/cart/change', isAuthenticated, async (req, res) => {
       const itemIndex = cart.prodotti.findIndex(item => item.productId.toString() === productId);
 
       if (itemIndex > -1) {
-          // Aggiorna la quantità, ma non permettere che diventi meno di 1
           cart.prodotti[itemIndex].quantita += change;
           if (cart.prodotti[itemIndex].quantita < 1) {
               cart.prodotti.splice(itemIndex, 1);
