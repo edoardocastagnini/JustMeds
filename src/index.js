@@ -236,6 +236,28 @@ app.get('/api/cart', isAuthenticated, async (req, res) => {
   }
 });
 
+// RIMOZIONE ARTICOLO DAL CARRELLO
+app.post('/api/cart/remove', isAuthenticated, async (req, res) => {
+  const { id } = req.body;
+  const clienteId = req.session.user._id;
+  try {
+      const cart = await Carrello.findOne({ clienteId: clienteId });
+      if (!cart) {
+          return res.status(404).json({ message: 'Carrello non trovato' });
+      }
+
+      // Rimuovi l'articolo dal carrello
+      cart.prodotti = cart.prodotti.filter(item => item.productId.toString() !== id);
+      await cart.save();
+
+      res.json({ success: true, message: 'Articolo rimosso dal carrello' });
+  } catch (error) {
+      console.error('Errore nella rimozione dell\'articolo:', error);
+      res.status(500).json({ success: false, message: 'Errore durante la rimozione dell\'articolo', error });
+  }
+});
+
+
 
 
 
