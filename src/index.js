@@ -249,6 +249,7 @@ app.post('/api/cart/remove', isAuthenticated, async (req, res) => {
 
       // Rimuovi l'articolo dal carrello
       cart.prodotti = cart.prodotti.filter(item => item.productId.toString() !== id);
+      cart.totale = cart.prodotti.reduce((total, item) => total + item.prezzo, 0);
       await cart.save();
 
       res.json({ success: true, message: 'Articolo rimosso dal carrello' });
