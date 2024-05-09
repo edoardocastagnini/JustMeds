@@ -205,7 +205,7 @@ app.post('/api/cart/add', async (req, res) => {
   }
 });
 
-// ENDPOINT PER VISUALIZZAZIONE DEL CARRELLO  (probabilmente da rifare da zero)
+// ENDPOINT PER VISUALIZZAZIONE DEL CARRELLO
 app.get('/api/cart', isAuthenticated, async (req, res) => {
   const clienteId = req.session.user.id; // Assume che l'ID dell'utente sia salvato nella sessione al login
   console.log("clienteId:", clienteId)
