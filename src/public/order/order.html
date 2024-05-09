@@ -254,24 +254,57 @@
 
         function updateCartPopup(items) {
             const cartContent = document.getElementById('cartContent');
+            let total = 0;
             if (items && items.length > 0) {
-                cartContent.innerHTML = items.map(item => generateCartItemHTML(item)).join('');
+                cartContent.innerHTML = items.map(item => {
+                    total += item.price * item.quantity;
+                    return generateCartItemHTML(item);
+                }).join('');
+                cartContent.innerHTML += `<div class="total">Totale: €${total.toFixed(2)}</div>`;
             } else {
                 cartContent.innerHTML = '<p>Il tuo carrello è vuoto.</p>';
             }
         }
+
 
         function generateCartItemHTML(item) {
             return `
                 <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
                     <div>
                         <h6 class="my-0">${item.name}</h6>
-                        <small class="text-muted">Quantità: ${item.quantity}</small>
+                        <div class="quantity-controls">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="changeItemQuantity('${item.id}', -1)">-</button>
+                            <span class="mx-2">${item.quantity}</span>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="changeItemQuantity('${item.id}', 1)">+</button>
+                        </div>
                     </div>
                     <span class="text-muted">€${item.price * item.quantity}</span>
                 </div>
             `;
         }
+
+        function changeItemQuantity(productId, change) {
+            fetch(`/api/cart/change`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productId, change })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    fetchCartItems();  // Ricarica gli articoli del carrello per visualizzare la quantità aggiornata
+                } else {
+                    alert('Errore nella modifica della quantità dell\'articolo.');
+                }
+            })
+            .catch(error => {
+                console.error('Errore nella modifica della quantità dell\'articolo:', error);
+                alert('Errore nella modifica della quantità dell\'articolo.');
+            });
+        }
+
 
 
         // Aggiunta del listener per il bottone "Procedi al checkout"

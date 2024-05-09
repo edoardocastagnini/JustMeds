@@ -259,6 +259,32 @@ app.post('/api/cart/remove', isAuthenticated, async (req, res) => {
 });
 
 
+app.post('/api/cart/change', isAuthenticated, async (req, res) => {
+  const { productId, change } = req.body;
+  const userId = req.session.user.id;
+
+  try {
+      const cart = await Carrello.findOne({ clienteId: userId });
+      const itemIndex = cart.prodotti.findIndex(item => item.productId.toString() === productId);
+
+      if(itemIndex >= 0) {
+          cart.prodotti[itemIndex].quantita += change;
+          if (cart.prodotti[itemIndex].quantita <= 0) {
+              cart.prodotti.splice(itemIndex, 1); // Rimuovi l'articolo se la quantità è 0
+          }
+          await cart.save();
+          res.json({ success: true, message: 'Quantità aggiornata' });
+      } else {
+          res.status(404).json({ success: false, message: 'Prodotto non trovato nel carrello' });
+      }
+  } catch (error) {
+      console.error('Errore nella modifica della quantità nel carrello:', error);
+      res.status(500).json({ success: false, message: 'Errore tecnico nel modificare la quantità' });
+  }
+});
+
+
+
 
 
 
