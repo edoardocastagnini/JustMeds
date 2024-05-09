@@ -49,7 +49,7 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              Al momento, il carrello è vuoto...
+                <div id="cartContent">Al momento, il carrello è vuoto...</div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
@@ -236,8 +236,43 @@
         const cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
 
         cartIcon.addEventListener('click', function() {
+            fetchCartItems();
             cartModal.show();
         });
+
+        function fetchCartItems() {
+             fetch('/api/cart', { credentials: 'include' })
+            .then(response => response.json())
+            .then(data => {
+                updateCartPopup(data.items); // Aggiorna il popup con gli articoli del carrello
+            })
+            .catch(error => {
+                console.error('Errore nel caricare gli articoli del carrello:', error);
+                document.getElementById('cartContent').innerHTML = `<p>Errore nel caricare gli articoli del carrello: ${error.message}</p>`;
+            });
+        }
+
+        function updateCartPopup(items) {
+            const cartContent = document.getElementById('cartContent');
+            if (items && items.length > 0) {
+                cartContent.innerHTML = items.map(item => generateCartItemHTML(item)).join('');
+            } else {
+                cartContent.innerHTML = '<p>Il tuo carrello è vuoto.</p>';
+            }
+        }
+
+        function generateCartItemHTML(item) {
+            return `
+                <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
+                    <div>
+                        <h6 class="my-0">${item.name}</h6>
+                        <small class="text-muted">Quantità: ${item.quantity}</small>
+                    </div>
+                    <span class="text-muted">€${item.price}</span>
+                </div>
+            `;
+        }
+
 
         // Aggiunta del listener per il bottone "Procedi al checkout"
         const checkoutButton = document.getElementById('checkoutButton');
