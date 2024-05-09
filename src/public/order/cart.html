@@ -141,7 +141,7 @@
                           <div class="card-body">
                               <h5 class="card-title">${item.name}</h5>
                               <p class="card-text">Quantità: ${item.quantity}</p>
-                              <p class="card-text">Prezzo: ${item.price} €</p>
+                              <p class="card-text">Prezzo: ${item.price * item.quantity} €</p>
                               <button class="btn btn-danger" onclick="removeFromCart('${item.id}')">Rimuovi</button>
                           </div>
                       </div>
