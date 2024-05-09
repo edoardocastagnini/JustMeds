@@ -52,6 +52,11 @@
       <h2>Il tuo carrello</h2>
       <div id="cartItems" class="row"></div>
     </div>
+
+    <div class="container mt-4">
+      <h3>Totale Carrello: <span id="cartTotal">0</span> €</h3>
+    </div>
+    
   
 
     <footer class="bg-dark text-white text-center p-3 mt-4">
@@ -99,7 +104,7 @@
           });
       }
 
-      //CODICE PER VISUALIZZARE IL CARRELLO (da rifare anche questo mi sa)
+      //CODICE PER VISUALIZZARE IL CARRELLO 
       document.addEventListener('DOMContentLoaded', function() {
       fetchCartItems();
       });
@@ -129,25 +134,31 @@
           function updateCartUI(items) {
               const container = document.getElementById('cartItems');
               container.innerHTML = '';
+              let total = 0;  // Inizializza il totale a zero
               items.forEach(item => {
-                  container.innerHTML += generateCartItemHTML(item);
+                  const itemTotal = item.price * item.quantity;  // Calcola il totale per ogni articolo
+                  total += itemTotal;  // Aggiungi al totale generale
+                  container.innerHTML += generateCartItemHTML(item, itemTotal);  // Aggiorna il HTML
               });
+              document.getElementById('cartTotal').textContent = total.toFixed(2);  // Visualizza il totale
           }
 
-          function generateCartItemHTML(item) {
+          function generateCartItemHTML(item, itemTotal) {
               return `
                   <div class="col-md-4">
                       <div class="card mb-3">
                           <div class="card-body">
                               <h5 class="card-title">${item.name}</h5>
                               <p class="card-text">Quantità: ${item.quantity}</p>
-                              <p class="card-text">Prezzo: ${item.price * item.quantity} €</p>
+                              <p class="card-text">Prezzo unitario: ${item.price} €</p>
+                              <p class="card-text">Totale: ${itemTotal.toFixed(2)} €</p>
                               <button class="btn btn-danger" onclick="removeFromCart('${item.id}')">Rimuovi</button>
                           </div>
                       </div>
                   </div>
               `;
           }
+
 
           function removeFromCart(id) {
               fetch('/api/cart/remove', {
