@@ -207,12 +207,12 @@ app.post('/api/cart/add', async (req, res) => {
 
 // ENDPOINT PER VISUALIZZAZIONE DEL CARRELLO  (probabilmente da rifare da zero)
 app.get('/api/cart', isAuthenticated, async (req, res) => {
-  const clienteId = req.session.user.id; // Assume che l'ID dell'utente sia salvato nella sessione al login
+  const clienteId = req.session.user._id; // Assume che l'ID dell'utente sia salvato nella sessione al login
   try {
       // Popola i dettagli del prodotto nel carrello usando il modello Drug
       const cart = await Carrello.findOne({ clienteId: clienteId })
           .populate({
-              path: 'prodotti.productId',
+              path: 'prodotti._id',
               model: 'Drug',
               select: 'Farmaco PrezzoRiferimentoSSN'  // Seleziona solo i campi necessari per il frontend
           });
