@@ -227,7 +227,7 @@ app.get('/api/cart', isAuthenticated, async (req, res) => {
           id: item.productId._id,
           name: item.productId.Farmaco,         // Nome del farmaco
           quantity: item.quantita,              // Quantità
-          price: item.prezzo                    // Prezzo per unità
+          price: item.prezzo                   // Prezzo per unità
       }));
 
       res.status(200).json({ success: true, items: items });
@@ -278,6 +278,7 @@ app.post('/api/cart/change', isAuthenticated, async (req, res) => {
           if (cart.prodotti[itemIndex].quantita < 1) {
               cart.prodotti.splice(itemIndex, 1);
           }
+          cart.totale += change * cart.prodotti[itemIndex].prezzo;
           await cart.save();
           res.json({ success: true, message: 'Quantità aggiornata', cart: cart });
       } else {
