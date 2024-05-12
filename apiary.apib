@@ -1,0 +1,145 @@
+FORMAT: 1A
+HOST: http://localhost:3000/
+
+
+# Just Meds API
+
+## Group Users
+
+### Sign Up [POST /sign_up]
++ Request (application/json)
+
+    + Attributes (object)
+        + nome: `Mario` (string, required) - Nome dell'utente
+        + cognome: `Rossi` (string, required) - Cognome dell'utente
+        + email: `mario.rossi@example.com` (string, required) - Email per il login
+        + password: `sicura123` (string, required) - Password dell'utente
+        + type: `ricevente` (string, required) - Tipo di account (ricevente o rider)
+
++ Response 200 (application/json)
+
+    + Attributes (object)
+        + message: "Registration successful" (string)
+
+### Login [POST /login]
++ Request (application/json)
+
+    + Attributes (object)
+        + email: `mario.rossi@example.com` (string, required) - Email dell'utente
+        + password: `sicura123` (string, required) - Password dell'utente
+
++ Response 200 (application/json)
+
+    + Attributes (object)
+        + success: true (boolean)
+        + message: "Logged in successfully" (string)
+        + role: `ricevente` (string)
+
++ Response 401 (application/json)
+    + Attributes (object)
+        + message: "Invalid credentials" (string)
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "User not found" (string)
+
+### Check Login Status [GET /api/check-login]
++ Response 200 (application/json)
+
+    + Attributes (object)
+        + isLoggedIn: true (boolean)
+        + userRole: `ricevente` (string)
+
++ Response 401 (application/json)
+    + Attributes (object)
+        + isLoggedIn: false (boolean)
+
+### Logout [GET /logout]
++ Response 200 (text/plain)
+    + Body
+
+            "You have been logged out successfully."
+
++ Response 500 (text/plain)
+    + Body
+
+            "Failed to log out."
+
+
+## Group Cart
+
+### View Cart [GET /api/cart]
+    + Headers
+
+     Authorization: `Bearer YourTokenHere`
+
++ Response 200 (application/json)
+
+    + Attributes (array[Product])
+
+### Add Item to Cart [POST /api/cart/add]
++ Request (application/json)
+
+    + Attributes (object)
+        + productId: `5fbc110fa7b11b5f5c8e4e46` (string, required) - ID del prodotto
+        + quantity: 1 (number, required) - Quantità da aggiungere
+        + price: `19.99` (string, required) - Prezzo del prodotto
+
++ Response 200 (application/json)
+
+    + Attributes (object)
+        + success: true (boolean)
+        + message: "Prodotto aggiunto al carrello" (string)
+        + carrello (object) - Dettagli aggiornati del carrello
+
+
+### Update Product Quantity in Cart [POST /api/cart/change]
++ Request (application/json)
+
+    + Attributes (object)
+        + productId: `12345` (string, required) - ID del prodotto nel carrello
+        + change: 1 (number, required) - Quantità da aggiungere o sottrarre (es. 1 per aggiungere, -1 per rimuovere)
+
++ Response 200 (application/json)
+
+    + Attributes (object)
+        + success: true (boolean)
+        + message: "Quantità aggiornata" (string)
+        + cart (object) - Dettagli aggiornati del carrello
+            + total: 150.50 (number) - Totale aggiornato del carrello
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Prodotto non trovato nel carrello" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore tecnico nel modificare la quantità" (string)
+
+
+### Remove Item from Cart [POST /api/cart/remove]
++ Request (application/json)
+
+    + Attributes (object)
+        + id: `5fbc110fa7b11b5f5c8e4e46` (string, required) - ID del prodotto nel carrello
+
++ Response 200 (application/json)
+
+    + Attributes (object)
+        + success: true (boolean)
+        + message: "Articolo rimosso dal carrello" (string)
+
+## Group Products
+
+### Get List Products [GET /api/products]
++ Response 200 (application/json)
+
+    + Attributes (array[Product])
+
+## Data Structures
+
+### Product
++ id: `5fbc110fa7b11b5f5c8e4e46` (string, required) - ID univoco del prodotto
++ name: `Ibuprofen` (string, required) - Nome del prodotto
++ price: `19.99` (string, required) - Prezzo del prodotto
++ quantity: 1 (number, required) - Quantità disponibile
