@@ -283,34 +283,33 @@
     <!-- Assicurati che questo script sia incluso nel tuo file HTML dove gestisci il login -->
     <script>
       function login(event) {
-    event.preventDefault();
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+        event.preventDefault();
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
 
-    // URL del Mock Server Apiary
-    const apiaryMockUrl = "http://private-28b430-justmedsapis.apiary-mock.com/login";
-
-    fetch(apiaryMockUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-          // Redirect based on role
-          const redirectUrl = data.role === "rider" ? "/delivery/delivery.html" : "/order/order.html";
-          window.location.href = redirectUrl;
-        } else {
-          throw new Error("Login failed: " + data.message);
-        }
-    })
-    .catch(error => {
-        console.error("Error during login:", error);
-        alert("Login error: " + error.message);
-    });
-}
-
+        fetch("/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              // Ridireziona in base al ruolo
+              const redirectUrl =
+                data.role === "rider"
+                  ? "/delivery/delivery.html"
+                  : "/order/order.html";
+              window.location.href = redirectUrl;
+            } else {
+              throw new Error("Login failed: " + data.message);
+            }
+          })
+          .catch((error) => {
+            console.error("Error during login:", error);
+            alert("Login error: " + error.message);
+          });
+      }
     </script>
   </body>
 </html>
