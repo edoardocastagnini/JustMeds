@@ -8,7 +8,7 @@ require("dotenv").config(); // console.log(process.env.SUPER_SECRET);
 app.use(express.json()); // Per supportare il corpo delle richieste in formato JSON
 app.use(express.urlencoded({ extended: true })); // Per supportare il corpo delle richieste URL-encoded
 
-app.use(express.static("public"));
+app.use(express.static("../"));
 app.use(
   session({
     secret: "sanremo",
@@ -26,13 +26,13 @@ app.use(
   })
 );
 
-const tokenChecker = require("./public/middlewares/tokenChecker");
+const tokenChecker = require("./middlewares/tokenChecker");
 
-const drugRoutes = require("./public/order/farmaci");
+const drugRoutes = require("./order/farmaci");
 app.use("/api", drugRoutes);
 
-const User = require("./public/models/User");
-const Carrello = require("./public/models/Carrello");
+const User = require("./models/User");
+const Carrello = require("./models/Carrello");
 
 // La tua stringa di connessione Atlas
 const DbURI =
