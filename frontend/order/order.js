@@ -29,7 +29,7 @@ function updateNavigation() {
                 const navBar = document.querySelector('#navbarNavAltMarkup .navbar-nav');
                 const loginLink = document.createElement('a');
                 loginLink.className = 'nav-link';
-                loginLink.href = '/login.html';
+                loginLink.href = '../auth/login.html';
                 loginLink.textContent = 'Registrati/Accedi';
                 navBar.appendChild(loginLink);
             }
