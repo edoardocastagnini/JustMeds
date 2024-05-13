@@ -18,15 +18,14 @@
     <header>
       <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-          <a href="index.html"
+          <a href="../index.html"
             ><img
-              src="./images/Logo.png"
+              src="../images/Logo.png"
               alt="Logo"
               class="navbar-brand img-fluid"
               style="width: 40px;"
-              href="index.html"
           /></a>
-          <a class="navbar-brand" href="index.html">JustMeds</a>
+          <a class="navbar-brand" href="../index.html">JustMeds</a>
           <button
             class="navbar-toggler"
             type="button"
@@ -40,9 +39,9 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-              <a class="nav-link active" aria-current="page" href="/index.html">Home</a>
-              <a class="nav-link" href="./about/about.html">Chi siamo</a>
-              <a class="nav-link" href="order/order.html">Lista Farmaci</a>
+              <a class="nav-link active" aria-current="page" href="../index.html">Home</a>
+              <a class="nav-link" href="../about/about.html">Chi siamo</a>
+              <a class="nav-link" href="../order/order.html">Lista Farmaci</a>
             </div>
           </div>
         </div>
@@ -278,38 +277,6 @@
       crossorigin="anonymous"
     ></script>
     <!-- Your custom JS goes here -->
-    <script src="/generale.js"></script>
-    <script src="../index.js"></script>
-    <!-- Assicurati che questo script sia incluso nel tuo file HTML dove gestisci il login -->
-    <script>
-      function login(event) {
-        event.preventDefault();
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-
-        fetch("/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              // Ridireziona in base al ruolo
-              const redirectUrl =
-                data.role === "rider"
-                  ? "/delivery/delivery.html"
-                  : "/order/order.html";
-              window.location.href = redirectUrl;
-            } else {
-              throw new Error("Login failed: " + data.message);
-            }
-          })
-          .catch((error) => {
-            console.error("Error during login:", error);
-            alert("Login error: " + error.message);
-          });
-      }
-    </script>
+    <script src="login.js"></script>
   </body>
 </html>

@@ -8,7 +8,7 @@ require("dotenv").config(); // console.log(process.env.SUPER_SECRET);
 app.use(express.json()); // Per supportare il corpo delle richieste in formato JSON
 app.use(express.urlencoded({ extended: true })); // Per supportare il corpo delle richieste URL-encoded
 
-app.use(express.static("../"));
+app.use(express.static("../frontend"));
 app.use(
   session({
     secret: "sanremo",
@@ -66,7 +66,7 @@ app.post("/sign_up", async (req, res) => {
 
 
     setTimeout(() => {
-      res.redirect("SignupSuccess.html");
+      res.redirect("../frontend/auth/SignuoSuccess.html");
     }, 2000);
   } catch (err) {
     console.error(err);
@@ -129,7 +129,7 @@ app.get("/api/check-login", (req, res) => {
 
 app.get("/", (req, res) => {
   try {
-    res.redirect("index.html");
+    res.redirect("../frontend/index.html");
   } catch (error) {
     console.error("Error handling root route:", error);
     res.status(500).send("Internal Server Error");
@@ -154,7 +154,7 @@ function checkUserRole(roles) {
 
 // Proteggi le rotte con il middleware
 app.get(
-  "/delivery/delivery.html",
+  "../frontend/delivery/delivery.html",
   checkUserRole(["rider", "admin"]),
   (req, res) => {
     res.sendFile(path.join(__dirname, "views", "delivery.html"));
@@ -162,7 +162,7 @@ app.get(
 );
 
 app.get(
-  "/order/order.html",
+  "../frontend/order/order.html",
   checkUserRole(["ricevente", "admin"]),
   (req, res) => {
     res.sendFile(path.join(__dirname, "views", "order.html"));
