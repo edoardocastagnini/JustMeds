@@ -31,6 +31,10 @@ const tokenChecker = require("./middlewares/tokenChecker");
 const drugRoutes = require("./order/farmaci");
 app.use("/api", drugRoutes);
 
+// Importa e utilizza il router di contattaci.js
+const contattaciRouter = require("./form_request/contattaci");
+app.use('/api', contattaciRouter);
+
 const User = require("./models/User");
 const Carrello = require("./models/Carrello");
 
