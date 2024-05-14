@@ -10,11 +10,16 @@ HOST: http://localhost:3000/
 + Request (application/json)
 
     + Attributes (object)
-        + nome: `Mario` (string, required) - Nome dell'utente
-        + cognome: `Rossi` (string, required) - Cognome dell'utente
-        + email: `mario.rossi@example.com` (string, required) - Email per il login
-        + password: `sicura123` (string, required) - Password dell'utente
-        + type: `ricevente` (string, required) - Tipo di account (ricevente o rider)
+        + nome: `Giovanni` (string, required) - Nome dell'utente
+        + cognome: `Bianchi` (string, required) - Cognome dell'utente
+        + email: `gb@example.com` (string, required) - Indirizzo email dell'utente
+        + password: `securePassword123` (string, required) - Password dell'utente
+        + dataDiNascita: `1985-10-15` (string, required) - Data di nascita dell'utente
+        + CF: `BNCGVN85O15H501K` (string, required) - Codice fiscale
+        + paese: `Italia` (string, required) - Paese di nascita dell'utente
+        + citta: `Milano` (string, required) - Città di residenza dell'utente
+        + via: `Via Larga 4` (string, required) - Via di residenza
+        + type: `ricevente` (string, required) - Tipo di account (rider o ricevente)
 
 + Response 200 (application/json)
 
@@ -25,8 +30,8 @@ HOST: http://localhost:3000/
 + Request (application/json)
 
     + Attributes (object)
-        + email: `mr@mr` (string, required) - Email dell'utente
-        + password: `1234` (string, required) - Password dell'utente
+        + email: `gb@example.com` (string, required) - Email dell'utente
+        + password: `securePassword123` (string, required) - Password dell'utente
 
 + Response 200 (application/json)
 
@@ -34,6 +39,7 @@ HOST: http://localhost:3000/
         + success: true (boolean)
         + message: "Logged in successfully" (string)
         + role: `ricevente` (string)
+        + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c` (string)
 
 + Response 401 (application/json)
     + Attributes (object)
@@ -44,6 +50,11 @@ HOST: http://localhost:3000/
         + message: "User not found" (string)
 
 ### Check Login Status [GET /api/check-login]
++ Request
+    + Headers
+    
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
+
 + Response 200 (application/json)
 
     + Attributes (object)
@@ -55,6 +66,11 @@ HOST: http://localhost:3000/
         + isLoggedIn: false (boolean)
 
 ### Logout [GET /logout]
++ Request
+    + Headers
+    
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
+
 + Response 200 (text/plain)
     + Body
 
@@ -69,9 +85,10 @@ HOST: http://localhost:3000/
 ## Group Cart
 
 ### View Cart [GET /api/cart]
++ Request
     + Headers
 
-     Authorization: `Bearer YourTokenHere`
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
 
 + Response 200 (application/json)
 
@@ -79,6 +96,9 @@ HOST: http://localhost:3000/
 
 ### Add Item to Cart [POST /api/cart/add]
 + Request (application/json)
+    + Headers
+    
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
 
     + Attributes (object)
         + productId: `5fbc110fa7b11b5f5c8e4e46` (string, required) - ID del prodotto
@@ -92,9 +112,11 @@ HOST: http://localhost:3000/
         + message: "Prodotto aggiunto al carrello" (string)
         + carrello (object) - Dettagli aggiornati del carrello
 
-
 ### Update Product Quantity in Cart [POST /api/cart/change]
 + Request (application/json)
+    + Headers
+    
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
 
     + Attributes (object)
         + productId: `12345` (string, required) - ID del prodotto nel carrello
@@ -116,9 +138,11 @@ HOST: http://localhost:3000/
     + Attributes (object)
         + message: "Errore tecnico nel modificare la quantità" (string)
 
-
 ### Remove Item from Cart [POST /api/cart/remove]
 + Request (application/json)
+    + Headers
+    
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
 
     + Attributes (object)
         + id: `5fbc110fa7b11b5f5c8e4e46` (string, required) - ID del prodotto nel carrello
@@ -129,9 +153,10 @@ HOST: http://localhost:3000/
         + success: true (boolean)
         + message: "Articolo rimosso dal carrello" (string)
 
+
 ## Group Products
 
-### Get List Products [GET /api/products]
+### Get Lista Farmaci [GET /api/products]
 + Response 200 (application/json)
 
     + Attributes (array[Product])
@@ -139,7 +164,13 @@ HOST: http://localhost:3000/
 ## Data Structures
 
 ### Product
-+ id: `5fbc110fa7b11b5f5c8e4e46` (string, required) - ID univoco del prodotto
-+ name: `Ibuprofen` (string, required) - Nome del prodotto
-+ price: `19.99` (string, required) - Prezzo del prodotto
-+ quantity: 1 (number, required) - Quantità disponibile
++ _id: `5fbc110fa7b11b5f5c8e4e46` (string, required) - ID univoco del prodotto
++ PrincipioAttivo: `Acarbosio` (string, required) - Principio attivo
++ ConfezioneRiferimento: "40 UNITA' 100 MG - USO ORALE" (string, required) - Nome confezione prodotto
++ ATC: 'A10BF01' (string, required) - 
++ AIC: '26851016' (string, required) - 
++ Farmaco: `Glucobay` (string, required) - Nome del prodotto
++ Confezione: `100 MG COMPRESSE" 40 COMPRESSE` (string, required) - Confezione
++ Ditta: `BAYER S.P.A` (string, required) - Ditta produttrice
++ PrezzoRiferimentoSSN: `5,63` (string, required) - Prezzo del prodotto
++ CodiceGruppoEquivalenza: `H1A` (string, required) - Gruppo equivalenza
