@@ -2,7 +2,9 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchLoginStatus()
       .then((data) => {
         if (data.isLoggedIn) {
+          addCartIcon();
           setupLogoutLink();
+          removeLoginLink();
           setupButtons(data.userRole); // Assicurati che il ruolo utente sia passato correttamente
         } else {
           setupUnauthenticatedButtons(); // Setup per utenti non autenticati
@@ -52,6 +54,13 @@ document.addEventListener("DOMContentLoaded", () => {
     navBar.appendChild(logoutLink);
   }
 
+  function removeLoginLink() {
+    const loginLink = document.getElementById("loginLink");
+    if (loginLink) {
+        loginLink.parentNode.removeChild(loginLink);
+    }
+}
+  
   function fetchLoginStatus() {
     return fetch("/api/check-login", { credentials: "include" })
       .then((response) => response.json())
@@ -63,3 +72,18 @@ document.addEventListener("DOMContentLoaded", () => {
         throw error;
       });
   }
+
+  function addCartIcon() {
+    const navBar = document.querySelector(".navbar-nav");
+    const cartIconLink = document.createElement("a");
+    cartIconLink.className = "nav-link";
+    cartIconLink.href = "/order/cart.html"; // Aggiusta l'URL in base alla tua struttura
+    cartIconLink.id = "cartIconLink";
+    const icon = document.createElement("i");
+    icon.className = "fas fa-shopping-cart";
+    cartIconLink.appendChild(icon);
+
+    navBar.appendChild(cartIconLink);
+}
+
+  

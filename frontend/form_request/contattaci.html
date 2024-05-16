@@ -11,6 +11,8 @@
     crossorigin="anonymous"
   />
   <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 </head>
 <body>
   <header>
@@ -38,9 +40,13 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav">
-            <a class="nav-link active" aria-current="page" href="../index.html">Home</a>
             <a class="nav-link" href="../about_us/about.html">Chi siamo</a>
             <a class="nav-link" href="../order/order.html">Lista Farmaci</a>
+            <a class="nav-link" id="cartIcon" href="../order/cart.html" style="display: none;">
+              <i class="fas fa-shopping-cart"></i>
+          </a>
+          <a class="nav-link" href="/logout" id="logoutLink" style="display: none;">Logout</a>
+          <a class="nav-link" href="../auth/login.html" id="loginLink" style="display: none;">Registrati/Login</a>
           </div>
         </div>
       </div>
