@@ -3,6 +3,7 @@ const session = require("express-session");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const app = express();
+const PORT = process.env.PORT || 3000;
 require("dotenv").config(); // console.log(process.env.SUPER_SECRET);
 // Middleware per il parsing del corpo delle richieste
 app.use(express.json()); // Per supportare il corpo delle richieste in formato JSON
