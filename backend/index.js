@@ -71,7 +71,7 @@ app.post("/sign_up", async (req, res) => {
 
 
     setTimeout(() => {
-      res.redirect("../frontend/auth/SignuoSuccess.html");
+      res.redirect("../frontend/auth/SignupSuccess.html");
     }, 2000);
   } catch (err) {
     console.error(err);
