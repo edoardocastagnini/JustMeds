@@ -26,6 +26,9 @@ app.use(
     credentials: true,
   })
 );
+const adminRoutes = require("../backend/admin/admin"); // Importa adminRoutes
+// Usa adminRoutes per tutte le rotte che iniziano con /api/admin
+app.use('/api/admin', adminRoutes);
 
 const tokenChecker = require("./middlewares/tokenChecker");
 
@@ -146,38 +149,36 @@ app.get("/", (req, res) => {
   }
 });
 
-/// Middleware per verificare il ruolo utente
+// Middleware per verificare il ruolo utente
 function checkUserRole(roles) {
   return (req, res, next) => {
-    const userRole = req.session.user && req.session.user.role; // Assicurati che il ruolo sia memorizzato nella sessione
-    if (roles.includes(userRole)) {
+    const userRole = req.session.user && req.session.user.type; // Assicurati che il ruolo sia memorizzato nella sessione
+    if (userRole === 'admin' || roles.includes(userRole)) {
       next();
     } else {
-      res
-        .status(403)
-        .send(
-          "Accesso negato: non hai i permessi per accedere a questa pagina"
-        );
+      res.status(403).send("Accesso negato: non hai i permessi per accedere a questa pagina");
     }
   };
 }
 
+
 // Proteggi le rotte con il middleware
 app.get(
-  "../frontend/delivery/delivery.html",
-  checkUserRole(["rider", "admin"]),
+  "/delivery/delivery.html",
+  checkUserRole(["rider"]),
   (req, res) => {
     res.sendFile(path.join(__dirname, "views", "delivery.html"));
   }
 );
 
 app.get(
-  "../frontend/order/order.html",
-  checkUserRole(["ricevente", "admin"]),
+  "/order/order.html",
+  checkUserRole(["ricevente"]),
   (req, res) => {
     res.sendFile(path.join(__dirname, "views", "order.html"));
   }
 );
+
 
 
 app.post('/api/cart/add', async (req, res) => {
