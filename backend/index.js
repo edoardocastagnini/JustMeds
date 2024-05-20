@@ -335,6 +335,73 @@ app.get('/api/cart/details', isAuthenticated, async (req, res) => {
   }
 });
 
+const Ordine = require("./models/Ordine");
+
+
+app.post('/api/order/create', isAuthenticated, async (req, res) => {
+  const userId = req.session.user.id; // ID utente dalla sessione
+  const userAddress = await User.findById(userId).select('nome cognome via città paese');
+  const cart = await Carrello.findOne({ _id: userId }).populate('prodotti._id');
+  const IDfarmacia = req.body.farmaciaId;
+  const IndirizzoFarmacia = await ListaFarmacie.findById(IDfarmacia).select('INDIRIZZO CAP PROVINCIA');
+  console.log("IndirizzoFarmacia:", IndirizzoFarmacia);
+
+  if (!cart || cart.prodotti.length === 0) {
+      return res.status(400).json({ success: false, message: 'Il carrello è vuoto.' });
+  }
+
+  try {
+      const newOrder = new Ordine({
+          utenteID: userId,
+          farmaciaID: IDfarmacia,
+          riderID: null,
+          secretcode: Math.floor(1000 + Math.random() * 9000).toString(),
+          prodotti: cart.prodotti.map(item => ({
+              _id: item._id._id,
+              quantita: item.quantita,
+              prezzo: item.prezzo
+          })),
+          indirizzoCliente: {
+              nome: userAddress.nome,
+              cognome: userAddress.cognome,
+              via: userAddress.via,
+              città: userAddress.città,
+              paese: userAddress.paese
+          },
+          indirizzoFarmacia: {
+              via: IndirizzoFarmacia.INDIRIZZO,
+              cap: IndirizzoFarmacia.CAP,
+              provincia: IndirizzoFarmacia.PROVINCIA
+          },
+          stato: 'inviato'
+          
+      });
+
+      await newOrder.save();
+
+      // Pulire il carrello dopo l'ordine
+      cart.prodotti = [];
+      cart.totale = 0;
+      await cart.save();
+
+      res.json({ success: true, message: 'Ordine creato con successo' });
+  } catch (error) {
+      console.error('Errore nella creazione dell\'ordine:', error);
+      res.status(500).json({ success: false, message: 'Errore tecnico nella creazione dell\'ordine' });
+  }
+});
+
+
+const ListaFarmacie = require("./models/ListaFarmacie"); 
+app.get('/api/farmacie', async (req, res) => {
+  try {
+      const farmacie = await ListaFarmacie.find({});
+      res.json({ success: true, farmacie: farmacie });
+  } catch (error) {
+      console.error('Errore nel recuperare la lista delle farmacie:', error);
+      res.status(500).json
+  }
+});
 
 
 app.listen(3000, () => {

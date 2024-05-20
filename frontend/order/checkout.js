@@ -1,6 +1,10 @@
-
-
 document.addEventListener('DOMContentLoaded', function() {
+    fetchLoginStatus().then((data) => {
+      if (data.isLoggedIn) {
+        setupLogoutLink();
+      }
+    });
+
     fetch('/api/user/address', { credentials: 'include' })
         .then(response => response.json())
         .then(data => {
@@ -18,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('user-address').textContent = 'Errore nel caricare l\'indirizzo.';
         });
 
-        fetch('/api/cart/details', { credentials: 'include' })
+    fetch('/api/cart/details', { credentials: 'include' })
         .then(response => response.json())
         .then(data => {
             if (data.items && data.items.length > 0) {
@@ -36,5 +40,81 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Errore nel caricamento dei dettagli del carrello:', error);
             document.getElementById('cart-items').innerHTML = '<li>Errore nel caricare gli articoli del carrello.</li>';
         });
+
+    // Carica la lista delle farmacie
+    fetch('/api/farmacie', { credentials: 'include' })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Farmacie:', data); // Log per verificare i dati ricevuti
+            const farmaciaSelect = document.getElementById('farmacia-select');
+            if (data.success && data.farmacie.length > 0) {
+                data.farmacie.forEach(farmacia => {
+                    const option = document.createElement('option');
+                    option.value = farmacia._id;
+                    option.textContent = `${farmacia.FARMACIA} - ${farmacia.INDIRIZZO}, ${farmacia.COMUNE}`;
+                    farmaciaSelect.appendChild(option);
+                });
+            } else {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Nessuna farmacia disponibile';
+                farmaciaSelect.appendChild(option);
+            }
+        })
+        .catch(error => {
+            console.error('Errore nel caricamento delle farmacie:', error);
+        });
+
+    document.getElementById('submit-order').addEventListener('click', function() {
+        const selectedFarmaciaId = document.getElementById('farmacia-select').value;
+        if (!selectedFarmaciaId) {
+            alert('Seleziona una farmacia prima di inviare l\'ordine.');
+            return;
+        }
+
+
+        fetch('/api/order/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ farmaciaId: selectedFarmaciaId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Ordine inviato alla farmacia');
+                window.location.href = '../index.html';
+            } else {
+                alert('Errore nell\'invio dell\'ordine: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Errore nell\'invio dell\'ordine:', error);
+            alert('Errore tecnico nell\'invio dell\'ordine.');
+        });
+    });
 });
 
+function setupLogoutLink() {
+    const navBar = document.querySelector(".navbar-nav");
+    const logoutLink = document.createElement("a");
+    logoutLink.className = "nav-link";
+    logoutLink.href = "/logout";
+    logoutLink.textContent = "Logout";
+    navBar.appendChild(logoutLink);
+}
+
+function fetchLoginStatus() {
+    return fetch("/api/check-login", { credentials: "include" })
+      .then((response) => response.json())
+      .then((data) => {
+        return data; // Assicurati che data sia l'oggetto che include isLoggedIn e userRole
+      })
+      .catch((error) => {
+        console.error("Error fetching login status:", error);
+        throw error;
+      });
+}

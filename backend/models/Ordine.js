@@ -40,8 +40,8 @@ const ordineSchema = new mongoose.Schema({
     },
     indirizzoFarmacia: {
         via: String,
-        città: String,
-        paese: String
+        cap: String,
+        provincia: String
     },
 }, { versionKey: false});
 
