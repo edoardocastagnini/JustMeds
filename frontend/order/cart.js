@@ -120,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (data.success) {
           alert("Articolo rimosso dal carrello!");
           fetchCartItems(); // Aggiorna la visualizzazione del carrello
+          updateCheckoutButton();
         } else {
           alert("Errore nella rimozione dell'articolo.");
         }
@@ -142,6 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Controlla se la quantità è 1 e il change è -1, quindi rimuovi l'articolo
         if (item.quantity === 1 && change === -1) {
           removeFromCart(productId); // Chiama una funzione per rimuovere l'articolo
+          updateCheckoutButton();
         } else {
           fetch(`/api/cart/change`, {
             method: "POST",
@@ -177,3 +179,32 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = 'checkout.html'; // Modifica con il percorso appropriato alla tua pagina di checkout
     });
 });
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  updateCheckoutButton();
+});
+
+function updateCheckoutButton() {
+  fetch('/api/cart', { credentials: 'include' })
+  .then(response => {
+      if (!response.ok) {
+          throw new Error('Network response was not ok');
+      }
+      return response.json();
+  })
+  .then(data => {
+      if (data && data.items && data.items.length > 0) {
+          // Se il carrello ha elementi, abilita il pulsante di checkout
+          document.getElementById('checkoutButton').disabled = false;
+      } else {
+          // Se il carrello è vuoto, disabilita il pulsante di checkout
+          document.getElementById('checkoutButton').disabled = true;
+          document.getElementById('checkoutButton').title = "Il carrello è vuoto";
+      }
+  })
+  .catch(error => {
+      console.error('Errore nel caricare gli articoli del carrello:', error);
+      // Opzionalmente, gestisci gli errori mostrando un messaggio all'utente
+  });
+}
