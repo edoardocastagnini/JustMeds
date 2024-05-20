@@ -170,3 +170,10 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Errore nella modifica della quantità dell'articolo.");
       });
   }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const checkoutButton = document.getElementById('checkoutButton');
+    checkoutButton.addEventListener('click', function() {
+        window.location.href = 'checkout.html'; // Modifica con il percorso appropriato alla tua pagina di checkout
+    });
+});
