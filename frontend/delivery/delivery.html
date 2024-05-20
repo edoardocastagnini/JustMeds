@@ -2,12 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <!-- This meta tag sets the viewport of the webpage to the width of the device and scales it to fit the screen. -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>JustMeds</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
-    
+    <link rel="stylesheet" href="../style.css">
 </head>
 
 <body>
@@ -15,67 +13,102 @@
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand" href="../index.html">
-                <img src="../images/Logo.png" alt="Logo" width="40" height="40">
+                    <img src="../images/Logo.png" alt="Logo" width="40" height="40">
                 </a>
-              <a class="navbar-brand" href="../index.html">Just Meds</a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-              <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav">
-                  <a class="nav-link active" aria-current="page" href="../index.html">Home</a>
-                  <a class="nav-link" href="../about_us/about.html">Chi siamo</a>
-                  <a class="nav-link" href="/logout">Logout</a>
+                <a class="navbar-brand" href="../index.html">Just Meds</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav me-auto">
+                        <a class="nav-link active" aria-current="page" href="../index.html">Home</a>
+                        <a class="nav-link" href="../about_us/about.html">Chi siamo</a>
+                    </div>
+                    <div class="navbar-nav">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#accountModal">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                                <path d="M13.468 12.37C12.758 11.226 11.48 10.5 10 10.5s-2.758.726-3.468 1.87A6.97 6.97 0 0 0 8 15a6.97 6.97 0 0 0 5.468-2.63zM8 9.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/>
+                                <path fill-rule="evenodd" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"/>
+                                <path fill-rule="evenodd" d="M8 4a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/>
+                            </svg>
+                        </a>
+                    </div>
                 </div>
-              </div>
             </div>
-          </nav>
+        </nav>
     </header>
 
-    <!-- Your content goes here --> 
-    <div class="container card-deck">
-        <br> 
-        <div class="card">
-          
-          <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-          </div>
-          <div class="card-footer">
-            <small class="text-muted">Last updated 3 mins ago</small>
-          </div> 
+    <div class="container mt-4">
+        <h2>Ordini disponibili</h2>
+        <div class="card-deck mt-3">
+            <!-- Ordine 1 -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Ordine #1</h5>
+                    <p class="card-text"><strong>Farmaci:</strong></p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Paracetamolo - Quantità: 2 - Prezzo: €5</li>
+                        <li class="list-group-item">Ibuprofene - Quantità: 1 - Prezzo: €5</li>
+                    </ul>
+                    <p class="card-text mt-2"><strong>Prezzo Totale:</strong> €10</p>
+                    <p class="card-text"><strong>Indirizzo di consegna:</strong> Via Roma, 123, Milano</p>
+                    <button class="btn btn-primary">Accetta Incarico</button>
+                </div>
+            </div>
+            <!-- Ordine 2 -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Ordine #2</h5>
+                    <p class="card-text"><strong>Farmaci:</strong></p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Amoxicillina - Quantità: 3 - Prezzo: €15</li>
+                        <li class="list-group-item">Aspirina - Quantità: 1 - Prezzo: €2</li>
+                    </ul>
+                    <p class="card-text mt-2"><strong>Prezzo Totale:</strong> €17</p>
+                    <p class="card-text"><strong>Indirizzo di consegna:</strong> Via Verdi, 45, Torino</p>
+                    <button class="btn btn-primary">Accetta Incarico</button>
+                </div>
+            </div>
+            <!-- Ordine 3 -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Ordine #3</h5>
+                    <p class="card-text"><strong>Farmaci:</strong></p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Paracetamolo - Quantità: 1 - Prezzo: €5</li>
+                        <li class="list-group-item">Vitamina C - Quantità: 2 - Prezzo: €10</li>
+                    </ul>
+                    <p class="card-text mt-2"><strong>Prezzo Totale:</strong> €15</p>
+                    <p class="card-text"><strong>Indirizzo di consegna:</strong> Via Dante, 10, Firenze</p>
+                    <button class="btn btn-primary">Accetta Incarico</button>
+                </div>
+            </div>
         </div>
-        <br> 
-        <div class="card">
-         
-          <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
-          </div>
-          <div class="card-footer">
-            <small class="text-muted">Last updated 3 mins ago</small>
-          </div>
-        </div>
-        <br> 
-        <div class="card">
-         
-          <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
-          </div>
-          <div class="card-footer">
-            <small class="text-muted">Last updated 3 mins ago</small>
-          </div>
-        </div>
-        <br> 
-      </div>
+    </div>
 
+    <!-- Account Modal -->
+    <div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="accountModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="accountModalLabel">Il tuo Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Ordini accettati:</strong> 5</p>
+                    <p><strong>Soldo guadagnati:</strong> €50</p>
+                    <button class="btn btn-secondary mb-2" onclick="window.location.href='../orders/accepted_orders.html'">Visualizza Ordini Accettati</button>
+                    <button class="btn btn-danger" onclick="window.location.href='/logout'">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer style="background-color: gray;">
         <div class="container">
             <div class="row">
                 <div class="col-md-12 text-center">
-                    <p>&copy; 2024 Just Meds. All rights reserved.</p> 
+                    <p>&copy; 2024 Just Meds. All rights reserved.</p>
                 </div>
             </div>
         </div>
@@ -83,8 +116,5 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-    <!-- Your custom JS goes here -->
-
 </body>
-
 </html>
