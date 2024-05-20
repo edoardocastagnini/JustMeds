@@ -38,54 +38,69 @@
         </nav>
     </header>
 
-    <!-- ORDINI DI TEST PER VEDERE COME VENGONO -->
     <div class="container mt-4">
-        <h2>Ordini disponibili</h2>
-        <div class="card-deck mt-3">
-            <!-- ORDINE 1 -->
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Ordine #1</h5>
-                    <p class="card-text"><strong>Farmaci:</strong></p>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Paracetamolo - Quantità: 2 - Prezzo: €5</li>
-                        <li class="list-group-item">Ibuprofene - Quantità: 1 - Prezzo: €5</li>
-                    </ul>
-                    <p class="card-text mt-2"><strong>Prezzo Totale:</strong> €10</p>
-                    <p class="card-text"><strong>Indirizzo di consegna:</strong> Via Roma, 123, Milano</p>
-                    <button class="btn btn-primary">Accetta Incarico</button>
-                </div>
-            </div>
-            <!-- ORDINE 2 -->
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Ordine #2</h5>
-                    <p class="card-text"><strong>Farmaci:</strong></p>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Amoxicillina - Quantità: 3 - Prezzo: €15</li>
-                        <li class="list-group-item">Aspirina - Quantità: 1 - Prezzo: €2</li>
-                    </ul>
-                    <p class="card-text mt-2"><strong>Prezzo Totale:</strong> €17</p>
-                    <p class="card-text"><strong>Indirizzo di consegna:</strong> Via Verdi, 45, Torino</p>
-                    <button class="btn btn-primary">Accetta Incarico</button>
-                </div>
-            </div>
-            <!-- ORDINE 3 -->
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Ordine #3</h5>
-                    <p class="card-text"><strong>Farmaci:</strong></p>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Paracetamolo - Quantità: 1 - Prezzo: €5</li>
-                        <li class="list-group-item">Vitamina C - Quantità: 2 - Prezzo: €10</li>
-                    </ul>
-                    <p class="card-text mt-2"><strong>Prezzo Totale:</strong> €15</p>
-                    <p class="card-text"><strong>Indirizzo di consegna:</strong> Via Dante, 10, Firenze</p>
-                    <button class="btn btn-primary">Accetta Incarico</button>
-                </div>
-            </div>
-        </div>
-    </div>
+      <h2>Ordini disponibili</h2>
+      <div id="ordersContainer" class="card-deck mt-3"></div>
+  </div>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const response = await fetch("/api/orders");
+        const orders = await response.json();
+  
+        const ordersContainer = document.getElementById("ordersContainer");
+  
+        orders.forEach((order) => {
+          const orderCard = document.createElement("div");
+          orderCard.classList.add("card", "mb-3");
+  
+          const cardBody = document.createElement("div");
+          cardBody.classList.add("card-body");
+  
+          const title = document.createElement("h5");
+          title.classList.add("card-title");
+          title.textContent = `Ordine #${order._id}`;
+          cardBody.appendChild(title);
+  
+          const productList = document.createElement("ul");
+          productList.classList.add("list-group", "list-group-flush");
+  
+          order.products.forEach((product) => {
+            const productItem = document.createElement("li");
+            productItem.classList.add("list-group-item");
+            productItem.textContent = `${product.name} - Quantità: ${product.quantity} - Prezzo: €${product.price}`;
+            productList.appendChild(productItem);
+          });
+  
+          cardBody.appendChild(productList);
+  
+          const totalPrice = document.createElement("p");
+          totalPrice.classList.add("card-text", "mt-2");
+          totalPrice.innerHTML = `<strong>Prezzo Totale:</strong> €${order.totalPrice}`;
+          cardBody.appendChild(totalPrice);
+  
+          const deliveryAddress = document.createElement("p");
+          deliveryAddress.classList.add("card-text");
+          deliveryAddress.innerHTML = `<strong>Indirizzo di consegna:</strong> ${order.deliveryAddress}`;
+          cardBody.appendChild(deliveryAddress);
+  
+          const acceptButton = document.createElement("button");
+          acceptButton.classList.add("btn", "btn-primary");
+          acceptButton.textContent = "Accetta Incarico";
+          cardBody.appendChild(acceptButton);
+  
+          orderCard.appendChild(cardBody);
+          ordersContainer.appendChild(orderCard);
+        });
+      } catch (error) {
+        console.error("Errore nel caricare gli ordini:", error);
+      }
+    });
+  </script>
+  
+
+
 
     <!-- POPUP PER LA GESTIONE DELL'ACCOUNT -->
     <div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="accountModalLabel" aria-hidden="true">
