@@ -4,7 +4,8 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 const app = express();
 const PORT = process.env.PORT || 3000;
-require("dotenv").config(); // console.log(process.env.SUPER_SECRET);
+require("dotenv").config(); // console.log(process.env.SUPER_SECRET);à
+const Ordine = require("./models/Ordine");
 // Middleware per il parsing del corpo delle richieste
 app.use(express.json()); // Per supportare il corpo delle richieste in formato JSON
 app.use(express.urlencoded({ extended: true })); // Per supportare il corpo delle richieste URL-encoded
@@ -298,15 +299,13 @@ app.post('/api/cart/change', isAuthenticated, async (req, res) => {
 // Endpoint per recuperare tutti gli ordini
 app.get("/api/orders", isAuthenticated, async (req, res) => {
   try {
-    // Recupera tutti gli ordini dal database
-    const orders = await Order.find();
+    const orders = await Ordine.find().populate('prodotti._id');
     res.json(orders);
   } catch (error) {
     console.error("Errore nel recuperare gli ordini:", error);
     res.status(500).json({ success: false, message: "Errore durante il recupero degli ordini" });
   }
 });
-
 
 
 
