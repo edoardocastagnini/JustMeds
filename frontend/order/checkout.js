@@ -1,3 +1,5 @@
+
+
 document.addEventListener('DOMContentLoaded', function() {
     fetch('/api/user/address', { credentials: 'include' })
         .then(response => response.json())
@@ -35,3 +37,4 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('cart-items').innerHTML = '<li>Errore nel caricare gli articoli del carrello.</li>';
         });
 });
+
