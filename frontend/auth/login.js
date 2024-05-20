@@ -32,3 +32,30 @@ function showRegistrationForm(){
   document.getElementById("loginform").style.display = "none";
   document.getElementById("registerpopup").style.display = "none";
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelector("form[action='/sign_up']").addEventListener("submit", async function(event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      const response = await fetch("/sign_up", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const result = await response.json();
+        throw new Error(result.message);
+      }
+
+      window.location.href = "SignupSuccess.html";
+    } catch (error) {
+      alert(`Errore di registrazione: ${error.message}`);
+    }
+  });
+});

@@ -58,10 +58,9 @@ app.post("/sign_up", async (req, res) => {
     await user.save();
     console.log("Record inserted successfully");
 
-    //creo il carrello se l'utente è un cliente
-    if(user.type === "ricevente"){
+    if (user.type === "ricevente") {
       const cart = new Carrello({
-        clienteId: user._id, // Utilizzo del codice fiscale
+        clienteId: user._id,
         prodotti: [],
         totale: 0
       });
@@ -69,15 +68,21 @@ app.post("/sign_up", async (req, res) => {
       console.log("Cart created successfully");
     }
 
-
-    setTimeout(() => {
-      res.redirect("../auth/SignupSuccess.html");
-    }, 2000);
+    res.redirect("../auth/SignupSuccess.html");
   } catch (err) {
     console.error(err);
-    res.status(500).send(err.message);
+
+    if (err.code === 11000) {
+      // Errore di duplicato chiave
+      const field = Object.keys(err.keyValue)[0];
+      const message = `${field} già esistente. Per favore, usa un altro ${field}.`;
+      res.status(409).send({ success: false, message });
+    } else {
+      res.status(500).send({ success: false, message: err.message });
+    }
   }
 });
+
 const jwt = require("jsonwebtoken");
 
 app.post('/login', async (req, res) => {
