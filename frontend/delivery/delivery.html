@@ -71,7 +71,7 @@
                     order.prodotti.forEach((product) => {
                         const productItem = document.createElement("li");
                         productItem.classList.add("list-group-item");
-                        productItem.textContent = `${product._id.Farmaco} - Quantità: ${product.quantita} - Prezzo: €${product.prezzo}`;
+                        productItem.textContent = `${product._id.Farmaco} - Quantità: ${product.quantita} - Prezzo unitario: €${product.prezzo}`;
                         productList.appendChild(productItem);
                     });
 
