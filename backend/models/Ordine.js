@@ -43,6 +43,7 @@ const ordineSchema = new mongoose.Schema({
         cap: String,
         provincia: String
     },
+    prezzoFinale: String,
 }, { versionKey: false});
 
 const Ordine = mongoose.model('Ordine', ordineSchema, 'ordini');

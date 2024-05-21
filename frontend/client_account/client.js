@@ -1,12 +1,11 @@
+
 document.addEventListener("DOMContentLoaded", () => {
     fetchLoginStatus()
       .then((data) => {
         if (data.isLoggedIn) {
           addCartIcon();
-          addAccountIcon();
           setupLogoutLink();
           removeLoginLink();
-          setupButtons(data.userRole); // Assicurati che il ruolo utente sia passato correttamente
         } else {
           setupUnauthenticatedButtons(); // Setup per utenti non autenticati
         }
@@ -15,29 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Error checking login status:", error);
       });
   });
-
-  function setupButtons(userRole) {
-    const orderNowButton = document.getElementById("orderNowButton");
-    const deliveryButton = document.getElementById("deliveryButton");
-
-    if (!userRole) {
-      // Se non c'è un ruolo utente definito, reindirizza alla pagina di login
-      orderNowButton.onclick = () => (window.location.href = "./auth/login.html");
-      deliveryButton.onclick = () => (window.location.href = "./auth/login.html");
-    } else if (userRole === "rider") {
-      deliveryButton.onclick = () =>
-        (window.location.href = "/delivery/delivery.html");
-      orderNowButton.onclick = () => alert("Accesso non autorizzato."); // O reindirizza dove desiderato
-    } else if (userRole === "ricevente") {
-      orderNowButton.onclick = () =>
-        (window.location.href = "/order/order.html");
-      deliveryButton.onclick = () => alert("Accesso non autorizzato."); // O reindirizza dove desiderato
-    } else {
-      // Gestisci altri ruoli o impostazioni di default
-      orderNowButton.onclick = () => alert("Ruolo non autorizzato.");
-      deliveryButton.onclick = () => alert("Ruolo non autorizzato.");
-    }
-  }
 
   function setupUnauthenticatedButtons() {
     const orderNowButton = document.getElementById("orderNowButton");
@@ -74,22 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  function addAccountIcon(){
-    const navBar = document.querySelector(".navbar-nav");
-    const accountIconLink = document.createElement("a");
-    accountIconLink.className = "nav-link";
-    accountIconLink.href = "/client_account/client.html";
-    accountIconLink.id = "accountIconLink";
-    const icon = document.createElement("i");
-    icon.className = "fas fa-user";
-    accountIconLink.appendChild(icon);
-    const accountName = document.createElement("span");
-    accountName.textContent = " Il mio Account";
-    accountIconLink.appendChild(accountName);
-
-
-    navBar.appendChild(accountIconLink);
-  }
+ 
 
   function addCartIcon() {
     const navBar = document.querySelector(".navbar-nav");
@@ -106,5 +67,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
     navBar.appendChild(cartIconLink);
 }
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    function showSection(sectionId) {
+      document.querySelectorAll("#content > div").forEach(section => {
+        section.classList.add("hidden");
+      });
+      document.getElementById(sectionId).classList.remove("hidden");
+  
+    if (sectionId === 'impostazioniSection') {
+        loadProfile();
+    }
+    if (sectionId === 'orderSection') {
+        loadOrders();
+    }
+    }
+
+  
+    async function loadProfile() {
+     fetch('/api/profile', {credentials: 'include'}).then(response => response.json()).then(data => {
+        document.getElementById('profileName').textContent = data.name;
+        document.getElementById('profileSurname').textContent = data.surname;
+        document.getElementById('profileEmail').textContent = data.email;
+        document.getElementById('profileAddress').textContent = data.address;
+        document.getElementById('profileCity').textContent = data.city;
+    }).catch(error => {
+        console.error('Error loading profile:', error);
+    }
+    );
+    }
+    
+    async function loadOrders() {
+ 
+       
+    }
+
+    showSection('impostazioniSection');
+    window.showSection = showSection;
+
+  
+  });
 
   

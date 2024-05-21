@@ -342,18 +342,19 @@ app.post('/api/order/create', isAuthenticated, async (req, res) => {
   const userId = req.session.user.id; // ID utente dalla sessione
   const userAddress = await User.findById(userId).select('nome cognome via città paese');
   const cart = await Carrello.findOne({ _id: userId }).populate('prodotti._id');
-  const IDfarmacia = req.body.farmaciaId;
-  const IndirizzoFarmacia = await ListaFarmacie.findById(IDfarmacia).select('INDIRIZZO CAP PROVINCIA');
-  console.log("IndirizzoFarmacia:", IndirizzoFarmacia);
 
   if (!cart || cart.prodotti.length === 0) {
       return res.status(400).json({ success: false, message: 'Il carrello è vuoto.' });
   }
 
   try {
+    const farmacia = await ListaFarmacie.findOne({ _id:req.body.farmaciaId });
+    if (!farmacia) {
+        return res.status(400).json({ success: false, message: 'Farmacia non trovata.' });
+    }
       const newOrder = new Ordine({
           utenteID: userId,
-          farmaciaID: IDfarmacia,
+          farmaciaID: farmacia._id,
           riderID: null,
           secretcode: Math.floor(1000 + Math.random() * 9000).toString(),
           prodotti: cart.prodotti.map(item => ({
@@ -369,11 +370,12 @@ app.post('/api/order/create', isAuthenticated, async (req, res) => {
               paese: userAddress.paese
           },
           indirizzoFarmacia: {
-              via: IndirizzoFarmacia.INDIRIZZO,
-              cap: IndirizzoFarmacia.CAP,
-              provincia: IndirizzoFarmacia.PROVINCIA
+              via: farmacia.INDIRIZZO,
+              cap: farmacia.CAP,
+              provincia: farmacia.PROVINCIA
           },
-          stato: 'inviato'
+          stato: 'inviato',
+          prezzoFinale: '',
           
       });
 
@@ -402,6 +404,31 @@ app.get('/api/farmacie', async (req, res) => {
       res.status(500).json
   }
 });
+
+
+app.get('/api/profile', isAuthenticated, async (req, res) => {
+  const userId = req.session.user.id;
+  try {
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ message: 'Utente non trovato' });
+      }
+      res.json({
+          name: user.nome,
+          surname: user.cognome,
+          email: user.email,
+          address: user.via,
+          city: user.città,
+      });
+  } catch (error) {
+      console.error('Errore nel recuperare i dati utente:', error);
+      res.status(500).json({ message: 'Errore interno del server', error });
+  }
+});
+
+
+
+
 
 
 app.listen(3000, () => {
