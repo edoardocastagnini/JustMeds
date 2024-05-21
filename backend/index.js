@@ -14,7 +14,7 @@ app.use(
   session({
     secret: "sanremo",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: { secure: false, httpOnly: true, maxAge: 3600000 }, // Assicurati che 'secure' sia true se sei su HTTPS
   })
 );
@@ -34,6 +34,10 @@ const tokenChecker = require("./middlewares/tokenChecker");
 
 const drugRoutes = require("./order/farmaci");
 app.use("/api", drugRoutes);
+
+const farmaciaRoutes = require("../backend/farmacia/farmacia"); // Assicurati che il percorso sia corretto
+app.use('/api', farmaciaRoutes);
+
 
 // Importa e utilizza il router di contattaci.js
 const contattaciRouter = require("./form_request/contattaci");
@@ -91,18 +95,35 @@ const jwt = require("jsonwebtoken");
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-  
+
   if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    return res.status(404).json({ message: 'User not found' });
   }
 
   if (password !== user.password) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+    return res.status(401).json({ message: 'Invalid credentials' });
   }
 
-  req.session.user = { id: user._id, email: user.email, type: user.type };
-  res.json({ success: true, message: 'Logged in successfully', role: user.type });
+  req.session.user = {
+    id: user._id,
+    email: user.email,
+    type: user.type,
+    farmaciaID: user.type === 'farmacia' ? user._id : undefined // Usa il campo farmaciaID dal modello User
+  };
+
+  req.session.save(err => {
+    if (err) {
+      console.error('Error saving session:', err);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+    console.log('User logged in:', req.session.user); // Log dell'utente autenticato
+    res.json({ success: true, message: 'Logged in successfully', role: user.type });
+  });
 });
+
+
+
+
 
 
 function isAuthenticated(req, res, next) {
