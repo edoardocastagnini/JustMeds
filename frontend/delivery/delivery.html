@@ -60,7 +60,7 @@
                     noOrdersMessage.textContent = "Nessun ordine disponibile per il ritiro...";
                     ordersContainer.appendChild(noOrdersMessage);
                 } else {
-                    orders.forEach((order) => {
+                    confirmedOrders.forEach((order) => {
                     const orderCard = document.createElement("div");
                     orderCard.classList.add("card", "mb-3");
 
