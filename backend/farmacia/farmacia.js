@@ -29,10 +29,11 @@ router.get('/ordini', isAuthenticated, async (req, res) => {
 });
 
 // Endpoint per ottenere i dettagli di un farmaco
+// Endpoint per ottenere i dettagli di un farmaco
 router.get('/farmaci/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    const farmaco = await Drug.findById(mongoose.Types.ObjectId(id));
+    const farmaco = await Drug.findById(new mongoose.Types.ObjectId(id));
     if (!farmaco) {
       return res.status(404).json({ message: 'Farmaco non trovato' });
     }
@@ -55,13 +56,13 @@ router.get('/profile', isAuthenticated, (req, res) => {
 router.get('/farmacia/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    const farmacia = await ListaFarmacie.findById(id); // Usa l'ID come stringa
+    const farmacia = await ListaFarmacie.findById(id);
     if (!farmacia) {
       return res.status(404).json({ message: 'Farmacia non trovata' });
     }
     res.json(farmacia);
   } catch (error) {
-    res.status(500).json({ message: 'Errore nel recuperare le informazioni della farmacia' });
+    res.status(500).json({ message: 'Errore nel recuperare le informazioni della farmacia', error });
   }
 });
 
@@ -113,7 +114,6 @@ router.get('/ordini/storico', isAuthenticated, async (req, res) => {
   }
 });
 
-
 // Endpoint per aggiornare il prezzo dell'ordine
 router.post('/ordini/:id/aggiornaPrezzo', isAuthenticated, async (req, res) => {
   console.log(`Ricevuta richiesta per aggiornare il prezzo dell'ordine con ID: ${req.params.id}`);
@@ -137,30 +137,5 @@ router.post('/ordini/:id/aggiornaPrezzo', isAuthenticated, async (req, res) => {
     res.status(500).json({ message: 'Errore durante l\'aggiornamento del prezzo dell\'ordine', error });
   }
 });
-
-// Endpoint per aggiornare lo stato dell'ordine
-router.post('/ordini/:id/cambiaStato', isAuthenticated, async (req, res) => {
-  const orderId = req.params.id;
-  const { stato } = req.body;
-
-  try {
-    const ordine = await Ordine.findById(orderId);
-    if (!ordine) {
-      return res.status(404).json({ message: 'Ordine non trovato' });
-    }
-
-    ordine.stato = stato;
-    await ordine.save();
-
-    res.status(200).json({ message: 'Stato aggiornato con successo', ordine });
-  } catch (error) {
-    res.status(500).json({ message: 'Errore durante l\'aggiornamento dello stato dell\'ordine', error });
-  }
-});
-
-
-
-
-
 
 module.exports = router;
