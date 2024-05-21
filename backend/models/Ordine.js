@@ -23,6 +23,7 @@ const prodottoSchema = new mongoose.Schema({
 const ordineSchema = new mongoose.Schema({
     utenteID: String,
     farmaciaID: String,
+    prezzoFinale: Number,
     prodotti: [prodottoSchema],
     riderID: String,
     stato: {
