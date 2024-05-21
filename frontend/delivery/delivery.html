@@ -112,7 +112,24 @@
                 } catch (error) {
                 console.error("Errore nel caricare gli ordini:", error);
             }
+        acceptButton.addEventListener("click", async () => {
+            try {
+                const response = await fetch(`/api/orders/${order._id}/accept`, { method: "POST" });
+                if (!response.ok) {
+                    throw new Error("Errore durante l'accettazione dell'incarico");
+                }
+                const data = await response.json();
+                acceptButton.disabled = true; // Disabilita il bottone
+                acceptButton.classList.remove("btn-primary"); // Rimuovi classe btn-primary
+                acceptButton.classList.add("btn-secondary"); // Aggiungi classe btn-secondary
+                acceptButton.textContent = "Incarico accettato"; // Cambia testo del bottone
+                alert("Incarico accettato"); // Mostra messaggio di successo
+                } catch (error) {
+                    console.error("Errore durante l'accettazione dell'incarico:", error);
+                    alert("Errore durante l'accettazione dell'incarico");
+                    }
         });
+    });
   </script>
   
 
