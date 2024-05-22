@@ -29,7 +29,7 @@ app.use(
 
 const tokenChecker = require("./middlewares/tokenChecker");
 
-const drugRoutes = require("./order/farmaci");
+const drugRoutes = require("./order/order_cart");
 app.use("/api", drugRoutes);
 
 // Importa e utilizza il router di contattaci.js
@@ -38,6 +38,9 @@ app.use('/api', contattaciRouter);
 
 const clientRouter = require("./client_account/client");
 app.use('/api',clientRouter);
+
+const checkoutRouter = require("./order/checkout");
+app.use('/api',checkoutRouter);
 
 const User = require("./models/User");
 const Carrello = require("./models/Carrello");
@@ -126,14 +129,7 @@ app.get("/logout", (req, res) => {
   }
 });
 
-app.get("/api/check-login", (req, res) => {
-  if (req.session && req.session.user) {
-    res.json({ isLoggedIn: true, userRole: req.session.user.type });
-    console.log("Ruolo:", req.session.user.type);
-  } else {
-    res.json({ isLoggedIn: false });
-  }
-});
+
 
 app.get("/", (req, res) => {
   try {
@@ -176,241 +172,6 @@ app.get(
     res.sendFile(path.join(__dirname, "views", "order.html"));
   }
 );
-
-
-app.post('/api/cart/add', async (req, res) => {
-  const { productId, quantity, price } = req.body;
-  const clienteId = req.session.user.id; // Utilizzo del codice fiscale
-  console.log("productId:", productId, "quantity:", quantity, "clienteId:", clienteId)
-  try {
-      const cart = await Carrello.findOne({ _id: clienteId });
-      console.log("Carrello:", cart);
-      // Se il carrello non esiste, restituisci un errore
-      if (!cart) {
-          return res.status(404).json({ message: 'Carrello non trovato' });
-      }
-        // Trova l'indice del prodotto nel carrello
-        const productIndex = cart.prodotti.findIndex(p => p._id.toString() === productId);
-        let priceCorrect = price.replace(',', '.');
-        let priceNumber = parseFloat(priceCorrect);
-        console.log("priceNumber:", priceNumber);
-        if (productIndex !== -1) {
-            // Prodotto esiste, aggiorna la quantità
-            cart.prodotti[productIndex].quantita += quantity;
-            cart.prodotti[productIndex].prezzo = priceNumber*quantity;
-            console.log("Prodotto esiste, aggiorna la quantità")
-        } else {
-            // Prodotto non esiste, aggiungilo
-            cart.prodotti.push({ productId, quantita: quantity, prezzo: priceNumber});
-            console.log("Prodotto non esiste, aggiungilo")
-        }
-      cart.totale += quantity * priceNumber;  // Aggiorna il totale
-      await cart.save();
-      res.status(200).json({ success: true, message: 'Prodotto aggiunto al carrello', carrello: cart });
-  } catch (error) {
-      console.error('Errore aggiunta al carrello:', error);
-      res.status(500).json({ success: false, message: 'Errore durante l\'aggiunta al carrello', error });
-  }
-});
-
-// ENDPOINT PER VISUALIZZAZIONE DEL CARRELLO
-app.get('/api/cart', isAuthenticated, async (req, res) => {
-  const clienteId = req.session.user.id; // Assume che l'ID dell'utente sia salvato nella sessione al login
-  console.log("clienteId:", clienteId)
-  try {
-      // Popola i dettagli del prodotto nel carrello usando il modello Drug
-      const cart = await Carrello.findOne({ _id: clienteId })
-          .populate({
-              path: 'prodotti._id',
-              model: 'Drug',
-              select: 'Farmaco PrezzoRiferimentoSSN'  // Seleziona solo i campi necessari per il frontend
-          });
-
-      if (!cart || cart.prodotti.length === 0) {
-          return res.status(200).json({ success: true, items: [] });
-      }
-
-      // Mappa gli articoli del carrello per il frontend
-      const items = cart.prodotti.map(item => ({
-          id: item.productId._id,
-          name: item.productId.Farmaco,         // Nome del farmaco
-          quantity: item.quantita,              // Quantità
-          price: item.prezzo                   // Prezzo per unità
-      }));
-
-      res.status(200).json({ success: true, items: items });
-  } catch (error) {
-      console.error('Errore nel recuperare il carrello:', error);
-      res.status(500).json({ success: false, message: 'Errore durante il recupero del carrello', error });
-  }
-});
-
-// RIMOZIONE ARTICOLO DAL CARRELLO
-app.post('/api/cart/remove', isAuthenticated, async (req, res) => {
-  const { id } = req.body;
-  const clienteId = req.session.user.id;
-  try {
-      const cart = await Carrello.findOne({ _id: clienteId });
-      if (!cart) {
-          return res.status(404).json({ message: 'Carrello non trovato' });
-      }
-
-      // Rimuovi l'articolo dal carrello
-      cart.prodotti = cart.prodotti.filter(item => item.productId.toString() !== id);
-      cart.totale = cart.prodotti.reduce((acc, item) => acc + item.prezzo, 0);
-      await cart.save();
-
-      res.json({ success: true, message: 'Articolo rimosso dal carrello' });
-  } catch (error) {
-      console.error('Errore nella rimozione dell\'articolo:', error);
-      res.status(500).json({ success: false, message: 'Errore durante la rimozione dell\'articolo', error });
-  }
-});
-
-
-app.post('/api/cart/change', isAuthenticated, async (req, res) => {
-  const { productId, change } = req.body; // change è il delta, può essere 1 o -1
-  const userId = req.session.user.id;
-
-  try {
-      const cart = await Carrello.findOne({ _id: userId });
-      if (!cart) {
-          return res.status(404).json({ success: false, message: 'Carrello non trovato' });
-      }
-
-      const itemIndex = cart.prodotti.findIndex(item => item.productId.toString() === productId);
-
-      if (itemIndex > -1) {
-          cart.prodotti[itemIndex].quantita += change;
-          if (cart.prodotti[itemIndex].quantita < 1) {
-              cart.prodotti.splice(itemIndex, 1);
-          }
-          cart.totale += change * cart.prodotti[itemIndex].prezzo;
-          await cart.save();
-          res.json({ success: true, message: 'Quantità aggiornata', cart: cart });
-      } else {
-          res.status(404).json({ success: false, message: 'Prodotto non trovato nel carrello' });
-      }
-  } catch (error) {
-      console.error('Errore nella modifica della quantità nel carrello:', error);
-      res.status(500).json({ success: false, message: 'Errore tecnico nel modificare la quantità' });
-  }
-});
-
-
-app.get('/api/user/address', isAuthenticated, async (req, res) => {
-  const userId = req.session.user.id;  // Assicurati che l'ID utente sia salvato nella sessione al login
-  try {
-      const user = await User.findById(userId);
-      if (!user) {
-          return res.status(404).json({ message: "Utente non trovato" });
-      }
-      res.json({
-          nome: user.nome,
-          cognome: user.cognome,
-          città: user.città,
-          cap: user.cap,
-          provincia: user.provincia,
-          via: user.via,
-      });
-  } catch (error) {
-      console.error('Errore nel recuperare i dati utente:', error);
-      res.status(500).json({ message: 'Errore interno del server', error });
-  }
-});
-
-
-app.get('/api/cart/details', isAuthenticated, async (req, res) => {
-  const clienteId = req.session.user.id;
-  try {
-      const cart = await Carrello.findOne({ _id: clienteId }).populate('prodotti._id');
-      if (!cart) {
-          return res.status(404).json({ message: 'Carrello non trovato' });
-      }
-      const items = cart.prodotti.map(item => ({
-          nome: item._id.Farmaco, // Assumendo che 'nome' sia un campo del documento a cui il prodotto è collegato
-          quantità: item.quantita,
-          prezzo: item.prezzo
-      }));
-      res.json({ items, totalPrice: cart.totale });
-  } catch (error) {
-      console.error('Errore nel recuperare i dettagli del carrello:', error);
-      res.status(500).json({ message: 'Errore interno del server', error });
-  }
-});
-
-const Ordine = require("./models/Ordine");
-
-
-app.post('/api/order/create', isAuthenticated, async (req, res) => {
-  const userId = req.session.user.id; // ID utente dalla sessione
-  const userAddress = await User.findById(userId).select('nome cognome città cap provincia via');
-  const cart = await Carrello.findOne({ _id: userId }).populate('prodotti._id');
-
-  if (!cart || cart.prodotti.length === 0) {
-      return res.status(400).json({ success: false, message: 'Il carrello è vuoto.' });
-  }
-
-  try {
-    const farmacia = await ListaFarmacie.findOne({ _id:req.body.farmaciaId });
-    if (!farmacia) {
-        return res.status(400).json({ success: false, message: 'Farmacia non trovata.' });
-    }
-      const newOrder = new Ordine({
-          utenteID: userId,
-          farmaciaID: farmacia._id,
-          riderID: null,
-          secretcode: Math.floor(1000 + Math.random() * 9000).toString(),
-          prodotti: cart.prodotti.map(item => ({
-              _id: item._id._id,
-              quantita: item.quantita,
-              prezzo: item.prezzo
-          })),
-          indirizzoCliente: {
-              nome: userAddress.nome,
-              cognome: userAddress.cognome,
-              città: userAddress.città,
-              cap: userAddress.cap,
-              provincia: userAddress.provincia,
-              via: userAddress.via,
-          },
-          indirizzoFarmacia: {
-              via: farmacia.INDIRIZZO,
-              cap: farmacia.CAP,
-              provincia: farmacia.PROVINCIA
-          },
-          stato: 'inviato',
-          prezzoFinale: '',
-          
-      });
-
-      await newOrder.save();
-
-      // Pulire il carrello dopo l'ordine
-      cart.prodotti = [];
-      cart.totale = 0;
-      await cart.save();
-
-      res.json({ success: true, message: 'Ordine creato con successo' });
-  } catch (error) {
-      console.error('Errore nella creazione dell\'ordine:', error);
-      res.status(500).json({ success: false, message: 'Errore tecnico nella creazione dell\'ordine' });
-  }
-});
-
-
-const ListaFarmacie = require("./models/ListaFarmacie"); 
-app.get('/api/farmacie', async (req, res) => {
-  try {
-      const farmacie = await ListaFarmacie.find({});
-      res.json({ success: true, farmacie: farmacie });
-  } catch (error) {
-      console.error('Errore nel recuperare la lista delle farmacie:', error);
-      res.status(500).json
-  }
-});
-
-
 
 
 app.listen(3000, () => {
