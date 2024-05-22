@@ -42,6 +42,14 @@
     .hiddenRow {
       padding: 0 !important;
     }
+    .success-input {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .error-input {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
   </style>
 </head>
 <body>
@@ -96,9 +104,9 @@
               <th>ID</th>
               <th>Prodotti</th>
               <th>Quantità</th>
-              <th>Prezzo</th>
+              <th>Prezzo Finale</th>
               <th>Cliente</th>
-              <th>Indirizzo</th>
+              <th>Nome Rider</th>
               <th>Azione</th>
             </tr>
           </thead>
@@ -118,7 +126,6 @@
               <th>Quantità</th>
               <th>Prezzo</th>
               <th>Cliente</th>
-              <th>Indirizzo</th>
               <th>Azione</th>
             </tr>
           </thead>
@@ -144,6 +151,29 @@
           <p><strong>Provincia:</strong> <span id="farmaciaProvincia"></span></p>
           <p><strong>Regione:</strong> <span id="farmaciaRegione"></span></p>
           <p><strong>Indirizzo:</strong> <span id="farmaciaIndirizzo"></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="verifyCodeModal" tabindex="-1" aria-labelledby="verifyCodeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="verifyCodeModalLabel">Verifica Codice</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="currentOrderId" />
+          <div class="mb-3">
+            <label for="verificationCode" class="form-label">Codice di Verifica</label>
+            <input type="text" class="form-control" id="verificationCode" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+          <button type="button" class="btn btn-primary" onclick="verifyCode()">Conferma</button>
         </div>
       </div>
     </div>

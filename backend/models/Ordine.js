@@ -28,7 +28,7 @@ const ordineSchema = new mongoose.Schema({
     riderID: String,
     stato: {
         type: String,
-        enum: ['inviato', 'accettato', 'rifiutato', 'confermato', 'attesa', 'consegnato'],
+        enum: ['inviato', 'accettato', 'rifiutato', 'confermato', 'attesa','inconsegna', 'consegnato'],
         default: 'In attesa'
     },
     secretcode: String,

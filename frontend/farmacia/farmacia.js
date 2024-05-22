@@ -1,7 +1,6 @@
 async function aggiornaPrezzo(index, orderId) {
   const nuovoPrezzo = document.getElementById(`prezzoAggiornato-${index}`).value;
   const inputBox = document.getElementById(`prezzoAggiornato-${index}`);
-  const aggiornaButton = document.getElementById(`aggiornaPrezzo-${index}`);
   const confermaButton = document.getElementById(`confermaOrdine-${index}`);
   const eliminaButton = document.getElementById(`eliminaOrdine-${index}`);
 
@@ -67,26 +66,9 @@ async function cambiaStatoOrdine(index, orderId, stato) {
     console.log(`Stato aggiornato per l'ordine ${orderId}:`, result);
     alert(`Stato dell'ordine aggiornato con successo a ${stato}`);
 
-    const inputBox = document.getElementById(`prezzoAggiornato-${index}`);
-    const aggiornaButton = document.getElementById(`aggiornaPrezzo-${index}`);
-    const confermaButton = document.getElementById(`confermaOrdine-${index}`);
-    const eliminaButton = document.getElementById(`eliminaOrdine-${index}`);
-    if (inputBox) {
-      inputBox.disabled = true;
-    }
-    if (aggiornaButton) {
-      aggiornaButton.style.display = 'none';
-    }
-    if (confermaButton) {
-      confermaButton.style.display = 'none';
-    }
-    if (eliminaButton) {
-      eliminaButton.style.display = 'none';
-    }
-
-    await loadOrders('storico', 'storicoOrdiniTableBody', '/api/ordini/storico');
-    await loadOrders('in_corso', 'ordiniInCorsoTableBody', '/api/ordini/incorso');
-    await loadOrders('candidati', 'listaOrdiniCandidatiTableBody', '/api/ordini/candidati');
+    loadOrders('storico', 'storicoOrdiniTableBody', '/api/ordini/storico', 'storicoOrdiniSection');
+    loadOrders('in_corso', 'ordiniInCorsoTableBody', '/api/ordini/incorso', 'ordiniInCorsoSection');
+    loadOrders('candidati', 'listaOrdiniCandidatiTableBody', '/api/ordini/candidati', 'listaOrdiniCandidatiSection');
   } catch (error) {
     console.error('Errore durante l\'aggiornamento dello stato:', error);
     alert('Errore durante l\'aggiornamento dello stato.');
@@ -100,10 +82,140 @@ async function getFarmacoNome(id) {
       throw new Error(`Errore nel recuperare il farmaco con ID ${id}`);
     }
     const farmaco = await response.json();
-    return farmaco.Farmaco; // Assuming 'Farmaco' is the field for the name
+    return farmaco.Farmaco;
   } catch (error) {
     console.error('Errore nel recuperare il farmaco:', error);
-    return id; // In case of error, return the ID itself
+    return id;
+  }
+}
+
+async function mostraInfoOrdine(orderId) {
+  try {
+    const response = await fetch(`/api/ordini/${orderId}`);
+    if (!response.ok) {
+      throw new Error(`Errore durante il recupero dell'ordine con ID ${orderId}`);
+    }
+    const ordine = await response.json();
+    document.getElementById('currentOrderId').value = orderId;
+    const modal = new bootstrap.Modal(document.getElementById('verifyCodeModal'));
+    modal.show();
+  } catch (error) {
+    console.error('Errore durante il recupero dell\'ordine:', error);
+    alert('Errore durante il recupero dell\'ordine.');
+  }
+}
+
+async function verifyCode() {
+  const orderId = document.getElementById('currentOrderId').value;
+  const verificationCode = document.getElementById('verificationCode').value;
+  const url = `/api/ordini/${orderId}/verifyCode`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ verificationCode })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Errore durante la verifica del codice. Status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    if (result.valid) {
+      document.getElementById('verificationCode').classList.add('success-input');
+      document.getElementById('verificationCode').disabled = true;
+      alert('Codice confermato! Stato dell\'ordine aggiornato a "inconsegna".');
+    } else {
+      document.getElementById('verificationCode').classList.add('error-input');
+      alert('Codice non valido.');
+    }
+  } catch (error) {
+    console.error('Errore durante la verifica del codice:', error);
+    alert('Errore durante la verifica del codice.');
+  }
+}
+
+async function loadOrders(stato, containerId, endpoint, section) {
+  try {
+    const response = await fetch(endpoint, {
+      credentials: 'include'
+    });
+    if (!response.ok) {
+      throw new Error('Errore durante il caricamento degli ordini');
+    }
+    const orders = await response.json();
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+
+    if (!Array.isArray(orders) || orders.length === 0) {
+      container.innerHTML = '<tr><td colspan="8">Nessun ordine trovato.</td></tr>';
+      return;
+    }
+
+    for (const order of orders) {
+      const productNames = await Promise.all(order.prodotti.map(async (prodotto) => {
+        const nome = await getFarmacoNome(prodotto._id);
+        return nome;
+      }));
+
+      let buttonLabel = 'Indaga';
+      let buttonAction = `data-bs-toggle="collapse" data-bs-target="#orderDetails-${orders.indexOf(order)}" aria-expanded="false" aria-controls="orderDetails-${orders.indexOf(order)}"`;
+
+      if (section === 'ordiniInCorsoSection') {
+        buttonLabel = 'Consegna';
+        buttonAction = `onclick="mostraInfoOrdine('${order._id}')"`
+      }
+
+      const riderName = order.riderID || 'Non ancora designato';
+
+      const orderElement = document.createElement('tr');
+      orderElement.innerHTML = `
+        <td>${orders.indexOf(order) + 1}</td>
+        <td>${order._id}</td>
+        <td>${productNames.join(', ')}</td>
+        <td>${order.prodotti.map(p => p.quantita).join(', ')}</td>
+        <td>${order.prezzoFinale || order.prodotti.reduce((total, p) => total + (p.quantita * p.prezzo), 0).toFixed(2)}</td>
+        <td>${order.indirizzoCliente.nome} ${order.indirizzoCliente.cognome}</td>
+        ${section === 'ordiniInCorsoSection' ? `<td>${riderName}</td>` : ''}
+        <td><button class="btn btn-primary" ${buttonAction}>${buttonLabel}</button></td>
+      `;
+      container.appendChild(orderElement);
+
+      const detailsRow = document.createElement('tr');
+      detailsRow.innerHTML = `
+        <td colspan="8" class="hiddenRow">
+          <div id="orderDetails-${orders.indexOf(order)}" class="accordion-collapse collapse">
+            <div class="card card-body">
+              <h5>Dettagli Prodotti</h5>
+              <ul id="productDetails-${orders.indexOf(order)}">
+                ${order.prodotti.map((p, i) => `<li>${productNames[i]} - Quantità: ${p.quantita}, Prezzo: €${p.prezzo.toFixed(2)}</li>`).join('')}
+              </ul>
+              <h5>Prezzo Totale: €${order.prodotti.reduce((total, p) => total + (p.quantita * p.prezzo), 0).toFixed(2)}</h5>
+              ${section === 'ordiniInCorsoSection' ? `<h5>Rider ID: ${riderName}</h5>` : ''}
+              ${section === 'ordiniInCorsoSection' ? '' : `
+                <div>
+                  <label for="prezzoAggiornato-${orders.indexOf(order)}">Prezzo Aggiornato:</label>
+                  <input type="number" id="prezzoAggiornato-${orders.indexOf(order)}" step="0.01">
+                  <button id="aggiornaPrezzo-${orders.indexOf(order)}" class="btn btn-success" onclick="aggiornaPrezzo(${orders.indexOf(order)}, '${order._id}')">Aggiorna Prezzo</button>
+                  <button id="confermaOrdine-${orders.indexOf(order)}" class="btn btn-primary" style="display: none;" onclick="cambiaStatoOrdine(${orders.indexOf(order)}, '${order._id}', 'accettato')">Conferma Ordine</button>
+                  <button id="eliminaOrdine-${orders.indexOf(order)}" class="btn btn-danger" onclick="cambiaStatoOrdine(${orders.indexOf(order)}, '${order._id}', 'rifiutato')">Elimina Ordine</button>
+                </div>
+              `}
+            </div>
+          </div>
+        </td>
+      `;
+      container.appendChild(detailsRow);
+    }
+  } catch (error) {
+    console.error('Errore durante il caricamento degli ordini:', error);
+    const container = document.getElementById(containerId);
+    if (container) {
+      container.innerHTML = '<tr><td colspan="8">Errore durante il caricamento degli ordini.</td></tr>';
+    }
   }
 }
 
@@ -153,81 +265,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  async function loadOrders(stato, containerId, endpoint) {
-    try {
-      const response = await fetch(endpoint, {
-        credentials: 'include'
-      });
-      if (!response.ok) {
-        throw new Error('Errore durante il caricamento degli ordini');
-      }
-      const orders = await response.json();
-      const container = document.getElementById(containerId);
-      container.innerHTML = '';
-  
-      if (!Array.isArray(orders) || orders.length === 0) {
-        container.innerHTML = '<tr><td colspan="8">Nessun ordine trovato.</td></tr>';
-        return;
-      }
-  
-      for (const order of orders) {
-        const productNames = await Promise.all(order.prodotti.map(async (prodotto) => {
-          const nome = await getFarmacoNome(prodotto._id);
-          return nome;
-        }));
-  
-        const orderElement = document.createElement('tr');
-        orderElement.innerHTML = `
-          <td>${orders.indexOf(order) + 1}</td>
-          <td>${order._id}</td>
-          <td>${productNames.join(', ')}</td>
-          <td>${order.prodotti.map(p => p.quantita).join(', ')}</td>
-          <td>${order.prodotti.map(p => p.prezzo.toFixed(2)).join(', ')}</td>
-          <td>${order.indirizzoCliente.nome} ${order.indirizzoCliente.cognome}</td>
-          <td>${order.indirizzoCliente.via}, ${order.indirizzoCliente.città}, ${order.indirizzoCliente.paese}</td>
-          <td><button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#orderDetails-${orders.indexOf(order)}" aria-expanded="false" aria-controls="orderDetails-${orders.indexOf(order)}">Indaga</button></td>
-        `;
-        container.appendChild(orderElement);
-  
-        const detailsRow = document.createElement('tr');
-        detailsRow.innerHTML = `
-          <td colspan="8" class="hiddenRow">
-            <div id="orderDetails-${orders.indexOf(order)}" class="accordion-collapse collapse">
-              <div class="card card-body">
-                <h5>Dettagli Prodotti</h5>
-                <ul id="productDetails-${orders.indexOf(order)}">
-                  ${order.prodotti.map((p, i) => `<li>${productNames[i]} - Quantità: ${p.quantita}, Prezzo: €${p.prezzo.toFixed(2)}</li>`).join('')}
-                </ul>
-                <h5>Prezzo Totale: €${order.prodotti.reduce((total, p) => total + (p.quantita * p.prezzo), 0).toFixed(2)}</h5>
-                <div>
-                  <label for="prezzoAggiornato-${orders.indexOf(order)}">Prezzo Aggiornato:</label>
-                  <input type="number" id="prezzoAggiornato-${orders.indexOf(order)}" step="0.01">
-                  <button id="aggiornaPrezzo-${orders.indexOf(order)}" class="btn btn-success" onclick="aggiornaPrezzo(${orders.indexOf(order)}, '${order._id}')">Aggiorna Prezzo</button>
-                  <button id="confermaOrdine-${orders.indexOf(order)}" class="btn btn-primary" style="display: none;" onclick="cambiaStatoOrdine(${orders.indexOf(order)}, '${order._id}', 'accettato')">Conferma Ordine</button>
-                  <button id="eliminaOrdine-${orders.indexOf(order)}" class="btn btn-danger" onclick="cambiaStatoOrdine(${orders.indexOf(order)}, '${order._id}', 'rifiutato')">Elimina Ordine</button>
-                </div>
-              </div>
-            </div>
-          </td>
-        `;
-        container.appendChild(detailsRow);
-      }
-    } catch (error) {
-      console.error('Errore durante il caricamento degli ordini:', error);
-      const container = document.getElementById(containerId);
-      if (container) {
-        container.innerHTML = '<tr><td colspan="8">Errore durante il caricamento degli ordini.</td></tr>';
-      }
-    }
-  }
-
   window.aggiornaPrezzo = aggiornaPrezzo;
   window.cambiaStatoOrdine = cambiaStatoOrdine;
+  window.mostraInfoOrdine = mostraInfoOrdine;
+  window.verifyCode = verifyCode;
 
   loadProfileSettings();
-  loadOrders('storico', 'storicoOrdiniTableBody', '/api/ordini/storico');
-  loadOrders('in_corso', 'ordiniInCorsoTableBody', '/api/ordini/incorso');
-  loadOrders('candidati', 'listaOrdiniCandidatiTableBody', '/api/ordini/candidati');
+  loadOrders('storico', 'storicoOrdiniTableBody', '/api/ordini/storico', 'storicoOrdiniSection');
+  loadOrders('in_corso', 'ordiniInCorsoTableBody', '/api/ordini/incorso', 'ordiniInCorsoSection');
+  loadOrders('candidati', 'listaOrdiniCandidatiTableBody', '/api/ordini/candidati', 'listaOrdiniCandidatiSection');
 
   document.querySelectorAll("#sidebar a").forEach(link => {
     link.addEventListener("click", function(event) {
@@ -237,3 +283,4 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+

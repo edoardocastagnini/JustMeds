@@ -24,21 +24,22 @@ router.get('/ordini', isAuthenticated, async (req, res) => {
     const ordini = await Ordine.find({ stato, farmaciaID });
     res.status(200).json(ordini);
   } catch (error) {
+    console.error('Errore durante il recupero degli ordini:', error);
     res.status(500).json({ success: false, message: 'Errore durante il recupero degli ordini', error });
   }
 });
 
 // Endpoint per ottenere i dettagli di un farmaco
-// Endpoint per ottenere i dettagli di un farmaco
-router.get('/farmaci/:id', async (req, res) => {
+router.get('/farmaci/:id', isAuthenticated, async (req, res) => {
   try {
     const id = req.params.id;
-    const farmaco = await Drug.findById(new mongoose.Types.ObjectId(id));
+    const farmaco = await Drug.findById(id);
     if (!farmaco) {
       return res.status(404).json({ message: 'Farmaco non trovato' });
     }
     res.json(farmaco);
   } catch (error) {
+    console.error('Errore durante il recupero del farmaco:', error);
     res.status(500).json({ message: 'Errore durante il recupero del farmaco' });
   }
 });
@@ -53,7 +54,7 @@ router.get('/profile', isAuthenticated, (req, res) => {
 });
 
 // Endpoint per ottenere le informazioni della farmacia
-router.get('/farmacia/:id', async (req, res) => {
+router.get('/farmacia/:id', isAuthenticated, async (req, res) => {
   try {
     const id = req.params.id;
     const farmacia = await ListaFarmacie.findById(id);
@@ -62,7 +63,8 @@ router.get('/farmacia/:id', async (req, res) => {
     }
     res.json(farmacia);
   } catch (error) {
-    res.status(500).json({ message: 'Errore nel recuperare le informazioni della farmacia', error });
+    console.error('Errore nel recuperare le informazioni della farmacia:', error);
+    res.status(500).json({ message: 'Errore nel recuperare le informazioni della farmacia' });
   }
 });
 
@@ -78,11 +80,12 @@ router.get('/ordini/candidati', isAuthenticated, async (req, res) => {
     const ordini = await Ordine.find({ stato: 'inviato', farmaciaID });
     res.status(200).json(ordini);
   } catch (error) {
+    console.error('Errore durante il recupero degli ordini candidati:', error);
     res.status(500).json({ success: false, message: 'Errore durante il recupero degli ordini candidati', error });
   }
 });
 
-// Endpoint per ottenere gli ordini in corso (confermato)
+// Endpoint per ottenere gli ordini in corso (attesa)
 router.get('/ordini/incorso', isAuthenticated, async (req, res) => {
   const farmaciaID = req.session.user && req.session.user.type === 'farmacia' ? req.session.user.farmaciaID : undefined;
 
@@ -91,12 +94,17 @@ router.get('/ordini/incorso', isAuthenticated, async (req, res) => {
   }
 
   try {
-    const ordini = await Ordine.find({ stato: 'confermato', farmaciaID });
+    const ordini = await Ordine.find({ stato: 'attesa', farmaciaID });
     res.status(200).json(ordini);
   } catch (error) {
+    console.error('Errore nel recuperare gli ordini in corso:', error);
     res.status(500).json({ success: false, message: 'Errore durante il recupero degli ordini in corso', error });
   }
 });
+
+
+
+
 
 // Endpoint per ottenere lo storico ordini (in attesa o consegnato)
 router.get('/ordini/storico', isAuthenticated, async (req, res) => {
@@ -110,7 +118,23 @@ router.get('/ordini/storico', isAuthenticated, async (req, res) => {
     const ordini = await Ordine.find({ stato: { $in: ['in attesa', 'consegnato'] }, farmaciaID });
     res.status(200).json(ordini);
   } catch (error) {
+    console.error('Errore durante il recupero dello storico ordini:', error);
     res.status(500).json({ success: false, message: 'Errore durante il recupero dello storico ordini', error });
+  }
+});
+
+// Endpoint per ottenere i dettagli di un ordine
+router.get('/ordini/:id', isAuthenticated, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const ordine = await Ordine.findById(id).populate('prodotti._id', 'Farmaco');
+    if (!ordine) {
+      return res.status(404).json({ message: 'Ordine non trovato' });
+    }
+    res.json(ordine);
+  } catch (error) {
+    console.error('Errore durante il recupero dell\'ordine:', error);
+    res.status(500).json({ message: 'Errore durante il recupero dell\'ordine', error });
   }
 });
 
@@ -137,5 +161,45 @@ router.post('/ordini/:id/aggiornaPrezzo', isAuthenticated, async (req, res) => {
     res.status(500).json({ message: 'Errore durante l\'aggiornamento del prezzo dell\'ordine', error });
   }
 });
+
+// Endpoint per cambiare lo stato di un ordine
+router.post('/ordini/:id/cambiaStato', isAuthenticated, async (req, res) => {
+  const { id } = req.params;
+  const { stato } = req.body;
+
+  try {
+    const ordine = await Ordine.findById(id);
+    if (!ordine) {
+      return res.status(404).json({ message: 'Ordine non trovato' });
+    }
+
+    ordine.stato = stato;
+    await ordine.save();
+
+    res.status(200).json({ message: 'Stato aggiornato con successo', ordine });
+  } catch (error) {
+    console.error('Errore durante l\'aggiornamento dello stato dell\'ordine:', error);
+    res.status(500).json({ message: 'Errore durante l\'aggiornamento dello stato dell\'ordine', error });
+  }
+});
+
+
+// Endpoint per ottenere lo storico ordini (inconsegna o consegnato)
+router.get('/ordini/storico', isAuthenticated, async (req, res) => {
+  const farmaciaID = req.session.user && req.session.user.type === 'farmacia' ? req.session.user.farmaciaID : undefined;
+
+  if (!farmaciaID) {
+    return res.status(400).json({ success: false, message: 'FarmaciaID is missing or user is not authorized' });
+  }
+
+  try {
+    const ordini = await Ordine.find({ stato: { $in: ['inconsegna', 'consegnato'] }, farmaciaID });
+    res.status(200).json(ordini);
+  } catch (error) {
+    console.error('Errore durante il recupero dello storico ordini:', error);
+    res.status(500).json({ success: false, message: 'Errore durante il recupero dello storico ordini', error });
+  }
+});
+
 
 module.exports = router;
