@@ -219,6 +219,62 @@ async function loadOrders(stato, containerId, endpoint, section) {
   }
 }
 
+async function loadStoricoOrders(stato, containerId, endpoint) {
+  try {
+    const response = await fetch(endpoint, {
+      credentials: 'include'
+    });
+    if (!response.ok) {
+      throw new Error('Errore durante il caricamento degli ordini');
+    }
+    const orders = await response.json();
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+
+    if (!Array.isArray(orders) || orders.length === 0) {
+      container.innerHTML = '<tr><td colspan="3">Nessun ordine trovato.</td></tr>';
+      return;
+    }
+
+    for (const order of orders) {
+      const orderElement = document.createElement('tr');
+      orderElement.innerHTML = `
+        <td>${orders.indexOf(order) + 1}</td>
+        <td>${order._id}</td>
+        <td><button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#storicoOrderDetails-${orders.indexOf(order)}" aria-expanded="false" aria-controls="storicoOrderDetails-${orders.indexOf(order)}">Dettagli</button></td>
+      `;
+      container.appendChild(orderElement);
+
+      const indirizzoCliente = `${order.indirizzoCliente.via}, ${order.indirizzoCliente.città}, ${order.indirizzoCliente.paese}`;
+
+      const detailsRow = document.createElement('tr');
+      detailsRow.innerHTML = `
+        <td colspan="3" class="hiddenRow">
+          <div id="storicoOrderDetails-${orders.indexOf(order)}" class="accordion-collapse collapse">
+            <div class="card card-body">
+              <h5>Dettagli Prodotti</h5>
+              <ul id="productDetails-${orders.indexOf(order)}">
+                ${order.prodotti.map((p, i) => `<li>Quantità: ${p.quantita}, Prezzo: €${p.prezzo.toFixed(2)}</li>`).join('')}
+              </ul>
+              <h5>Prezzo Totale: €${order.prodotti.reduce((total, p) => total + (p.quantita * p.prezzo), 0).toFixed(2)}</h5>
+              <h5>Cliente: ${order.indirizzoCliente.nome} ${order.indirizzoCliente.cognome}</h5>
+              <h5>Indirizzo: ${indirizzoCliente}</h5>
+            </div>
+          </div>
+        </td>
+      `;
+      container.appendChild(detailsRow);
+    }
+  } catch (error) {
+    console.error('Errore durante il caricamento degli ordini:', error);
+    const container = document.getElementById(containerId);
+    if (container) {
+      container.innerHTML = '<tr><td colspan="3">Errore durante il caricamento degli ordini.</td></tr>';
+    }
+  }
+}
+
+
 document.addEventListener("DOMContentLoaded", function () {
   function showSection(sectionId) {
     document.querySelectorAll("#content > div").forEach(section => {
@@ -271,7 +327,7 @@ document.addEventListener("DOMContentLoaded", function () {
   window.verifyCode = verifyCode;
 
   loadProfileSettings();
-  loadOrders('storico', 'storicoOrdiniTableBody', '/api/ordini/storico', 'storicoOrdiniSection');
+  loadStoricoOrders('storico', 'storicoOrdiniTableBody', '/api/ordini/storico');
   loadOrders('in_corso', 'ordiniInCorsoTableBody', '/api/ordini/incorso', 'ordiniInCorsoSection');
   loadOrders('candidati', 'listaOrdiniCandidatiTableBody', '/api/ordini/candidati', 'listaOrdiniCandidatiSection');
 
@@ -283,4 +339,3 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
-
