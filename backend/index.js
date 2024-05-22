@@ -145,7 +145,7 @@ app.get("/", (req, res) => {
 /// Middleware per verificare il ruolo utente
 function checkUserRole(roles) {
   return (req, res, next) => {
-    const userRole = req.session.user && req.session.user.role; // Assicurati che il ruolo sia memorizzato nella sessione
+    const userRole = req.session.user && req.session.user.type; // Assicurati che il ruolo sia memorizzato nella sessione
     if (roles.includes(userRole)) {
       next();
     } else {
@@ -328,6 +328,26 @@ app.post('/api/orders/:id/accept', async (req, res) => {
   } catch (error) {
     console.error('Errore durante l\'accettazione dell\'ordine:', error);
     res.status(500).json({ message: 'Errore durante l\'accettazione dell\'ordine', error });
+  }
+});
+
+// Endpoint per annullare l'accettazione dell'ordine
+app.post('/api/orders/:id/cancel', async (req, res) => {
+  const orderId = req.params.id;
+  console.log(`POST /api/orders/${orderId}/cancel`);
+
+  try {
+      const order = await Ordine.findById(orderId);
+      if (order) {
+          order.stato = 'confermato'; // Imposta lo stato dell'ordine su 'confermato'
+          await order.save();
+          res.status(200).json({ message: 'Accettazione dell\'incarico annullata' });
+      } else {
+          res.status(404).json({ message: 'Ordine non trovato' });
+      }
+  } catch (error) {
+      console.error('Errore durante l\'annullamento dell\'accettazione dell\'incarico:', error);
+      res.status(500).json({ message: 'Errore durante l\'annullamento dell\'accettazione dell\'incarico', error });
   }
 });
 
