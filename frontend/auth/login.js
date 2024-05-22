@@ -25,7 +25,7 @@ function login(event) {
             break;
           case "ricevente":
           default:
-            redirectUrl = "./index.html";
+            redirectUrl = "../order/order.html";
             break;
         }
         window.location.href = redirectUrl;

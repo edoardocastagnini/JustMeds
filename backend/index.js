@@ -31,7 +31,15 @@ app.use(
   })
 );
 
-const tokenChecker = require("./middlewares/tokenChecker");
+// Importare e utilizzare i router
+const adminRoutes = require("../backend/admin/admin");
+app.use('/api/admin', adminRoutes);
+
+const farmaciaRoutes = require("../backend/farmacia/farmacia");
+app.use('/api', farmaciaRoutes);
+
+const contattaciRouter = require("./form_request/contattaci");
+app.use('/api', contattaciRouter);
 
 const drugRoutes = require("./order/order_cart");
 app.use("/api", drugRoutes);
@@ -90,19 +98,7 @@ app.get('/admin/admin.html', isAuthenticated, checkUserRole(['admin']), (req, re
   res.sendFile(path.join(__dirname, '../frontend/admin/admin.html'));
 });
 
-// Importare e utilizzare i router
-const adminRoutes = require("../backend/admin/admin");
-app.use('/api/admin', adminRoutes);
 
-const tokenChecker = require("./middlewares/tokenChecker");
-const drugRoutes = require("./order/farmaci");
-app.use("/api", drugRoutes);
-
-const farmaciaRoutes = require("../backend/farmacia/farmacia");
-app.use('/api', farmaciaRoutes);
-
-const contattaciRouter = require("./form_request/contattaci");
-app.use('/api', contattaciRouter);
 
 // Rotte per la registrazione e il login
 app.post("/sign_up", async (req, res) => {
@@ -215,9 +211,13 @@ app.post('/api/cart/add', isAuthenticated, async (req, res) => {
       cart.prodotti.push({ productId, quantita: quantity, prezzo: priceNumber });
       console.log("Prodotto non esiste, aggiungilo");
     }
+  } catch (error) {
+    console.error("Errore nell'aggiunta al carrello:", error);
+    res.status(500).json({ message: "Errore nell'aggiunta al carrello" });
+  }
+});
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
-
 
