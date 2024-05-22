@@ -274,8 +274,33 @@ async function loadStoricoOrders(stato, containerId, endpoint) {
   }
 }
 
+function setupLogoutLink() {
+  const navBar = document.querySelector(".navbar-nav");
+  const logoutLink = document.createElement("a");
+  logoutLink.className = "nav-link";
+  logoutLink.href = "/logout";
+  logoutLink.textContent = "Logout";
+  navBar.appendChild(logoutLink);
+}
 
+function fetchLoginStatus() {
+  return fetch("/api/check-login", { credentials: "include" })
+    .then((response) => response.json())
+    .then((data) => {
+      return data; // Assicurati che data sia l'oggetto che include isLoggedIn e userRole
+    })
+    .catch((error) => {
+      console.error("Error fetching login status:", error);
+      throw error;
+    });
+}
 document.addEventListener("DOMContentLoaded", function () {
+  fetchLoginStatus().then((data) => {
+    if (data.isLoggedIn) {
+      setupLogoutLink();
+    }
+  });
+  showSection('impostazioniSection');  // Mostra la sezione "Impostazioni" di default
   function showSection(sectionId) {
     document.querySelectorAll("#content > div").forEach(section => {
       section.classList.add("hidden");
@@ -338,4 +363,5 @@ document.addEventListener("DOMContentLoaded", function () {
       showSection(sectionId);
     });
   });
+
 });
