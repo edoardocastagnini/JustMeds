@@ -308,14 +308,26 @@ app.get("/api/orders", isAuthenticated, async (req, res) => {
 });
 
 // Endpoint per aggiornare lo stato dell'ordine
-app.post("/api/orders/:orderId/accept", isAuthenticated, async (req, res) => {
-  const { orderId } = req.params;
+app.post('/api/orders/:id/accept', async (req, res) => {
+  const orderId = req.params.id;
+  console.log(`POST /api/orders/${orderId}/accept`);
+
   try {
-    const updatedOrder = await Ordine.findByIdAndUpdate(orderId, { stato: "attesa" }, { new: true });
-    res.json({ success: true, message: "Incarico accettato", order: updatedOrder });
+    // Recupera l'ordine dal database utilizzando il modello Ordine
+    const order = await Ordine.findById(orderId);
+
+    if (order) {
+      // Aggiorna lo stato dell'ordine
+      order.stato = 'accettato';
+      // Salva l'ordine aggiornato nel database
+      await order.save();
+      res.status(200).json({ message: 'Ordine accettato' });
+    } else {
+      res.status(404).json({ message: 'Ordine non trovato' });
+    }
   } catch (error) {
-    console.error("Errore nell'accettare l'incarico:", error);
-    res.status(500).json({ success: false, message: "Errore durante l'accettazione dell'incarico" });
+    console.error('Errore durante l\'accettazione dell\'ordine:', error);
+    res.status(500).json({ message: 'Errore durante l\'accettazione dell\'ordine', error });
   }
 });
 
