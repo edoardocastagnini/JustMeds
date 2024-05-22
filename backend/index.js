@@ -305,9 +305,10 @@ app.get('/api/user/address', isAuthenticated, async (req, res) => {
       res.json({
           nome: user.nome,
           cognome: user.cognome,
-          via: user.via,
           città: user.città,
-          paese: user.paese
+          cap: user.cap,
+          provincia: user.provincia,
+          via: user.via,
       });
   } catch (error) {
       console.error('Errore nel recuperare i dati utente:', error);
@@ -340,7 +341,7 @@ const Ordine = require("./models/Ordine");
 
 app.post('/api/order/create', isAuthenticated, async (req, res) => {
   const userId = req.session.user.id; // ID utente dalla sessione
-  const userAddress = await User.findById(userId).select('nome cognome via città paese');
+  const userAddress = await User.findById(userId).select('nome cognome città cap provincia via');
   const cart = await Carrello.findOne({ _id: userId }).populate('prodotti._id');
 
   if (!cart || cart.prodotti.length === 0) {
@@ -365,9 +366,10 @@ app.post('/api/order/create', isAuthenticated, async (req, res) => {
           indirizzoCliente: {
               nome: userAddress.nome,
               cognome: userAddress.cognome,
-              via: userAddress.via,
               città: userAddress.città,
-              paese: userAddress.paese
+              cap: userAddress.cap,
+              provincia: userAddress.provincia,
+              via: userAddress.via,
           },
           indirizzoFarmacia: {
               via: farmacia.INDIRIZZO,
@@ -418,11 +420,54 @@ app.get('/api/profile', isAuthenticated, async (req, res) => {
           surname: user.cognome,
           email: user.email,
           address: user.via,
+          cap: user.cap,
+          province: user.provincia,
           city: user.città,
       });
   } catch (error) {
       console.error('Errore nel recuperare i dati utente:', error);
       res.status(500).json({ message: 'Errore interno del server', error });
+  }
+});
+
+app.get('/api/ordini', isAuthenticated, async (req, res) => {
+  const userId = req.session.user.id;
+  try {
+    const ordini = await Ordine.find({ utenteID: userId })
+      .populate('prodotti._id', 'Farmaco');
+
+    const ordiniConFarmacie = await Promise.all(ordini.map(async (ordine) => {
+      const farmacia = await ListaFarmacie.findById(ordine.farmaciaID).select('FARMACIA');
+      return {
+        ...ordine.toObject(),
+        farmaciaNome: farmacia ? farmacia.FARMACIA : 'N/A'
+      };
+    }));
+
+    res.json(ordiniConFarmacie);
+  } catch (error) {
+    console.error('Errore nel recuperare gli ordini:', error);
+    res.status(500).json({ message: 'Errore interno del server', error });
+  }
+});
+
+app.put('/api/editprofile', isAuthenticated, async (req, res) => {
+  const userId = req.session.user.id;
+  const { city, cap, province,address } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Utente non trovato' });
+    }
+    user.città = city;
+    user.cap = cap;
+    user.provincia = province;
+    user.via = address;
+    await user.save();
+    res.json({ message: 'Profilo aggiornato con successo' });
+  } catch (error) {
+    console.error('Errore durante l\'aggiornamento del profilo:', error);
+    res.status(500).json({ message: 'Errore interno del server', error });
   }
 });
 

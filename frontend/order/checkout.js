@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if(data) {
                 document.getElementById('user-address').innerHTML = `
                     <strong>Nome:</strong> ${data.nome} ${data.cognome}<br>
-                    <strong>Indirizzo:</strong> ${data.via}, ${data.città}, ${data.paese}
+                    <strong>Indirizzo:</strong> ${data.città}, ${data.cap}, ${data.provincia}, ${data.via}
                 `;
             } else {
                 document.getElementById('user-address').textContent = 'Indirizzo non disponibile.';
