@@ -83,7 +83,6 @@ document.addEventListener("DOMContentLoaded", function () {
   async function loadOrders() {
     try {
       const response = await fetch('/api/ordini', { credentials: 'include' });
-      console.log(response);
       if (!response.ok) {
         throw new Error('Errore durante il caricamento degli ordini');
       }
