@@ -1,11 +1,29 @@
 document.addEventListener("DOMContentLoaded", () => {
     fetchLoginStatus().then((data) => {
       if (data.isLoggedIn) {
+        addAccountIcon();
         setupLogoutLink();
       }
     });
   });
 
+
+function addAccountIcon(){
+  const navBar = document.querySelector(".navbar-nav");
+    const accountIconLink = document.createElement("a");
+    accountIconLink.className = "nav-link";
+    accountIconLink.href = "/client_account/client.html";
+    accountIconLink.id = "accountIconLink";
+    const icon = document.createElement("i");
+    icon.className = "fas fa-user";
+    accountIconLink.appendChild(icon);
+    const accountName = document.createElement("span");
+    accountName.textContent = " Il mio Account";
+    accountIconLink.appendChild(accountName);
+
+
+    navBar.appendChild(accountIconLink);
+}
   function setupLogoutLink() {
     const navBar = document.querySelector(".navbar-nav");
     const logoutLink = document.createElement("a");

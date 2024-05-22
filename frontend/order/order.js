@@ -24,6 +24,16 @@ function updateNavigation() {
                 // ICONA CARRELLO
                 const cartIcon = document.getElementById('cartIcon');
                 cartIcon.style.display = 'block';
+                const cartName = document.createElement("span");
+                cartName.textContent = " Carrello";
+                cartIcon.appendChild(cartName);
+                // ICONA ACCOUNT con " Il mio account"
+                const accountIcon = document.getElementById('accountIcon');
+                accountIcon.style.display = 'block';
+                const accountName = document.createElement("span");
+                accountName.textContent = ' Il mio Account';
+                accountIcon.appendChild(accountName);
+        
                 //navBar.insertBefore(logoutLink, cartIcon);  //ICONA PRIMA DI LOGOUT
             }else{
                 const navBar = document.querySelector('#navbarNavAltMarkup .navbar-nav');

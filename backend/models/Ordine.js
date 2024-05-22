@@ -28,17 +28,16 @@ const ordineSchema = new mongoose.Schema({
     riderID: String,
     stato: {
         type: String,
-        enum: ['inviato', 'accettato', 'rifiutato', 'confermato', 'attesa','inconsegna', 'consegnato'],
-
-        default: 'In attesa'
+        enum: ['inviato', 'accettato', 'rifiutato', 'confermato', 'attesa', 'consegnato','inconsegna'],
     },
     secretcode: String,
     indirizzoCliente: {
         nome: String,
         cognome: String,
-        via: String,
         città: String,
-        paese: String
+        cap: String,
+        provincia: String,
+        via: String,
     },
     indirizzoFarmacia: {
         via: String,
@@ -46,6 +45,7 @@ const ordineSchema = new mongoose.Schema({
         paese: String
 
     },
+    prezzoFinale: String,
 }, { versionKey: false});
 
 const Ordine = mongoose.model('Ordine', ordineSchema, 'ordini');
