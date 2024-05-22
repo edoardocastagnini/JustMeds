@@ -318,7 +318,7 @@ app.post('/api/orders/:id/accept', async (req, res) => {
 
     if (order) {
       // Aggiorna lo stato dell'ordine
-      order.stato = 'accettato';
+      order.stato = 'attesa';
       // Salva l'ordine aggiornato nel database
       await order.save();
       res.status(200).json({ message: 'Ordine accettato' });

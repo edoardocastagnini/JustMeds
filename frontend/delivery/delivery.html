@@ -53,7 +53,7 @@
                 const orders = await response.json();
                 const ordersContainer = document.getElementById("ordersContainer");
 
-                const confirmedOrders = orders.filter(order => order.stato === 'confermato');
+                const confirmedOrders = orders.filter(order => order.stato === 'confermato' || order.stato === 'attesa');
 
                 if (confirmedOrders.length === 0) {
                     const noOrdersMessage = document.createElement("p");
