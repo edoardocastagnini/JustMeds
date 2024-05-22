@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const farmaciaSchema = new mongoose.Schema({
+
   _id: { type: String, required: true, alias: 'COD_FARMACIA_OD' },
   COD_FARMACIA: { type: String, required: true },
   FARMACIA: { type: String, required: true },

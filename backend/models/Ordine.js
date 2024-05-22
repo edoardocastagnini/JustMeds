@@ -23,6 +23,7 @@ const prodottoSchema = new mongoose.Schema({
 const ordineSchema = new mongoose.Schema({
     utenteID: String,
     farmaciaID: String,
+    prezzoFinale: Number,
     prodotti: [prodottoSchema],
     riderID: String,
     stato: {
@@ -40,8 +41,9 @@ const ordineSchema = new mongoose.Schema({
     },
     indirizzoFarmacia: {
         via: String,
-        cap: String,
-        provincia: String
+        città: String,
+        paese: String
+
     },
     prezzoFinale: String,
 }, { versionKey: false});
