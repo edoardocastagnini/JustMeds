@@ -103,7 +103,13 @@
                     const acceptButton = document.createElement("button");
                     acceptButton.classList.add("btn", "btn-primary", "accept-button");
                     acceptButton.textContent = "Accetta Incarico";
-                    acceptButton.dataset.orderId = order._id; // Save the order ID in the button's dataset
+                    acceptButton.dataset.orderId = order._id; // per salvare l'id dell'ordine
+                    if (isOrderAccepted || order.stato === 'attesa') {
+                        acceptButton.disabled = true; // Disable the button
+                        acceptButton.classList.remove("btn-primary"); // Remove btn-primary class
+                        acceptButton.classList.add("btn-secondary");
+                        acceptButton.textContent = "Incarico accettato"; // Add btn-secondary class
+                    }
                     cardBody.appendChild(acceptButton);
 
                     orderCard.appendChild(cardBody);
@@ -114,6 +120,7 @@
                 console.error("Errore nel caricare gli ordini:", error);
             }
     });
+    let isOrderAccepted = false;
     document.addEventListener("click", async (event) => {
           if (event.target.classList.contains("accept-button")) {
               const button = event.target;
@@ -124,6 +131,7 @@
                       throw new Error("Errore durante l'accettazione dell'incarico");
                   }
                   const data = await response.json();
+                  isOrderAccepted = true;
                   button.disabled = true; // Disable the button
                   button.classList.remove("btn-primary"); // Remove btn-primary class
                   button.classList.add("btn-secondary"); // Add btn-secondary class
