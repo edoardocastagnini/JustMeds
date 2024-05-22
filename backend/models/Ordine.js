@@ -29,6 +29,7 @@ const ordineSchema = new mongoose.Schema({
     stato: {
         type: String,
         enum: ['inviato', 'accettato', 'rifiutato', 'confermato', 'attesa','inconsegna', 'consegnato'],
+
         default: 'In attesa'
     },
     secretcode: String,
@@ -43,6 +44,7 @@ const ordineSchema = new mongoose.Schema({
         via: String,
         città: String,
         paese: String
+
     },
 }, { versionKey: false});
 
