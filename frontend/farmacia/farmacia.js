@@ -9,7 +9,7 @@ async function aggiornaPrezzo(index, orderId) {
     return;
   }
 
-  const url = `/api/ordini/${orderId}/aggiornaPrezzo`;
+  const url = `/api/ordini_f/${orderId}/aggiornaPrezzo`;
   console.log(`Chiamata API a: ${url} con prezzoFinale: ${nuovoPrezzo}`);
 
   try {
@@ -46,7 +46,7 @@ async function aggiornaPrezzo(index, orderId) {
 }
 
 async function cambiaStatoOrdine(index, orderId, stato) {
-  const url = `/api/ordini/${orderId}/cambiaStato`;
+  const url = `/api/ordini_f/${orderId}/cambiaStato`;
   console.log(`Chiamata API a: ${url} con stato: ${stato}`);
 
   try {
@@ -66,9 +66,9 @@ async function cambiaStatoOrdine(index, orderId, stato) {
     console.log(`Stato aggiornato per l'ordine ${orderId}:`, result);
     alert(`Stato dell'ordine aggiornato con successo a ${stato}`);
 
-    loadOrders('storico', 'storicoOrdiniTableBody', '/api/ordini/storico', 'storicoOrdiniSection');
-    loadOrders('in_corso', 'ordiniInCorsoTableBody', '/api/ordini/incorso', 'ordiniInCorsoSection');
-    loadOrders('candidati', 'listaOrdiniCandidatiTableBody', '/api/ordini/candidati', 'listaOrdiniCandidatiSection');
+    loadOrders('storico', 'storicoOrdiniTableBody', '/api/ordini_f/storico', 'storicoOrdiniSection');
+    loadOrders('in_corso', 'ordiniInCorsoTableBody', '/api/ordini_f/incorso', 'ordiniInCorsoSection');
+    loadOrders('candidati', 'listaOrdiniCandidatiTableBody', '/api/ordini_f/candidati', 'listaOrdiniCandidatiSection');
   } catch (error) {
     console.error('Errore durante l\'aggiornamento dello stato:', error);
     alert('Errore durante l\'aggiornamento dello stato.');
@@ -91,7 +91,7 @@ async function getFarmacoNome(id) {
 
 async function mostraInfoOrdine(orderId) {
   try {
-    const response = await fetch(`/api/ordini/${orderId}`);
+    const response = await fetch(`/api/ordini_f/${orderId}`);
     if (!response.ok) {
       throw new Error(`Errore durante il recupero dell'ordine con ID ${orderId}`);
     }
@@ -108,7 +108,7 @@ async function mostraInfoOrdine(orderId) {
 async function verifyCode() {
   const orderId = document.getElementById('currentOrderId').value;
   const verificationCode = document.getElementById('verificationCode').value;
-  const url = `/api/ordini/${orderId}/verifyCode`;
+  const url = `/api/ordini_f/${orderId}/verifyCode`;
 
   try {
     const response = await fetch(url, {
@@ -393,7 +393,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function loadProfileSettings() {
     try {
       // Carica le informazioni del profilo utente
-      const profileResponse = await fetch('/api/profile', {
+      const profileResponse = await fetch('/api/profile_f', {
         credentials: 'include'
       });
       if (!profileResponse.ok) {
@@ -430,9 +430,9 @@ document.addEventListener("DOMContentLoaded", function () {
   window.verifyCode = verifyCode;
 
   loadProfileSettings();
-  loadStoricoOrders('storico', 'storicoOrdiniTableBody', '/api/ordini/storico');
-  loadInCorsoOrders('ordiniInCorsoTableBody', '/api/ordini/incorso'); // Usa la funzione aggiornata
-  loadOrders('candidati', 'listaOrdiniCandidatiTableBody', '/api/ordini/candidati', 'listaOrdiniCandidatiSection');
+  loadStoricoOrders('storico', 'storicoOrdiniTableBody', '/api/ordini_f/storico');
+  loadInCorsoOrders('ordiniInCorsoTableBody', '/api/ordini_f/incorso'); // Usa la funzione aggiornata
+  loadOrders('candidati', 'listaOrdiniCandidatiTableBody', '/api/ordini_f/candidati', 'listaOrdiniCandidatiSection');
 
   // Mostra la sezione "Impostazioni" di default
   showSection('impostazioniSection');
