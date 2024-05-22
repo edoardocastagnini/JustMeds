@@ -94,11 +94,11 @@
 
                     const pickupAddress = document.createElement("p");
                     pickupAddress.classList.add("card-text");
-                    pickupAddress.innerHTML = `<strong>Indirizzo di ritiro:</strong> ${order.indirizzoFarmacia.via}, ${order.indirizzoFarmacia.cap}, ${order.indirizzoFarmacia.provincia}`;
+                    pickupAddress.innerHTML = `<strong>Indirizzo di ritiro:</strong> ${order.indirizzoFarmacia.via}, ${order.indirizzoFarmacia.cap} ${order.indirizzoFarmacia.provincia}`;
 
                     const deliveryAddress = document.createElement("p");
                     deliveryAddress.classList.add("card-text");
-                    deliveryAddress.innerHTML = `<strong>Indirizzo di consegna:</strong> ${order.indirizzoCliente.via}, ${order.indirizzoCliente.città}, ${order.indirizzoCliente.paese}`;
+                    deliveryAddress.innerHTML = `<strong>Indirizzo di consegna:</strong> ${order.indirizzoCliente.via}, ${order.indirizzoCliente.cap} ${order.indirizzoCliente.città}`;
 
                     cardBody.appendChild(pickupAddress);
                     cardBody.appendChild(deliveryAddress);
