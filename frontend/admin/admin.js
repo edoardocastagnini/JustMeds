@@ -26,21 +26,26 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch(error => console.error("Error fetching form requests:", error));
   }
+// Funzione per mostrare la sezione selezionata
+window.showSection = function(sectionId) {
+  document.querySelectorAll("#content > div").forEach(section => {
+    section.classList.add("hidden");
+  });
+  document.getElementById(sectionId).classList.remove("hidden");
 
-  // Funzione per mostrare la sezione selezionata
-  window.showSection = function(sectionId) {
-    document.querySelectorAll("#content > div").forEach(section => {
-      section.classList.add("hidden");
-    });
-    document.getElementById(sectionId).classList.remove("hidden");
-
-    // Esegui azioni specifiche per ogni sezione
-    if (sectionId === "formRequestsSection") {
-      fetchFormRequests();
-    } else if (sectionId === "statsSection") {
-      fetchStats();
-    }
+  // Nascondi la sezione dell'account farmacia quando si cambia sezione
+  const accountSection = document.getElementById("accountSection");
+  if (accountSection) {
+    accountSection.style.display = "none"; // Usa display:none per nasconderla
   }
+
+  // Esegui azioni specifiche per ogni sezione
+  if (sectionId === "formRequestsSection") {
+    fetchFormRequests();
+  } else if (sectionId === "statsSection") {
+    fetchStats();
+  }
+}
 
   window.investigateRequest = function(requestId, button) {
     const row = button.closest("tr");

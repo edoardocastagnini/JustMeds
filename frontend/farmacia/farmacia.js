@@ -294,13 +294,82 @@ function fetchLoginStatus() {
       throw error;
     });
 }
+
+// Funzione aggiornata per caricare gli ordini in corso con stato "attesa" e "inconsegna"
+async function loadInCorsoOrders(containerId, endpoint) {
+  try {
+    const response = await fetch(endpoint, {
+      credentials: 'include'
+    });
+    if (!response.ok) {
+      throw new Error('Errore durante il caricamento degli ordini');
+    }
+    const orders = await response.json();
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+
+    if (!Array.isArray(orders) || orders.length === 0) {
+      container.innerHTML = '<tr><td colspan="8">Nessun ordine trovato.</td></tr>';
+      return;
+    }
+
+    for (const order of orders) {
+      const productNames = await Promise.all(order.prodotti.map(async (prodotto) => {
+        const nome = await getFarmacoNome(prodotto._id);
+        return nome;
+      }));
+
+      let buttonLabel = 'Consegna';
+      let buttonAction = `onclick="mostraInfoOrdine('${order._id}')"`
+
+      const riderName = order.riderID || 'Non ancora designato';
+
+      const orderElement = document.createElement('tr');
+      orderElement.innerHTML = `
+        <td>${orders.indexOf(order) + 1}</td>
+        <td>${order._id}</td>
+        <td>${productNames.join(', ')}</td>
+        <td>${order.prodotti.map(p => p.quantita).join(', ')}</td>
+        <td>${order.prezzoFinale || order.prodotti.reduce((total, p) => total + (p.quantita * p.prezzo), 0).toFixed(2)}</td>
+        <td>${order.indirizzoCliente.nome} ${order.indirizzoCliente.cognome}</td>
+        <td>${riderName}</td>
+        <td><button class="btn btn-primary" ${buttonAction}>${buttonLabel}</button></td>
+      `;
+      container.appendChild(orderElement);
+
+      const detailsRow = document.createElement('tr');
+      detailsRow.innerHTML = `
+        <td colspan="8" class="hiddenRow">
+          <div id="orderDetails-${orders.indexOf(order)}" class="accordion-collapse collapse">
+            <div class="card card-body">
+              <h5>Dettagli Prodotti</h5>
+              <ul id="productDetails-${orders.indexOf(order)}">
+                ${order.prodotti.map((p, i) => `<li>${productNames[i]} - Quantità: ${p.quantita}, Prezzo: €${p.prezzo.toFixed(2)}</li>`).join('')}
+              </ul>
+              <h5>Prezzo Totale: €${order.prodotti.reduce((total, p) => total + (p.quantita * p.prezzo), 0).toFixed(2)}</h5>
+              <h5>Rider ID: ${riderName}</h5>
+            </div>
+          </div>
+        </td>
+      `;
+      container.appendChild(detailsRow);
+    }
+  } catch (error) {
+    console.error('Errore durante il caricamento degli ordini:', error);
+    const container = document.getElementById(containerId);
+    if (container) {
+      container.innerHTML = '<tr><td colspan="8">Errore durante il caricamento degli ordini.</td></tr>';
+    }
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   fetchLoginStatus().then((data) => {
     if (data.isLoggedIn) {
       setupLogoutLink();
     }
   });
-  showSection('impostazioniSection');  // Mostra la sezione "Impostazioni" di default
+
   function showSection(sectionId) {
     document.querySelectorAll("#content > div").forEach(section => {
       section.classList.add("hidden");
@@ -311,36 +380,45 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
       console.error("Section not found:", sectionId);
     }
+
+    // Nascondi il form Crea Account Farmacia se presente
+    if (sectionId !== 'accountSection') {
+      const accountSection = document.getElementById('accountSection');
+      if (accountSection) {
+        accountSection.style.display = 'none';
+      }
+    }
   }
 
   async function loadProfileSettings() {
     try {
-      const response = await fetch('/api/profile', {
+      // Carica le informazioni del profilo utente
+      const profileResponse = await fetch('/api/profile', {
         credentials: 'include'
       });
-      if (!response.ok) {
-        throw new Error('Errore durante il caricamento delle impostazioni del profilo');
+      if (!profileResponse.ok) {
+        throw new Error('Errore durante il caricamento del profilo');
       }
-      const profile = await response.json();
-      document.getElementById('profileEmail').textContent = profile.email;
-      document.getElementById('profileRole').textContent = profile.type;
-
-      const farmaciaResponse = await fetch(`/api/farmacia/${profile.id}`, {
+      const profileData = await profileResponse.json();
+      document.getElementById('profileEmail').textContent = profileData.email;
+      document.getElementById('profileRole').textContent = profileData.type;
+  
+      // Carica le informazioni della farmacia
+      const farmaciaResponse = await fetch(`/api/farmacia/${profileData.farmaciaID}`, {
         credentials: 'include'
       });
       if (!farmaciaResponse.ok) {
-        console.error(`Errore durante il caricamento delle informazioni della farmacia. Status: ${farmaciaResponse.status}`);
-        throw new Error(`Errore durante il caricamento delle informazioni della farmacia. Status: ${farmaciaResponse.status}`);
+        throw new Error('Errore durante il caricamento delle informazioni della farmacia');
       }
-      const farmacia = await farmaciaResponse.json();
-      document.getElementById('farmaciaNome').textContent = farmacia.FARMACIA;
-      document.getElementById('farmaciaCodice').textContent = farmacia.COD_FARMACIA;
-      document.getElementById('farmaciaIVA').textContent = farmacia.IVA;
-      document.getElementById('farmaciaCAP').textContent = farmacia.CAP;
-      document.getElementById('farmaciaComune').textContent = farmacia.COMUNE;
-      document.getElementById('farmaciaProvincia').textContent = farmacia.PROVINCIA;
-      document.getElementById('farmaciaRegione').textContent = farmacia.REGIONE;
-      document.getElementById('farmaciaIndirizzo').textContent = farmacia.INDIRIZZO;
+      const farmaciaData = await farmaciaResponse.json();
+      document.getElementById('farmaciaNome').textContent = farmaciaData.FARMACIA;
+      document.getElementById('farmaciaCodice').textContent = farmaciaData._id;
+      document.getElementById('farmaciaIVA').textContent = farmaciaData.IVA;
+      document.getElementById('farmaciaCAP').textContent = farmaciaData.CAP;
+      document.getElementById('farmaciaComune').textContent = farmaciaData.COMUNE;
+      document.getElementById('farmaciaProvincia').textContent = farmaciaData.PROVINCIA;
+      document.getElementById('farmaciaRegione').textContent = farmaciaData.REGIONE;
+      document.getElementById('farmaciaIndirizzo').textContent = farmaciaData.INDIRIZZO;
     } catch (error) {
       console.error('Errore durante il caricamento delle impostazioni del profilo:', error);
     }
@@ -353,8 +431,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   loadProfileSettings();
   loadStoricoOrders('storico', 'storicoOrdiniTableBody', '/api/ordini/storico');
-  loadOrders('in_corso', 'ordiniInCorsoTableBody', '/api/ordini/incorso', 'ordiniInCorsoSection');
+  loadInCorsoOrders('ordiniInCorsoTableBody', '/api/ordini/incorso'); // Usa la funzione aggiornata
   loadOrders('candidati', 'listaOrdiniCandidatiTableBody', '/api/ordini/candidati', 'listaOrdiniCandidatiSection');
+
+  // Mostra la sezione "Impostazioni" di default
+  showSection('impostazioniSection');
 
   document.querySelectorAll("#sidebar a").forEach(link => {
     link.addEventListener("click", function(event) {
@@ -363,6 +444,7 @@ document.addEventListener("DOMContentLoaded", function () {
       showSection(sectionId);
     });
   });
+
   fetch('/api/check-login', {
     credentials: 'include'
   })
@@ -376,5 +458,4 @@ document.addEventListener("DOMContentLoaded", function () {
     console.error('Errore durante il controllo dello stato di login:', error);
     window.location.href = '../auth/login.html'; // Ridirige alla pagina di login in caso di errore
   });
-
 });

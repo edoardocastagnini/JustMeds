@@ -103,9 +103,6 @@ router.get('/ordini/incorso', isAuthenticated, async (req, res) => {
 });
 
 
-
-
-
 // Endpoint per ottenere lo storico ordini (in attesa o consegnato)
 router.get('/ordini/storico', isAuthenticated, async (req, res) => {
   const farmaciaID = req.session.user && req.session.user.type === 'farmacia' ? req.session.user.farmaciaID : undefined;
