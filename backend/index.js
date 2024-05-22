@@ -51,6 +51,7 @@ app.use('/api', contattaciRouter);
 
 const User = require("./models/User");
 const Carrello = require("./models/Carrello");
+const UserFarmacia = require("./models/UserFarmacia");
 
 // La tua stringa di connessione Atlas
 const DbURI =

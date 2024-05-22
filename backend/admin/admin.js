@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const Form = require("../models/Form");
 const User = require("../models/User");
+const Farmacia = require("../models/UserFarmacia");
 const ListaFarmacie = require("../models/ListaFarmacie");
 const ListaFarmaci = require("../models/Drug");
 const Carrello = require("../models/Carrello");
@@ -49,7 +51,7 @@ router.post('/create_pharmacy', async (req, res) => {
       }
     };
 
-    const pharmacy = new User(pharmacyData);
+    const pharmacy = new Farmacia(pharmacyData); // Usa il modello Farmacia
     await pharmacy.save();
     res.status(201).json({ success: true, message: 'Account farmacia creato con successo' });
   } catch (error) {
@@ -71,17 +73,15 @@ router.get('/pharmacies', async (req, res) => {
   }
 });
 
-// Endpoint per ottenere le statistiche delle collezioni
+// Endpoint per ottenere le statistiche
 router.get('/stats', async (req, res) => {
   try {
-    const stats = {
-      form_requests: await Form.countDocuments(),
-      users: await User.countDocuments(),
-      ListaFarmacie: await ListaFarmacie.countDocuments(),
-      ListaFarmaci: await ListaFarmaci.countDocuments(),
-      carrello: await Carrello.countDocuments(),
-      ordini: await Ordini.countDocuments()
-    };
+    const collections = await mongoose.connection.db.listCollections().toArray();
+    const stats = {};
+    for (const collection of collections) {
+      const count = await mongoose.connection.db.collection(collection.name).countDocuments();
+      stats[collection.name] = count;
+    }
     res.json(stats);
   } catch (error) {
     res.status(500).json({ message: error.message });

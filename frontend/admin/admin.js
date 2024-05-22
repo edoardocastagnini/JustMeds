@@ -98,8 +98,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("pharmacyManagerName").value = name; // Popola il campo nome responsabile
   }
   
-  
-
   // Funzione per gestire la creazione di un nuovo account farmacia
   document.getElementById("createPharmacyForm").addEventListener("submit", function (event) {
     event.preventDefault();
@@ -134,40 +132,41 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Funzione per visualizzare le farmacie
-  function displayPharmacies(pharmacies) {
-    const pharmacyList = document.getElementById("pharmacyList");
-    pharmacyList.innerHTML = '';
-    if (pharmacies.length > 0) {
-      pharmacies.forEach(pharmacy => {
-        const listItem = document.createElement("li");
-        listItem.className = "list-group-item";
-        listItem.textContent = pharmacy.FARMACIA;
-        listItem.onclick = () => selectPharmacy(pharmacy);
-        pharmacyList.appendChild(listItem);
-      });
-      pharmacyList.classList.add("show");
-    } else {
-      pharmacyList.classList.remove("show");
-    }
+function displayPharmacies(pharmacies) {
+  const pharmacyList = document.getElementById("pharmacyList");
+  pharmacyList.innerHTML = '';
+  if (pharmacies.length > 0) {
+    pharmacies.forEach(pharmacy => {
+      const listItem = document.createElement("li");
+      listItem.className = "list-group-item";
+      listItem.textContent = pharmacy.FARMACIA;
+      listItem.onclick = () => selectPharmacy(pharmacy);
+      pharmacyList.appendChild(listItem);
+    });
+    pharmacyList.classList.add("show");
+  } else {
+    pharmacyList.classList.remove("show");
   }
+}
 
   // Funzione per selezionare una farmacia
-  function selectPharmacy(pharmacy) {
-    document.getElementById("pharmacyId").value = pharmacy.COD_FARMACIA_OD;
-    document.getElementById("pharmacyName").value = pharmacy.FARMACIA;
-    document.getElementById("pharmacyCountry").value = "Italia"; // Assuming country is always Italy
-    document.getElementById("pharmacyCity").value = pharmacy.COMUNE;
-    document.getElementById("pharmacyStreet").value = pharmacy.INDIRIZZO;
-    document.getElementById("pharmacyList").innerHTML = ''; // Clear the list after selection
-    document.getElementById("pharmacyList").classList.remove("show");
+function selectPharmacy(pharmacy) {
+  document.getElementById("pharmacyId").value = pharmacy._id; // Usare _id invece di COD_FARMACIA_OD
+  document.getElementById("pharmacyName").value = pharmacy.FARMACIA;
+  document.getElementById("pharmacyCountry").value = "Italia"; // Assuming country is always Italy
+  document.getElementById("pharmacyCity").value = pharmacy.COMUNE;
+  document.getElementById("pharmacyStreet").value = pharmacy.INDIRIZZO;
+  document.getElementById("pharmacyList").innerHTML = ''; // Clear the list after selection
+  document.getElementById("pharmacyList").classList.remove("show");
 
-    // Rendi i campi non editabili
-    document.getElementById("pharmacyId").classList.add("non-editable");
-    document.getElementById("pharmacyName").classList.add("non-editable");
-    document.getElementById("pharmacyCountry").classList.add("non-editable");
-    document.getElementById("pharmacyCity").classList.add("non-editable");
-    document.getElementById("pharmacyStreet").classList.add("non-editable");
-  }
+  // Rendi i campi non editabili
+  document.getElementById("pharmacyId").classList.add("non-editable");
+  document.getElementById("pharmacyName").classList.add("non-editable");
+  document.getElementById("pharmacyCountry").classList.add("non-editable");
+  document.getElementById("pharmacyCity").classList.add("non-editable");
+  document.getElementById("pharmacyStreet").classList.add("non-editable");
+}
+
 
   // Funzione per recuperare e visualizzare le statistiche
   function fetchStats() {
