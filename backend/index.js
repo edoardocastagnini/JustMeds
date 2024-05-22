@@ -2,12 +2,18 @@ const express = require("express");
 const session = require("express-session");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
+const path = require('path'); // Assicurati di avere questo modulo importato
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 require("dotenv").config(); // console.log(process.env.SUPER_SECRET);
 // Middleware per il parsing del corpo delle richieste
 app.use(express.json()); // Per supportare il corpo delle richieste in formato JSON
 app.use(express.urlencoded({ extended: true })); // Per supportare il corpo delle richieste URL-encoded
+
+app.get('./farmacia/farmacia.html', isAuthenticated, checkUserRole('farmacia'), (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/farmacia/farmacia.html')); // Assicurati che il percorso sia corretto
+});
 
 app.use(express.static("../frontend"));
 app.use(

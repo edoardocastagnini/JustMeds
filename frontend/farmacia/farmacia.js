@@ -363,5 +363,18 @@ document.addEventListener("DOMContentLoaded", function () {
       showSection(sectionId);
     });
   });
+  fetch('/api/check-login', {
+    credentials: 'include'
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (!data.isLoggedIn || data.userRole !== 'farmacia') {
+      window.location.href = '../auth/login.html'; // Ridirige alla pagina di login se non loggato o non è una farmacia
+    }
+  })
+  .catch(error => {
+    console.error('Errore durante il controllo dello stato di login:', error);
+    window.location.href = '../auth/login.html'; // Ridirige alla pagina di login in caso di errore
+  });
 
 });

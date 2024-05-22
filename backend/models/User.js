@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
     città: { type: String, required: true },
     via: { type: String, required: true }
   },
-  type: { type: String, default: 'farmacia', required: true },
+  type: { type: String, required: true },
   numeroTelefono: { type: String, required: true },
   responsabile: {
     nome: { type: String, required: true },
