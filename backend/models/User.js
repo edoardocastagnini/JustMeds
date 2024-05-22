@@ -8,8 +8,9 @@ const userSchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   dataDiNascita: Date,
-  paese: String,
   città: String,
+  cap: String,
+  provincia: String,
   via: String,
   type: String
 }, { id: false, versionKey: false  }); // Disabilita l'auto-creazione dell'id virtuale
