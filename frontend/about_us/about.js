@@ -5,10 +5,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.isLoggedIn) {
                 document.getElementById('cartIcon').style.display = 'block';
                 document.getElementById('logoutLink').style.display = 'block';
+                document.getElementById('accountIcon').style.display = 'block';
                 document.getElementById('loginLink').style.display = 'none';
             } else {
                 document.getElementById('logoutLink').style.display = 'none';
                 document.getElementById('loginLink').style.display = 'block';
+                document.getElementById('accountIcon').style.display = 'none';
                 document.getElementById('cartIcon').style.display = 'none';
             }
         })

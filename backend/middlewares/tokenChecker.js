@@ -16,15 +16,15 @@ const tokenChecker = (req, res, next) => {
     }
 };
 
-// middlewares/tokenChecker.js
+
 function isAuthenticated(req, res, next) {
-    console.log('Session User:', req.session.user); // Log della sessione dell'utente
     if (req.session.user) {
-      return next();
+      next();
     } else {
       res.status(401).send({ success: false, message: "Not authenticated" });
     }
   }
+
   
   module.exports = { tokenChecker, isAuthenticated };
   

@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((data) => {
         if (data.isLoggedIn) {
           addCartIcon();
+          addAccountIcon();
           setupLogoutLink();
           removeLoginLink();
           setupButtons(data.userRole); // Assicurati che il ruolo utente sia passato correttamente
@@ -73,15 +74,35 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
+  function addAccountIcon(){
+    const navBar = document.querySelector(".navbar-nav");
+    const accountIconLink = document.createElement("a");
+    accountIconLink.className = "nav-link";
+    accountIconLink.href = "/client_account/client.html";
+    accountIconLink.id = "accountIconLink";
+    const icon = document.createElement("i");
+    icon.className = "fas fa-user";
+    accountIconLink.appendChild(icon);
+    const accountName = document.createElement("span");
+    accountName.textContent = " Il mio Account";
+    accountIconLink.appendChild(accountName);
+
+
+    navBar.appendChild(accountIconLink);
+  }
+
   function addCartIcon() {
     const navBar = document.querySelector(".navbar-nav");
     const cartIconLink = document.createElement("a");
     cartIconLink.className = "nav-link";
-    cartIconLink.href = "/order/cart.html"; // Aggiusta l'URL in base alla tua struttura
+    cartIconLink.href = "/order/cart.html"; 
     cartIconLink.id = "cartIconLink";
     const icon = document.createElement("i");
     icon.className = "fas fa-shopping-cart";
     cartIconLink.appendChild(icon);
+    const cartName = document.createElement("span");
+    cartName.textContent = " Carrello";
+    cartIconLink.appendChild(cartName);
 
     navBar.appendChild(cartIconLink);
 }

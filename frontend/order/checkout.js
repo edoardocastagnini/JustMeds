@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     fetchLoginStatus().then((data) => {
       if (data.isLoggedIn) {
+          addAccountIcon();
         setupLogoutLink();
       }
     });
@@ -11,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if(data) {
                 document.getElementById('user-address').innerHTML = `
                     <strong>Nome:</strong> ${data.nome} ${data.cognome}<br>
-                    <strong>Indirizzo:</strong> ${data.via}, ${data.città}, ${data.paese}
+                    <strong>Indirizzo:</strong> ${data.città}, ${data.cap}, ${data.provincia}, ${data.via}
                 `;
             } else {
                 document.getElementById('user-address').textContent = 'Indirizzo non disponibile.';
@@ -98,6 +99,22 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+function addAccountIcon(){
+    const navBar = document.querySelector(".navbar-nav");
+    const accountIconLink = document.createElement("a");
+    accountIconLink.className = "nav-link";
+    accountIconLink.href = "/client_account/client.html";
+    accountIconLink.id = "accountIconLink";
+    const icon = document.createElement("i");
+    icon.className = "fas fa-user";
+    accountIconLink.appendChild(icon);
+    const accountName = document.createElement("span");
+    accountName.textContent = " Il mio Account";
+    accountIconLink.appendChild(accountName);
+
+
+    navBar.appendChild(accountIconLink);
+}
 function setupLogoutLink() {
     const navBar = document.querySelector(".navbar-nav");
     const logoutLink = document.createElement("a");

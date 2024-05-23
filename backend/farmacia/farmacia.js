@@ -12,7 +12,7 @@ if (typeof isAuthenticated !== 'function') {
 }
 
 // Endpoint per ottenere gli ordini in base allo stato e alla farmacia
-router.get('/ordini', isAuthenticated, async (req, res) => {
+router.get('/ordini_f', isAuthenticated, async (req, res) => {
   const { stato } = req.query;
   const farmaciaID = req.session.user && req.session.user.type === 'farmacia' ? req.session.user.farmaciaID : undefined;
 
@@ -45,7 +45,7 @@ router.get('/farmaci/:id', isAuthenticated, async (req, res) => {
 });
 
 // Endpoint per ottenere le informazioni del profilo
-router.get('/profile', isAuthenticated, (req, res) => {
+router.get('/profile_f', isAuthenticated, (req, res) => {
   const user = req.session.user;
   if (!user) {
     return res.status(401).json({ message: 'Non autenticato' });
@@ -69,7 +69,7 @@ router.get('/farmacia/:id', isAuthenticated, async (req, res) => {
 });
 
 // Endpoint per ottenere gli ordini candidati (inviato)
-router.get('/ordini/candidati', isAuthenticated, async (req, res) => {
+router.get('/ordini_f/candidati', isAuthenticated, async (req, res) => {
   const farmaciaID = req.session.user && req.session.user.type === 'farmacia' ? req.session.user.farmaciaID : undefined;
 
   if (!farmaciaID) {
@@ -86,7 +86,7 @@ router.get('/ordini/candidati', isAuthenticated, async (req, res) => {
 });
 
 // Endpoint per ottenere gli ordini in corso (attesa)
-router.get('/ordini/incorso', isAuthenticated, async (req, res) => {
+router.get('/ordini_f/incorso', isAuthenticated, async (req, res) => {
   const farmaciaID = req.session.user && req.session.user.type === 'farmacia' ? req.session.user.farmaciaID : undefined;
 
   if (!farmaciaID) {
@@ -104,7 +104,7 @@ router.get('/ordini/incorso', isAuthenticated, async (req, res) => {
 
 
 // Endpoint per ottenere lo storico ordini (in attesa o consegnato)
-router.get('/ordini/storico', isAuthenticated, async (req, res) => {
+router.get('/ordini_f/storico', isAuthenticated, async (req, res) => {
   const farmaciaID = req.session.user && req.session.user.type === 'farmacia' ? req.session.user.farmaciaID : undefined;
 
   if (!farmaciaID) {
@@ -121,7 +121,7 @@ router.get('/ordini/storico', isAuthenticated, async (req, res) => {
 });
 
 // Endpoint per ottenere i dettagli di un ordine
-router.get('/ordini/:id', isAuthenticated, async (req, res) => {
+router.get('/ordini_f/:id', isAuthenticated, async (req, res) => {
   try {
     const id = req.params.id;
     const ordine = await Ordine.findById(id).populate('prodotti._id', 'Farmaco');
@@ -136,7 +136,7 @@ router.get('/ordini/:id', isAuthenticated, async (req, res) => {
 });
 
 // Endpoint per aggiornare il prezzo dell'ordine
-router.post('/ordini/:id/aggiornaPrezzo', isAuthenticated, async (req, res) => {
+router.post('/ordini_f/:id/aggiornaPrezzo', isAuthenticated, async (req, res) => {
   console.log(`Ricevuta richiesta per aggiornare il prezzo dell'ordine con ID: ${req.params.id}`);
   const orderId = req.params.id;
   const { prezzoFinale } = req.body;
@@ -160,7 +160,7 @@ router.post('/ordini/:id/aggiornaPrezzo', isAuthenticated, async (req, res) => {
 });
 
 // Endpoint per cambiare lo stato di un ordine
-router.post('/ordini/:id/cambiaStato', isAuthenticated, async (req, res) => {
+router.post('/ordini_f/:id/cambiaStato', isAuthenticated, async (req, res) => {
   const { id } = req.params;
   const { stato } = req.body;
 
@@ -182,7 +182,7 @@ router.post('/ordini/:id/cambiaStato', isAuthenticated, async (req, res) => {
 
 
 // Endpoint per ottenere lo storico ordini (inconsegna o consegnato)
-router.get('/ordini/storico', isAuthenticated, async (req, res) => {
+router.get('/ordini_f/storico', isAuthenticated, async (req, res) => {
   const farmaciaID = req.session.user && req.session.user.type === 'farmacia' ? req.session.user.farmaciaID : undefined;
 
   if (!farmaciaID) {
