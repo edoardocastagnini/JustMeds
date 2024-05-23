@@ -2,16 +2,16 @@ const express = require("express");
 const session = require("express-session");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
-const path = require('path');
-const cors = require("cors");
-require("dotenv").config();
-
 const app = express();
 const PORT = process.env.PORT || 3000;
-
+require("dotenv").config();
 // Middleware per il parsing del corpo delle richieste
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const path = require('path');
+
+app.use(express.static("../frontend"));
+
 
 // Configurazione della sessione
 app.use(
@@ -24,6 +24,7 @@ app.use(
 );
 
 // Middleware per il CORS
+const cors = require("cors");
 app.use(
   cors({
     origin: true,
@@ -33,29 +34,100 @@ app.use(
 
 const tokenChecker = require("./middlewares/tokenChecker");
 
+// Importare e utilizzare i router
 const drugRoutes = require("./order/order_cart");
 app.use("/api", drugRoutes);
 
-// Middleware per i log delle richieste
-app.use(morgan("dev"));
+const adminRoutes = require("../backend/admin/admin");
+app.use('/api/admin', adminRoutes);
 
-// Connessione al database
-const DbURI = "mongodb+srv://adminuser:adminuser@justmedsdata.d6avjw7.mongodb.net/Data?retryWrites=true&w=majority&appName=JustMedsData";
-mongoose
-  .connect(DbURI)
-  .then(() => console.log("MongoDB Atlas connected"))
-  .catch((err) => console.error("Error connecting to MongoDB Atlas:", err));
+
+const contattaciRouter = require("./form_request/contattaci");
+app.use('/api', contattaciRouter);
+
 
 const clientRouter = require("./client_account/client");
 app.use('/api',clientRouter);
 
-const checkoutRouter = require("./order/checkout");
-app.use('/api',checkoutRouter);
+const farmaciaRoutes = require("../backend/farmacia/farmacia");
+app.use('/api', farmaciaRoutes);
+
 
 // Modelli
 const User = require("./models/User");
 const Carrello = require("./models/Carrello");
-const UserFarmacia = require("./models/UserFarmacia");
+
+// Connessione al database
+const DbURI = "mongodb+srv://adminuser:adminuser@justmedsdata.d6avjw7.mongodb.net/Data?retryWrites=true&w=majority&appName=JustMedsData";
+mongoose
+.connect(DbURI)
+.then(() => console.log("MongoDB Atlas connected"))
+.catch((err) => console.error("Error connecting to MongoDB Atlas:", err));
+
+app.set("view engine", "ejs");
+app.use(morgan("dev"));
+
+
+
+// Rotte per la registrazione e il login
+app.post("/sign_up", async (req, res) => {
+  try {
+    const user = new User(req.body);
+    await user.save();
+    console.log("Record inserted successfully");
+    
+    if (user.type === "ricevente") {
+      const cart = new Carrello({
+        clienteId: user._id,
+        prodotti: [],
+        totale: 0
+      });
+      await cart.save();
+      console.log("Cart created successfully");
+    }
+    
+    res.redirect("../auth/SignupSuccess.html");
+  } catch (err) {
+    console.error(err);
+    
+    if (err.code === 11000) {
+      const field = Object.keys(err.keyValue)[0];
+      const message = `${field} già esistente. Per favore, usa un altro ${field}.`;
+      res.status(409).send({ success: false, message });
+    } else {
+      res.status(500).send({ success: false, message: err.message });
+    }
+  }
+});
+
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+  
+  if (password !== user.password) {
+    return res.status(401).json({ message: 'Invalid credentials' });
+  }
+  
+  req.session.user = {
+    id: user._id,
+    email: user.email,
+    type: user.type,
+    farmaciaID: user.type === 'farmacia' ? user._id : undefined
+  };
+  
+  req.session.save(err => {
+    if (err) {
+      console.error('Error saving session:', err);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+    console.log('User logged in:', req.session.user);
+    res.json({ success: true, message: 'Logged in successfully', role: user.type });
+  });
+});
 
 // Middleware di autenticazione
 function isAuthenticated(req, res, next) {
@@ -65,6 +137,11 @@ function isAuthenticated(req, res, next) {
     res.status(401).send({ success: false, message: "Not authenticated" });
   }
 }
+
+const checkoutRouter = require("./order/checkout");
+app.use('/api',checkoutRouter);
+
+const UserFarmacia = require("./models/UserFarmacia");
 
 // Middleware di autorizzazione
 function checkUserRole(role) {
@@ -88,80 +165,6 @@ app.get('/farmacia/farmacia.html', isAuthenticated, checkUserRole(['farmacia']),
 
 app.get('/admin/admin.html', isAuthenticated, checkUserRole(['admin']), (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/admin/admin.html'));
-});
-
-// Importare e utilizzare i router
-const adminRoutes = require("../backend/admin/admin");
-app.use('/api/admin', adminRoutes);
-
-const tokenChecker = require("./middlewares/tokenChecker");
-const drugRoutes = require("./order/farmaci");
-app.use("/api", drugRoutes);
-
-const farmaciaRoutes = require("../backend/farmacia/farmacia");
-app.use('/api', farmaciaRoutes);
-
-const contattaciRouter = require("./form_request/contattaci");
-app.use('/api', contattaciRouter);
-
-// Rotte per la registrazione e il login
-app.post("/sign_up", async (req, res) => {
-  try {
-    const user = new User(req.body);
-    await user.save();
-    console.log("Record inserted successfully");
-
-    if (user.type === "ricevente") {
-      const cart = new Carrello({
-        clienteId: user._id,
-        prodotti: [],
-        totale: 0
-      });
-      await cart.save();
-      console.log("Cart created successfully");
-    }
-
-    res.redirect("../auth/SignupSuccess.html");
-  } catch (err) {
-    console.error(err);
-
-    if (err.code === 11000) {
-      const field = Object.keys(err.keyValue)[0];
-      const message = `${field} già esistente. Per favore, usa un altro ${field}.`;
-      res.status(409).send({ success: false, message });
-    } else {
-      res.status(500).send({ success: false, message: err.message });
-    }
-  }
-});
-
-app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
-
-  if (!user) {
-    return res.status(404).json({ message: 'User not found' });
-  }
-
-  if (password !== user.password) {
-    return res.status(401).json({ message: 'Invalid credentials' });
-  }
-
-  req.session.user = {
-    id: user._id,
-    email: user.email,
-    type: user.type,
-    farmaciaID: user.type === 'farmacia' ? user._id : undefined
-  };
-
-  req.session.save(err => {
-    if (err) {
-      console.error('Error saving session:', err);
-      return res.status(500).json({ message: 'Internal server error' });
-    }
-    console.log('User logged in:', req.session.user);
-    res.json({ success: true, message: 'Logged in successfully', role: user.type });
-  });
 });
 
 // Rotte di logout e verifica login
@@ -190,34 +193,8 @@ app.get("/", (req, res) => {
   }
 });
 
-// Rotte per il carrello
-app.post('/api/cart/add', isAuthenticated, async (req, res) => {
-  const { productId, quantity, price } = req.body;
-  const clienteId = req.session.user.id;
-  console.log("productId:", productId, "quantity:", quantity, "clienteId:", clienteId);
-  try {
-    const cart = await Carrello.findOne({ _id: clienteId });
-    console.log("Carrello:", cart);
-    if (!cart) {
-      return res.status(404).json({ message: 'Carrello non trovato' });
-    }
-
-    const productIndex = cart.prodotti.findIndex(p => p._id.toString() === productId);
-    let priceCorrect = price.replace(',', '.');
-    let priceNumber = parseFloat(priceCorrect);
-    console.log("priceNumber:", priceNumber);
-
-    if (productIndex !== -1) {
-      cart.prodotti[productIndex].quantita += quantity;
-      cart.prodotti[productIndex].prezzo = priceNumber * quantity;
-      console.log("Prodotto esiste, aggiorna la quantità");
-    } else {
-      cart.prodotti.push({ productId, quantita: quantity, prezzo: priceNumber });
-      console.log("Prodotto non esiste, aggiungilo");
-    }
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
-
 
