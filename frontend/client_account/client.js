@@ -61,6 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+
   async function loadProfile() {
     try {
       const response = await fetch('/api/profile', { credentials: 'include' });
@@ -89,14 +90,14 @@ document.addEventListener("DOMContentLoaded", function () {
       const orders = await response.json();
       const container = document.getElementById('orderSection').querySelector('table tbody');
       container.innerHTML = '';
-
+  
       if (!Array.isArray(orders) || orders.length === 0) {
         container.innerHTML = '<tr><td colspan="8">Nessun ordine trovato.</td></tr>';
         return;
       }
-
-      const sortedOrders = orders.sort((a, b) => a.stato === 'inviato' ? -1 : 1);
-
+  
+      const sortedOrders = orders.sort((a, b) => a.stato === 'accettato' ? -1 : (b.stato === 'accettato' ? 1 : 0));
+  
       sortedOrders.forEach((order, index) => {
         const totalOrderPrice = order.prodotti.reduce((total, product) => total + (product.prezzo * product.quantita), 0);
         const orderElement = document.createElement('tr');
@@ -106,12 +107,24 @@ document.addEventListener("DOMContentLoaded", function () {
           <td>${order.prodotti.map(p => `${p._id.Farmaco} - ${p.quantita}`).join('<br>')}</td>
           <td>${order.prodotti.map(p => `€${(p.prezzo * p.quantita).toFixed(2)}`).join('<br>')}</td>
           <td>${order.farmaciaNome}</td>
-          <td>${order.indirizzoCliente.città}, ${order.indirizzoCliente.cap},${order.indirizzoCliente.provincia},${order.indirizzoCliente.via}</td>
-          <td><button class="btn btn-primary" onclick='indaga("${order._id}", "${order.farmaciaID}", ${totalOrderPrice.toFixed(2)}, ${order.prezzoFinale})'>Dettagli</button></td>
+          <td>${order.indirizzoCliente.città}, ${order.indirizzoCliente.cap}, ${order.indirizzoCliente.provincia}, ${order.indirizzoCliente.via}</td>
+          <td>
+            <button class="btn btn-secondary" onclick='indaga("${order._id}", "${order.farmaciaID}", ${totalOrderPrice.toFixed(2)}, ${order.prezzoFinale})'>Dettagli</button>
+          </td>
         `;
         container.appendChild(orderElement);
+  
+        if (order.stato === 'accettato') {
+          const paymentRow = document.createElement('tr');
+          paymentRow.innerHTML = `
+            <td colspan="7">
+              <button class="btn btn-primary" onclick='window.location.href="../pagamento/pagamento.html?orderId=${order._id}"'>Pagamento</button>
+            </td>
+          `;
+          container.appendChild(paymentRow);
+        }
       });
-    }catch (error) {
+    } catch (error) {
       console.error('Errore durante il caricamento degli ordini:', error);
       const container = document.getElementById('orderSection').querySelector('table tbody');
       container.innerHTML = '<tr><td colspan="8">Errore durante il caricamento degli ordini.</td></tr>';
