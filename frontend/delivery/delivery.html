@@ -56,7 +56,7 @@
                 const orders = await response.json();
                 const ordersContainer = document.getElementById("ordersContainer");
 
-                const confirmedOrders = orders.filter(order => order.stato === 'confermato' || order.stato === 'attesa');
+                const confirmedOrders = orders.filter(order => order.stato === 'confermato');
 
                 if (confirmedOrders.length === 0) {
                     const noOrdersMessage = document.createElement("p");
@@ -151,6 +151,8 @@
                 button.classList.add("btn-secondary");
                 button.textContent = "Incarico accettato";
                 alert("Incarico accettato");
+
+                window.location.href = `delivery_management.html?orderId=${orderId}`;
               } catch (error) {
                   console.error("Errore durante l'accettazione dell'incarico:", error);
                   alert("Errore durante l'accettazione dell'incarico");
