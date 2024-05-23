@@ -27,7 +27,7 @@ const ordineSchema = new mongoose.Schema({
     riderID: String,
     stato: {
         type: String,
-        enum: ['inviato', 'accettato', 'rifiutato', 'confermato', 'attesa', 'consegnato'],
+        enum: ['inviato', 'accettato', 'rifiutato', 'confermato', 'attesa', 'consegnato', 'cancellato'],
         default: 'In attesa'
     },
     secretcode: String,
@@ -43,7 +43,7 @@ const ordineSchema = new mongoose.Schema({
         cap: String,
         provincia: String
     },
-    prezzoFinale: String,
+    prezzoFinale: Number,
 }, { versionKey: false});
 
 const Ordine = mongoose.model('Ordine', ordineSchema, 'ordini');
