@@ -49,21 +49,24 @@
     <script>
         document.addEventListener("DOMContentLoaded", async () => {
             try {
+                console.log("Fetching orders...");
                 const response = await fetch("/api/orders");
                 if (!response.ok) {
                     throw new Error("Network response was not ok");
                 }
                 const orders = await response.json();
+                console.log("Orders fetched:", orders);
                 const waitingOrdersContainer = document.getElementById("waitingOrders");
 
                 const waitingOrders = orders.filter(order => order.stato === 'attesa');
+                console.log("Filtered waiting orders:", waitingOrders);
 
                 if (waitingOrders.length === 0) {
                     const noOrdersMessage = document.createElement("p");
                     noOrdersMessage.textContent = "Nessun ordine in attesa di conferma...";
                     waitingOrdersContainer.appendChild(noOrdersMessage);
                 } else {
-                    waitingOrders.forEach((order) => {
+                    waitingOrders.forEach((order, orderIndex) => {
                         const orderCard = document.createElement("div");
                         orderCard.classList.add("card", "mb-3");
 
@@ -78,11 +81,14 @@
                         const productList = document.createElement("ul");
                         productList.classList.add("list-group", "list-group-flush");
 
+                        let productCounter = 1; // contatore prodotto per ogni ordine
+
                         order.prodotti.forEach((product) => {
                             const productItem = document.createElement("li");
                             productItem.classList.add("list-group-item");
-                            productItem.textContent = `${product._id.Farmaco} - Quantità: ${product.quantita} - Prezzo unitario: €${product.prezzo}`;
+                            productItem.textContent = `Farmaco ${productCounter} - Quantità: ${product.quantita} - Prezzo unitario: €${product.prezzo}`;
                             productList.appendChild(productItem);
+                            productCounter++;
                         });
 
                         cardBody.appendChild(productList);
@@ -111,13 +117,60 @@
                 console.error("Errore nel caricare gli ordini in attesa:", error);
             }
         });
+
+        function createOrderCard(order, orderIndex) {
+            const orderCard = document.createElement("div");
+            orderCard.classList.add("card", "mb-3");
+
+            const cardBody = document.createElement("div");
+            cardBody.classList.add("card-body");
+
+            const title = document.createElement("h5");
+            title.classList.add("card-title");
+            title.textContent = `Ordine #${order._id}`;
+            cardBody.appendChild(title);
+
+            const productList = document.createElement("ul");
+            productList.classList.add("list-group", "list-group-flush");
+
+            let productCounter = 1;
+
+            order.prodotti.forEach((product) => {
+                const productItem = document.createElement("li");
+                productItem.classList.add("list-group-item");
+                productItem.textContent = `Farmaco ${productCounter} - Quantità: ${product.quantita} - Prezzo unitario: €${product.prezzo}`;
+                productList.appendChild(productItem);
+                productCounter++;
+            });
+
+            cardBody.appendChild(productList);
+
+            const totalPrice = document.createElement("p");
+            totalPrice.classList.add("card-text", "mt-2");
+            totalPrice.innerHTML = `<strong>Prezzo Totale:</strong> €${order.prodotti.reduce((acc, item) => acc + (item.quantita * item.prezzo), 0)}`;
+            cardBody.appendChild(totalPrice);
+
+            const pickupAddress = document.createElement("p");
+            pickupAddress.classList.add("card-text");
+            pickupAddress.innerHTML = `<strong>Indirizzo di ritiro:</strong> ${order.indirizzoFarmacia.via}, ${order.indirizzoFarmacia.cap} ${order.indirizzoFarmacia.provincia}`;
+
+            const deliveryAddress = document.createElement("p");
+            deliveryAddress.classList.add("card-text");
+            deliveryAddress.innerHTML = `<strong>Indirizzo di consegna:</strong> ${order.indirizzoCliente.via}, ${order.indirizzoCliente.cap} ${order.indirizzoCliente.città}`;
+
+            cardBody.appendChild(pickupAddress);
+            cardBody.appendChild(deliveryAddress);
+
+            orderCard.appendChild(cardBody);
+            return orderCard;
+        }
     </script>
 
-<footer class="bg-dark text-white text-center p-0 mt-4">
-    <div class="container">
-        <p>&copy; 2024 JustMeds. All rights reserved.</p>
-    </div>
-</footer>
+    <footer class="bg-dark text-white text-center p-0 mt-4">
+        <div class="container">
+            <p>&copy; 2024 JustMeds. All rights reserved.</p>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>

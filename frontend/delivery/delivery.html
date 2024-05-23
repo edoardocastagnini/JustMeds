@@ -63,7 +63,7 @@
                     noOrdersMessage.textContent = "Nessun ordine disponibile per il ritiro...";
                     ordersContainer.appendChild(noOrdersMessage);
                 } else {
-                    confirmedOrders.forEach((order) => {
+                    confirmedOrders.forEach((order, orderIndex) => {
                     const orderCard = document.createElement("div");
                     orderCard.classList.add("card", "mb-3");
 
@@ -78,11 +78,14 @@
                     const productList = document.createElement("ul");
                     productList.classList.add("list-group", "list-group-flush");
 
+                    let productCounter = 1;
+
                     order.prodotti.forEach((product) => {
                         const productItem = document.createElement("li");
                         productItem.classList.add("list-group-item");
-                        productItem.textContent = `${product._id.Farmaco} - Quantità: ${product.quantita} - Prezzo unitario: €${product.prezzo}`;
+                        productItem.textContent = `Farmaco ${productCounter} - Quantità: ${product.quantita} - Prezzo unitario: €${product.prezzo}`;
                         productList.appendChild(productItem);
+                        productCounter++;
                     });
 
                     cardBody.appendChild(productList);
@@ -118,7 +121,6 @@
                         acceptButton.disabled = true;
                         acceptButton.classList.remove("btn-primary");
                         acceptButton.classList.add("btn-secondary");
-                        acceptButton.textContent = "Incarico accettato";
                         cancelButton.classList.remove("d-none"); // Add btn-secondary class
                     }
                     cardBody.appendChild(acceptButton);
@@ -177,6 +179,8 @@
             button.classList.add("d-none");
             acceptButton.classList.remove("d-none");
             alert("Accettazione dell'incarico annullata");
+            isOrderAccepted = false;
+            acceptButton.textContent = "Accetta Incarico";
         } catch (error) {
             console.error("Errore durante l'annullamento dell'accettazione dell'incarico:", error);
             alert("Errore durante l'annullamento dell'accettazione dell'incarico");
