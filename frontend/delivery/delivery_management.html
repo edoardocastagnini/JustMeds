@@ -106,8 +106,13 @@
                         deliveryAddress.classList.add("card-text");
                         deliveryAddress.innerHTML = `<strong>Indirizzo di consegna:</strong> ${order.indirizzoCliente.via}, ${order.indirizzoCliente.cap} ${order.indirizzoCliente.città}`;
 
+                        const secretCode = document.createElement("p");
+                        secretCode.classList.add("card-text");
+                        secretCode.innerHTML = `<strong>Secret Code:</strong> ${order.secretcode}`;
+
                         cardBody.appendChild(pickupAddress);
                         cardBody.appendChild(deliveryAddress);
+                        cardBody.appendChild(secretCode);
 
                         orderCard.appendChild(cardBody);
                         waitingOrdersContainer.appendChild(orderCard);
