@@ -295,6 +295,52 @@ function fetchLoginStatus() {
     });
 }
 
+async function loadProfileSettings() {
+  try {
+    const profileResponse = await fetch('/api/profile_f', {
+      credentials: 'include'
+    });
+    if (!profileResponse.ok) {
+      throw new Error('Errore durante il caricamento delle impostazioni del profilo');
+    }
+    const profile = await profileResponse.json();
+    document.getElementById('profileEmail').textContent = profile.email;
+    document.getElementById('profileRole').textContent = profile.type;
+
+    const farmaciaResponse = await fetch(`/api/farmacia/${profile.farmaciaID}`, {
+      credentials: 'include'
+    });
+    if (!farmaciaResponse.ok) {
+      console.error(`Errore durante il caricamento delle informazioni della farmacia. Status: ${farmaciaResponse.status}`);
+      throw new Error(`Errore durante il caricamento delle informazioni della farmacia. Status: ${farmaciaResponse.status}`);
+    }
+    const farmacia = await farmaciaResponse.json();
+    document.getElementById('farmaciaNome').textContent = farmacia.FARMACIA;
+    document.getElementById('farmaciaCodice').textContent = farmacia.COD_FARMACIA;
+    document.getElementById('farmaciaIVA').textContent = farmacia.IVA;
+    document.getElementById('farmaciaCAP').textContent = farmacia.CAP;
+    document.getElementById('farmaciaComune').textContent = farmacia.COMUNE;
+    document.getElementById('farmaciaProvincia').textContent = farmacia.PROVINCIA;
+    document.getElementById('farmaciaRegione').textContent = farmacia.REGIONE;
+    document.getElementById('farmaciaIndirizzo').textContent = farmacia.INDIRIZZO;
+
+    // Visualizza la mappa con le coordinate e il livello di zoom desiderato
+    const latitudine = parseFloat(farmacia.LATITUDINE_P);
+    const longitudine = parseFloat(farmacia.LONGITUDINE_P);
+    const zoomLevel = 16; // Imposta il livello di zoom desiderato
+    const map = L.map('map').setView([latitudine, longitudine], zoomLevel);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    L.marker([latitudine, longitudine]).addTo(map)
+      .bindPopup(`<b>${farmacia.FARMACIA}</b><br>${farmacia.INDIRIZZO}`).openPopup();
+  } catch (error) {
+    console.error('Errore durante il caricamento delle impostazioni del profilo:', error);
+  }
+}
+
 // Funzione aggiornata per caricare gli ordini in corso con stato "attesa" e "inconsegna"
 async function loadInCorsoOrders(containerId, endpoint) {
   try {
@@ -390,48 +436,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  async function loadProfileSettings() {
-    try {
-      // Carica le informazioni del profilo utente
-      const profileResponse = await fetch('/api/profile_f', {
-        credentials: 'include'
-      });
-      if (!profileResponse.ok) {
-        throw new Error('Errore durante il caricamento del profilo');
-      }
-      const profileData = await profileResponse.json();
-      document.getElementById('profileEmail').textContent = profileData.email;
-      document.getElementById('profileRole').textContent = profileData.type;
-  
-      // Carica le informazioni della farmacia
-      const farmaciaResponse = await fetch(`/api/farmacia/${profileData.farmaciaID}`, {
-        credentials: 'include'
-      });
-      if (!farmaciaResponse.ok) {
-        throw new Error('Errore durante il caricamento delle informazioni della farmacia');
-      }
-      const farmaciaData = await farmaciaResponse.json();
-      document.getElementById('farmaciaNome').textContent = farmaciaData.FARMACIA;
-      document.getElementById('farmaciaCodice').textContent = farmaciaData._id;
-      document.getElementById('farmaciaIVA').textContent = farmaciaData.IVA;
-      document.getElementById('farmaciaCAP').textContent = farmaciaData.CAP;
-      document.getElementById('farmaciaComune').textContent = farmaciaData.COMUNE;
-      document.getElementById('farmaciaProvincia').textContent = farmaciaData.PROVINCIA;
-      document.getElementById('farmaciaRegione').textContent = farmaciaData.REGIONE;
-      document.getElementById('farmaciaIndirizzo').textContent = farmaciaData.INDIRIZZO;
-    } catch (error) {
-      console.error('Errore durante il caricamento delle impostazioni del profilo:', error);
-    }
-  }
-
-  window.aggiornaPrezzo = aggiornaPrezzo;
-  window.cambiaStatoOrdine = cambiaStatoOrdine;
-  window.mostraInfoOrdine = mostraInfoOrdine;
-  window.verifyCode = verifyCode;
-
   loadProfileSettings();
   loadStoricoOrders('storico', 'storicoOrdiniTableBody', '/api/ordini_f/storico');
-  loadInCorsoOrders('ordiniInCorsoTableBody', '/api/ordini_f/incorso'); // Usa la funzione aggiornata
+  loadInCorsoOrders('ordiniInCorsoTableBody', '/api/ordini_f/incorso');
   loadOrders('candidati', 'listaOrdiniCandidatiTableBody', '/api/ordini_f/candidati', 'listaOrdiniCandidatiSection');
 
   // Mostra la sezione "Impostazioni" di default
