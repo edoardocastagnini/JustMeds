@@ -85,6 +85,7 @@ router.get('/ordini_f/candidati', isAuthenticated, async (req, res) => {
   }
 });
 
+
 // Endpoint per ottenere gli ordini in corso (attesa)
 router.get('/ordini_f/incorso', isAuthenticated, async (req, res) => {
   const farmaciaID = req.session.user && req.session.user.type === 'farmacia' ? req.session.user.farmaciaID : undefined;

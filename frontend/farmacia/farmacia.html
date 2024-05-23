@@ -7,6 +7,58 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="style.css" rel="stylesheet" />
   <link href="../style.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+    .wrapper {
+      display: flex;
+      flex: 1;
+    }
+    #sidebar {
+      min-width: 250px;
+      max-width: 250px;
+      background-color: #343a40;
+      color: #fff;
+      padding-top: 20px;
+      height: 100vh;
+    }
+    #sidebar a {
+      color: #fff;
+      text-decoration: none;
+      padding: 15px;
+      display: block;
+    }
+    #sidebar a:hover {
+      background-color: #495057;
+    }
+    #content {
+      flex: 1;
+      padding: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    #map {
+      height: 400px;
+      width: 100%;
+    }
+    .profile-info {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .profile-details {
+      flex: 1;
+      min-width: 300px;
+    }
+    .map-container {
+      flex: 1;
+      min-width: 300px;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -94,7 +146,7 @@
                 <!-- Ordini in corso saranno inseriti qui -->
             </tbody>
         </table>
-    </div>
+      </div>
       
       <div id="listaOrdiniCandidatiSection" class="hidden">
         <h2>Lista Ordini Candidati</h2>
@@ -115,23 +167,28 @@
           </tbody>
         </table>
       </div>
-      <div id="impostazioniSection" class="hidden">
+      <div id="impostazioniSection">
         <h2>Impostazioni</h2>
-        <div id="profileInfo">
-          <h3>Informazioni Profilo</h3>
-          <p><strong>Email:</strong> <span id="profileEmail"></span></p>
-          <p><strong>Ruolo:</strong> <span id="profileRole"></span></p>
-        </div>
-        <div id="farmaciaInfo">
-          <h3>Informazioni Farmacia</h3>
-          <p><strong>Nome Farmacia:</strong> <span id="farmaciaNome"></span></p>
-          <p><strong>Codice Farmacia:</strong> <span id="farmaciaCodice"></span></p>
-          <p><strong>IVA:</strong> <span id="farmaciaIVA"></span></p>
-          <p><strong>CAP:</strong> <span id="farmaciaCAP"></span></p>
-          <p><strong>Comune:</strong> <span id="farmaciaComune"></span></p>
-          <p><strong>Provincia:</strong> <span id="farmaciaProvincia"></span></p>
-          <p><strong>Regione:</strong> <span id="farmaciaRegione"></span></p>
-          <p><strong>Indirizzo:</strong> <span id="farmaciaIndirizzo"></span></p>
+        <div class="profile-info">
+          <div class="profile-details">
+            <div id="profileInfo">
+              <h3>Informazioni Profilo</h3>
+              <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+              <p><strong>Ruolo:</strong> <span id="profileRole"></span></p>
+            </div>
+            <div id="farmaciaInfo">
+              <h3>Informazioni Farmacia</h3>
+              <p><strong>Nome Farmacia:</strong> <span id="farmaciaNome"></span></p>
+              <p><strong>Codice Farmacia:</strong> <span id="farmaciaCodice"></span></p>
+              <p><strong>IVA:</strong> <span id="farmaciaIVA"></span></p>
+              <p><strong>CAP:</strong> <span id="farmaciaCAP"></span></p>
+              <p><strong>Comune:</strong> <span id="farmaciaComune"></span></p>
+              <p><strong>Provincia:</strong> <span id="farmaciaProvincia"></span></p>
+              <p><strong>Regione:</strong> <span id="farmaciaRegione"></span></p>
+              <p><strong>Indirizzo:</strong> <span id="farmaciaIndirizzo"></span></p>
+            </div>
+          </div>
+          <div id="map" class="map-container"></div>
         </div>
       </div>
     </div>
@@ -168,7 +225,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="farmacia.js"></script>
-
 </body>
 </html>
