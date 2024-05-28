@@ -100,7 +100,30 @@
     
     <div id="content">    
       <div id="orderSection" class="hidden">
-        <h2>Ordini</h2>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2>Ordini</h2>
+          <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#stateLegendModal">Legenda Stati</button>
+        </div>
+        
+        <h3>Ordini in Corso</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Stato</th>
+              <th>Prodotti</th>
+              <th>Prezzo</th>
+              <th>Farmacia</th>
+              <th>Indirizzo</th>
+              <th>Azioni</th>
+            </tr>
+          </thead>
+          <tbody id="ongoingOrders">
+            <!-- Ordini in corso -->
+          </tbody>
+        </table>
+    
+        <h3>Storico Ordini</h3>
         <table class="table">
           <thead>
             <tr>
@@ -112,8 +135,8 @@
               <th>Indirizzo</th>
             </tr>
           </thead>
-          <tbody>
-            <!-- Contenuto degli ordini -->
+          <tbody id="historicalOrders">
+            <!-- Storico ordini -->
           </tbody>
         </table>
       </div>
@@ -133,12 +156,39 @@
       </div>
     </div>
     
-  </div>
-
+    <!-- Modale per la legenda degli stati -->
+    <div class="modal fade" id="stateLegendModal" tabindex="-1" aria-labelledby="stateLegendModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="stateLegendModalLabel">Legenda Stati</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <ul>
+              <li><strong>Inviato:</strong> Il tuo ordine è stato inviato alla farmacia, rimani in attesa di una risposta dalla farmacia</li>
+              <li><strong>Accettato:</strong> Il tuo ordine è stato accettato dalla farmacia, procedi al pagamento</li>
+              <li><strong>Rifiutato:</strong> Il tuo ordine è stato rifiutato dalla farmacia per mancata disponibilità di prodotti</li>
+              <li><strong>Confermato:</strong> Il tuo ordine è stato pagato e sta aspettando di essere assegnato ad un rider</li>
+              <li><strong>Cancellato:</strong> Hai annullato l'ordine</li>
+              <li><strong>Attesa:</strong> Il tuo ordine sta per essere ritirato dal rider</li>
+              <li><strong>In consegna:</strong> Il tuo ordine è stato ritirato dal rider e arriverà presto</li>
+              <li><strong>Consegnato:</strong> Il tuo ordine è stato consegnato</li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
    
 
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-  <script src="client.js"></script>
-</body>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <script src="client.js"></script>
+  </body>
 </html>
