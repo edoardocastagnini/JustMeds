@@ -9,7 +9,7 @@ console.log("Google Client Secret:", process.env.GOOGLE_CLIENT_SECRET);
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "https://justmeds.onrender.com/auth/google/callback"
+  callbackURL: "http://localhost:3000/auth/google/callback"
 },
 async function(accessToken, refreshToken, profile, done) {
   console.log("Google Strategy invoked");
