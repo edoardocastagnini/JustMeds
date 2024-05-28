@@ -106,12 +106,19 @@
                         deliveryAddress.classList.add("card-text");
                         deliveryAddress.innerHTML = `<strong>Indirizzo di consegna:</strong> ${order.indirizzoCliente.via}, ${order.indirizzoCliente.cap} ${order.indirizzoCliente.città}`;
 
+                        const showCodeButton = document.createElement("button");
+                        showCodeButton.classList.add("btn", "btn-primary", "mt-2");
+                        showCodeButton.textContent = "Mostra codice segreto";
+                        showCodeButton.onclick = () => showSecretCode(order._id, showCodeButton);
+                        
                         const secretCode = document.createElement("p");
-                        secretCode.classList.add("card-text");
+                        secretCode.classList.add("card-text", `secret-code-${order._id}`);
+                        secretCode.style.display = "none";
                         secretCode.innerHTML = `<strong>Secret Code:</strong> ${order.secretcode}`;
 
                         cardBody.appendChild(pickupAddress);
                         cardBody.appendChild(deliveryAddress);
+                        cardBody.appendChild(showCodeButton); 
                         cardBody.appendChild(secretCode);
 
                         orderCard.appendChild(cardBody);
@@ -122,6 +129,17 @@
                 console.error("Errore nel caricare gli ordini in attesa:", error);
             }
         });
+
+        function showSecretCode(orderId, button) {
+            const secretCodeElement = document.querySelector(`.secret-code-${orderId}`);
+            if (secretCodeElement) {
+                secretCodeElement.style.display = "block";  // Mostra il codice segreto
+                button.style.display = "none";  // Nascondi il bottone
+                setTimeout(() => {
+                    secretCodeElement.style.display = "none";  // Nascondi il codice segreto dopo 5 minuti
+                }, 300000);  // 300000 millisecondi = 5 minuti
+            }
+        }
 
         function createOrderCard(order, orderIndex) {
             const orderCard = document.createElement("div");
