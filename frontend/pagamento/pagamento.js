@@ -31,27 +31,21 @@ function updateNavigation() {
         .catch(error => console.error('Error checking login status:', error));
 }
 
-document.addEventListener("DOMContentLoaded", async function() {
+document.addEventListener('DOMContentLoaded', async function() {
     const urlParams = new URLSearchParams(window.location.search);
     const orderId = urlParams.get('orderId');
-    document.getElementById('orderId').textContent = orderId;
-
+    
     try {
-        console.log('orderId:', orderId);
         const response = await fetch(`/api/ordini/${orderId}`);
         if (!response.ok) {
             throw new Error('Errore nel recuperare i dettagli dell\'ordine');
         }
-        console.log('Risposta:', response);
         const order = await response.json();
-        console.log('Dettagli dell\'ordine:', order);
         const orderSummary = document.getElementById('orderSummary');
-
+        
         const initialTotal = order.prodotti.reduce((total, product) => total + (product.prezzo * product.quantita), 0);
         const finalTotal = order.prezzoFinale;
-        //convert finalTotal to integer
         const totalWithCommission = finalTotal + 5;
-
 
         orderSummary.innerHTML = `
             <h4>Riepilogo Ordine</h4>
@@ -81,8 +75,28 @@ document.addEventListener("DOMContentLoaded", async function() {
         console.error('Errore durante il recupero dei dettagli dell\'ordine:', error);
     }
 
-    
-    
+    document.getElementById('paymentForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        try {
+            const response = await fetch('/api/payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ orderId })
+            });
+
+            if (response.ok) {
+                alert('Pagamento effettuato con successo');
+                window.location.href = '../client_account/client.html';
+            } else {
+                alert('Errore durante il pagamento');
+            }
+        } catch (error) {
+            console.error('Errore durante il pagamento:', error);
+        }
+    });
+
     document.getElementById('cancelOrder').addEventListener('click', async function() {
         try {
             const response = await fetch(`/api/ordini/${orderId}/cancella`, {
@@ -103,5 +117,3 @@ document.addEventListener("DOMContentLoaded", async function() {
         }
     });
 });
-    
-    

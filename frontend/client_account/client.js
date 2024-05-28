@@ -61,7 +61,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-
   async function loadProfile() {
     try {
       const response = await fetch('/api/profile', { credentials: 'include' });
@@ -88,19 +87,52 @@ document.addEventListener("DOMContentLoaded", function () {
         throw new Error('Errore durante il caricamento degli ordini');
       }
       const orders = await response.json();
-      const container = document.getElementById('orderSection').querySelector('table tbody');
-      container.innerHTML = '';
-  
+      const ongoingContainer = document.getElementById('ongoingOrders');
+      const historicalContainer = document.getElementById('historicalOrders');
+      ongoingContainer.innerHTML = '';
+      historicalContainer.innerHTML = '';
+
       if (!Array.isArray(orders) || orders.length === 0) {
-        container.innerHTML = '<tr><td colspan="8">Nessun ordine trovato.</td></tr>';
+        ongoingContainer.innerHTML = '<tr><td colspan="8">Nessun ordine trovato.</td></tr>';
         return;
       }
-  
-      const sortedOrders = orders.sort((a, b) => a.stato === 'accettato' ? -1 : (b.stato === 'accettato' ? 1 : 0));
-  
-      sortedOrders.forEach((order, index) => {
+
+      const createOrderElement = (order, index) => {
         const totalOrderPrice = order.prodotti.reduce((total, product) => total + (product.prezzo * product.quantita), 0);
         const orderElement = document.createElement('tr');
+        let rowClass = '';
+        let actions = '';
+
+        switch(order.stato) {
+          case 'confermato':
+            rowClass = 'table-success';
+            break;
+          case 'accettato':
+            rowClass = 'table-warning';
+            actions = `<button class="btn btn-primary" onclick='window.location.href="../pagamento/pagamento.html?orderId=${order._id}"'>Pagamento</button>`;
+            break;
+          case 'rifiutato':
+            rowClass = 'table-danger';
+            actions = `<button class="btn btn-danger" onclick='cancelOrder("${order._id}")'>Rimuovi</button>`;
+            break;
+          case 'attesa':
+            rowClass = 'table-warning';
+            break;
+          case 'inviato':
+            rowClass = 'table-secondary';
+            break;
+          case 'inconsegna':
+            rowClass = 'table-info';
+            break;
+          case 'consegnato':
+            rowClass = 'table-success';
+            break;
+          case 'cancellato':
+            rowClass = 'table-danger';
+            break;
+        }
+
+        orderElement.className = rowClass;
         orderElement.innerHTML = `
           <td>${index + 1}</td>
           <td>${order.stato}</td>
@@ -110,24 +142,45 @@ document.addEventListener("DOMContentLoaded", function () {
           <td>${order.indirizzoCliente.città}, ${order.indirizzoCliente.cap}, ${order.indirizzoCliente.provincia}, ${order.indirizzoCliente.via}</td>
           <td>
             <button class="btn btn-secondary" onclick='indaga("${order._id}", "${order.farmaciaID}", ${totalOrderPrice.toFixed(2)}, ${order.prezzoFinale})'>Dettagli</button>
+            ${actions}
           </td>
         `;
-        container.appendChild(orderElement);
-  
-        if (order.stato === 'accettato') {
-          const paymentRow = document.createElement('tr');
-          paymentRow.innerHTML = `
-            <td colspan="7">
-              <button class="btn btn-primary" onclick='window.location.href="../pagamento/pagamento.html?orderId=${order._id}"'>Pagamento</button>
-            </td>
-          `;
-          container.appendChild(paymentRow);
+        return orderElement;
+      };
+
+      orders.forEach((order, index) => {
+        const orderElement = createOrderElement(order, index);
+
+        if (order.stato === 'consegnato' || order.stato === 'cancellato') {
+          historicalContainer.appendChild(orderElement);
+        } else {
+          ongoingContainer.appendChild(orderElement);
         }
       });
     } catch (error) {
       console.error('Errore durante il caricamento degli ordini:', error);
-      const container = document.getElementById('orderSection').querySelector('table tbody');
+      const container = document.getElementById('ongoingOrders');
       container.innerHTML = '<tr><td colspan="8">Errore durante il caricamento degli ordini.</td></tr>';
+    }
+  }
+
+  async function cancelOrder(orderId) {
+    try {
+      const response = await fetch(`/api/ordini/${orderId}/cancella`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        alert('Ordine cancellato con successo');
+        loadOrders();
+      } else {
+        alert('Errore durante la cancellazione dell\'ordine');
+      }
+    } catch (error) {
+      console.error('Errore durante la cancellazione dell\'ordine:', error);
     }
   }
 
@@ -168,8 +221,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-
-
   function indaga(orderId, farmaciaId, totalPrice, finalPrice) {
     alert(`ID ordine: ${orderId}\nID farmacia: ${farmaciaId}\nPrezzo totale di riferimento: €${totalPrice}\nPrezzo totale finale: €${finalPrice}`);
   }
@@ -179,4 +230,5 @@ document.addEventListener("DOMContentLoaded", function () {
   window.indaga = indaga;
   window.enableEditProfile = enableEditProfile;
   window.saveProfile = saveProfile;
+  window.cancelOrder = cancelOrder;
 });

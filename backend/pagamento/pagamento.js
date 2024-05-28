@@ -39,4 +39,20 @@ router.post('/ordini/:orderId/cancella', async (req, res) => {
     }
 });
 
+router.post('/payment', isAuthenticated, async (req, res) => {
+  const { orderId } = req.body;
+  try {
+      const ordine = await Ordine.findById(orderId);
+      if (!ordine) {
+          return res.status(404).json({ message: 'Ordine non trovato' });
+      }
+      ordine.stato = 'confermato';
+      await ordine.save();
+      res.status(200).json({ message: 'Pagamento simulato con successo' });
+  } catch (error) {
+      console.error('Errore durante il pagamento simulato:', error);
+      res.status(500).json({ message: 'Errore durante il pagamento simulato' });
+  }
+});
+
   module.exports = router;
