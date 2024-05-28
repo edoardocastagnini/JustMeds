@@ -8,16 +8,15 @@ footer {
     bottom: 0;
     width: 100%;
     background-color: gray;
-    text-align: center;
-    padding: 10px 0; /* Aggiungi spaziatura al padding sopra e sotto */
+    text-align: center; /* Aggiungi spaziatura al padding sopra e sotto */
 }
 
 main {
-    margin-bottom: 50px; /* Aggiungi più spazio al fondo del <main> */
+    margin-bottom: 100px; /* Aggiungi più spazio al fondo del <main> */
 }
 
 .container {
-    padding-bottom: 50px; /* Oppure aggiungi spazio al fondo del contenitore */
+    padding-bottom: 10px; /* Oppure aggiungi spazio al fondo del contenitore */
 }
 
 body {
