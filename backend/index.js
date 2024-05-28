@@ -2,6 +2,8 @@ const express = require("express");
 const session = require("express-session");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
+const passport = require('../backend/auth/authGoogle');
+const User = require('./models/User')
 const app = express();
 const PORT = process.env.PORT || 3000;
 require("dotenv").config();
@@ -53,8 +55,7 @@ const farmaciaRoutes = require("../backend/farmacia/farmacia");
 app.use('/api', farmaciaRoutes);
 
 
-// Modelli
-const User = require("./models/User");
+
 const Carrello = require("./models/Carrello");
 
 // Connessione al database
@@ -66,6 +67,36 @@ mongoose
 
 app.set("view engine", "ejs");
 app.use(morgan("dev"));
+
+// Rotte per l'autenticazione con Google
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/loginFail.html' }),
+  function(req, res) {
+    // Autenticato con successo
+    if (!req.user.type) {
+      // Se il tipo di utente non è definito, chiedi all'utente di scegliere il tipo di account
+      return res.redirect(`/chooseAccountType?userId=${req.user._id}`);
+    }
+    req.session.user = {
+      id: req.user._id,
+      email: req.user.email,
+      type: req.user.type,
+      farmaciaID: req.user.type === 'farmacia' ? req.user._id : undefined
+    };
+    req.session.save(err => {
+      if (err) {
+        console.error('Error saving session:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+      }
+      res.redirect('/');
+    });
+  }
+);
+
 
 
 
@@ -134,7 +165,7 @@ function isAuthenticated(req, res, next) {
   if (req.session.user) {
     next();
   } else {
-    res.status(401).send({ success: false, message: "Not authenticated" });
+    res.redirect('./auth/login.html');
   }
 }
 
