@@ -16,11 +16,6 @@ function updateNavigation() {
         .then(data => {
             if (data.isLoggedIn) {
                 const navBar = document.querySelector('#navbarNavAltMarkup .navbar-nav');
-                const logoutLink = document.createElement('a');
-                logoutLink.className = 'nav-link';
-                logoutLink.href = '/logout';
-                logoutLink.textContent = 'Logout';
-                navBar.appendChild(logoutLink);
                 // ICONA CARRELLO
                 const cartIcon = document.getElementById('cartIcon');
                 cartIcon.style.display = 'block';
@@ -33,6 +28,11 @@ function updateNavigation() {
                 const accountName = document.createElement("span");
                 accountName.textContent = ' Il mio Account';
                 accountIcon.appendChild(accountName);
+                const logoutLink = document.createElement('a');
+                logoutLink.className = 'nav-link';
+                logoutLink.href = '/logout';
+                logoutLink.textContent = 'Logout';
+                navBar.appendChild(logoutLink);
         
                 //navBar.insertBefore(logoutLink, cartIcon);  //ICONA PRIMA DI LOGOUT
             }else{

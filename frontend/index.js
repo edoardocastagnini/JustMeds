@@ -2,8 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchLoginStatus()
     .then((data) => {
       if (data.isLoggedIn) {
-        setupLogoutLink();
-        removeLoginLink();
+
         if (data.userRole === "farmacia") {
           setupReservedAreaLink();
           hideUnauthenticatedLinks();
@@ -11,6 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
           addCartIcon();
           addAccountIcon();
         }
+        setupLogoutLink();
+        removeLoginLink();
         setupButtons(data.userRole); // Assicurati che il ruolo utente sia passato correttamente
       } else {
         setupUnauthenticatedButtons(); // Setup per utenti non autenticati
