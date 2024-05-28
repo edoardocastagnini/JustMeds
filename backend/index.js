@@ -54,6 +54,9 @@ app.use('/api',clientRouter);
 const farmaciaRoutes = require("../backend/farmacia/farmacia");
 app.use('/api', farmaciaRoutes);
 
+const pagamentoRoutes = require("../backend/pagamento/pagamento");
+app.use('/api', pagamentoRoutes);
+
 
 
 const Carrello = require("./models/Carrello");
