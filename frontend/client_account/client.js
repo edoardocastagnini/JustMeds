@@ -1,13 +1,15 @@
-
 document.addEventListener("DOMContentLoaded", () => {
   fetchLoginStatus().then((data) => {
     if (data.isLoggedIn) {
-      addCartIcon();
-      setupLogoutLink();
+      if (data.userRole === 'admin') {
+        window.location.href = '../admin/admin.html'; // Reindirizza l'admin a admin.html
+      } else {
+        addCartIcon();
+        setupLogoutLink();
+      }
     }
   });
 });
-
 
 
 function addCartIcon() {
