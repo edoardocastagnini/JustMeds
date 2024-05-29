@@ -60,6 +60,41 @@ document.addEventListener("DOMContentLoaded", function () {
       loadProfile();
     } else if (sectionId === 'orderSection') {
       loadOrders();
+    } else if (sectionId === 'formSection') {
+      loadForms();
+    }
+  }
+
+  async function loadForms() {
+    try {
+      const response = await fetch('/api/forms', { credentials: 'include' });
+      if (!response.ok) {
+        throw new Error('Errore durante il caricamento dei forms');
+      }
+      const forms = await response.json();
+      const container = document.getElementById('formRequestsTable');
+      container.innerHTML = '';
+
+      if (!Array.isArray(forms) || forms.length === 0) {
+        container.innerHTML = '<tr><td colspan="3">Nessuna forma trovata.</td></tr>';
+        return;
+      }
+
+      forms.forEach((form, index) => {
+        const formElement = document.createElement('tr');
+        formElement.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${form.message}</td>
+          <td>${form.createdAt}</td>
+          <td>${form.answer}</td>
+          <td>${form.answeredAt || 'N/A'}</td>
+        `;
+        container.appendChild(formElement);
+      });
+    } catch (error) {
+      console.error('Errore durante il caricamento delle forme:', error);
+      const container = document.getElementById('formContainer');
+      container.innerHTML = '<tr><td colspan="3">Errore durante il caricamento delle forme.</td></tr>';
     }
   }
 
@@ -223,9 +258,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+
   function indaga(orderId, farmaciaId, totalPrice, finalPrice) {
     alert(`ID ordine: ${orderId}\nID farmacia: ${farmaciaId}\nPrezzo totale di riferimento: €${totalPrice}\nPrezzo totale finale: €${finalPrice}`);
   }
+  
 
   showSection('orderSection');
   window.showSection = showSection;

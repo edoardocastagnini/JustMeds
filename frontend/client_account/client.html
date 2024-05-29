@@ -92,6 +92,9 @@
           <a href="#" onclick="showSection('orderSection')">I miei ordini</a>
         </li>
         <li>
+          <a href="#" onclick="showSection('formSection')">Richieste Assistenza</a>
+        </li>
+        <li>
           <a href="#" onclick="showSection('impostazioniSection')">Impostazioni</a>
         </li>
       </ul>
@@ -140,6 +143,28 @@
           </tbody>
         </table>
       </div>
+    <div id="formSection" class="hidden">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2>Richieste Assistenza</h2>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Messaggio</th>
+              <th>Data Invio</th>
+              <th>Risposta</th>
+              <th>Data Risposta</th>
+            </tr>
+            <button type="button" class="btn btn-primary" onclick="window.location.href='../form_request/contattaci.html'">Nuova Richiesta</button>
+          </thead>
+          <tbody id="formRequestsTable">
+            <!-- Richieste assistenza -->
+          </tbody>
+        </table>
+      </div>
+    
+
       <div id="impostazioniSection" class="hidden">
         <div id="profileInfo">
           <h3>Informazioni Profilo</h3>
