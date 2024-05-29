@@ -4,11 +4,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.isLoggedIn) {
 
         if (data.userRole === "farmacia") {
-          setupReservedAreaLink();
+          setupReservedAreaLink_farmacia();
           hideUnauthenticatedLinks();
-        } else {
+        } else if (data.userRole === "ricevente") {
           addCartIcon();
           addAccountIcon();
+        } else if (data.userRole === "admin") {
+          setupReservedAreaLink_admin();
+          hideUnauthenticatedLinks();
         }
         setupLogoutLink();
         removeLoginLink();
@@ -115,11 +118,21 @@ function addCartIcon() {
   navBar.appendChild(cartIconLink);
 }
 
-function setupReservedAreaLink() {
+function setupReservedAreaLink_farmacia() {
   const navBar = document.querySelector(".navbar-nav");
   const reservedAreaLink = document.createElement("a");
   reservedAreaLink.className = "nav-link";
   reservedAreaLink.href = "/farmacia/farmacia.html";
+  reservedAreaLink.textContent = "Zona Riservata";
+  navBar.appendChild(reservedAreaLink);
+}
+
+
+function setupReservedAreaLink_admin() {
+  const navBar = document.querySelector(".navbar-nav");
+  const reservedAreaLink = document.createElement("a");
+  reservedAreaLink.className = "nav-link";
+  reservedAreaLink.href = "/admin/admin.html";
   reservedAreaLink.textContent = "Zona Riservata";
   navBar.appendChild(reservedAreaLink);
 }

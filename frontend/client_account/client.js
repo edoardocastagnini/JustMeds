@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
       container.innerHTML = '';
 
       if (!Array.isArray(forms) || forms.length === 0) {
-        container.innerHTML = '<tr><td colspan="3">Nessuna forma trovata.</td></tr>';
+        container.innerHTML = '<tr><td colspan="3">Nessuna richiesta trovata.</td></tr>';
         return;
       }
 
