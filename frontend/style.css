@@ -7,8 +7,10 @@ footer {
     left: 0;
     bottom: 0;
     width: 100%;
-    background-color: gray;
+    background-color: #05ffc5;
+    color: #061fff;
     text-align: center; /* Aggiungi spaziatura al padding sopra e sotto */
+    height: 50pt;
 }
 
 main {
@@ -42,10 +44,6 @@ body {
     transform: scale(1.05); /* Leggero ingrandimento al hover */
 }
 
-.footer {
-    background-color: #343a40; /* Piede di pagina scuro per contrasto */
-    color: white;
-}
 
 #checkoutButton {
     margin-top: 20px;  /* Spazio dal totale del carrello */

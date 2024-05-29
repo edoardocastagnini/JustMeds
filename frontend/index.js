@@ -127,9 +127,7 @@ function setupReservedAreaLink() {
 function hideUnauthenticatedLinks() {
   const myAccountLink = document.getElementById('myAccountLink');
   const cartLink = document.getElementById('cartLink');
-  const orderLink = document.getElementById('orderLink');
 
   if (myAccountLink) myAccountLink.style.display = 'none';
   if (cartLink) cartLink.style.display = 'none';
-  if (orderLink) orderLink.style.display = 'none';
 }

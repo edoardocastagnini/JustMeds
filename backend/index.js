@@ -79,11 +79,6 @@ app.get('/auth/google',
 app.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: '/loginFail.html' }),
   function(req, res) {
-    // Autenticato con successo
-    if (!req.user.type) {
-      // Se il tipo di utente non è definito, chiedi all'utente di scegliere il tipo di account
-      return res.redirect(`/chooseAccountType?userId=${req.user._id}`);
-    }
     req.session.user = {
       id: req.user._id,
       email: req.user.email,
@@ -95,7 +90,18 @@ app.get('/auth/google/callback',
         console.error('Error saving session:', err);
         return res.status(500).json({ message: 'Internal server error' });
       }
-      res.redirect('/');
+      if (req.session.user.type === 'farmacia') {
+        return res.redirect('/farmacia/farmacia.html');
+      }
+      if (req.session.user.type === 'admin') {
+        return res.redirect('/admin/admin.html');
+      }
+      if (req.session.user.type === 'ricevente') {
+        return res.redirect('/order/order.html');
+      }
+      if (req.session.user.type === 'rider') {
+        return res.redirect('/delivery/delivery.html');
+      }
     });
   }
 );

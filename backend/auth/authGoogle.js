@@ -16,7 +16,6 @@ async function(accessToken, refreshToken, profile, done) {
   try {
     let user = await User.findOne({ email: profile.emails[0].value });
     if (!user) {
-      // Se l'utente non esiste, crea un nuovo utente senza salvare
       user = new User({
         googleId: profile.id,
         email: profile.emails[0].value,
@@ -24,9 +23,8 @@ async function(accessToken, refreshToken, profile, done) {
         cognome: profile.name.familyName
       });
       console.log("New user created:", user);
-      // Non salvare l'utente qui, aspetta la scelta del tipo di account
     } else {
-      console.log("User found:", user);
+      console.log("User not found:", user);
     }
     return done(null, user);
   } catch (err) {
