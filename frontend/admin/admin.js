@@ -66,8 +66,9 @@ window.showSection = function(sectionId) {
       expandedRow.innerHTML = `
         <td colspan="7">
           <strong>Azioni:</strong>
-          <button class="btn btn-danger" onclick="deleteRequest('${requestId}', this)">Elimina</button>
+          <button class="btn btn-success" onclick="answerRequest('${requestId}', this)">Rispondi</button>
           <button class="btn btn-primary" onclick="showAccountSection('${row.children[1].textContent}', '${row.children[2].textContent}')">Crea Account Farmacia</button>
+          <button class="btn btn-danger" onclick="deleteRequest('${requestId}', this)">Elimina Definitivamente</button>
         </td>
       `;
       row.parentNode.insertBefore(expandedRow, row.nextSibling);
@@ -77,10 +78,36 @@ window.showSection = function(sectionId) {
     }
   }
 
+
+
+  //Funzione per rispondere ad una richiesta
+  window.answerRequest = function(requestId, button) {
+    const row = button.closest("tr");
+    const message = prompt("Inserisci la risposta alla richiesta:");
+    if (message) {
+      fetch(`/api/admin/form_requests/answer/${requestId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ answer: message })
+      })
+      .then(response => {
+        if (response.ok) {
+          alert("Risposta inviata con successo.");
+          fetchFormRequests(); // Ricarica la tabella dopo aver risposto
+        } else {
+          alert("Errore durante l'invio della risposta.");
+        }
+      })
+      .catch(error => console.error("Error answering request:", error));
+    }
+  }
+
   // Funzione per eliminare una richiesta
   window.deleteRequest = function(requestId, button) {
     if (confirm("Sei sicuro di voler eliminare questa richiesta?")) {
-      fetch(`/api/admin/form_requests/${requestId}`, {
+      fetch(`/api/admin/form_requests/delete/${requestId}`, {
         method: 'DELETE'
       })
       .then(response => {

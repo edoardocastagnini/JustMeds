@@ -20,11 +20,22 @@ router.get('/form_requests', async (req, res) => {
 });
 
 // Endpoint per eliminare una richiesta di assistenza
-router.delete('/form_requests/:id', async (req, res) => {
+router.delete('/form_requests/delete/:id', async (req, res) => {
   try {
     const { id } = req.params;
     await Form.findByIdAndDelete(id);
     res.status(200).json({ success: true, message: 'Richiesta eliminata con successo' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.patch('/form_requests/answer/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { answer } = req.body;
+    await Form.findByIdAndUpdate(id, { answer, answeredAt: new Date() });
+    res.status(200).json({ success: true, message: 'Risposta inviata con successo' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

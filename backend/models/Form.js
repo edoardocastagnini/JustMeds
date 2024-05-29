@@ -6,6 +6,8 @@ const contactRequestSchema = new mongoose.Schema({
   orderNumber: { type: String },
   message: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
+  answer: { type: String, default: "" },
+  answeredAt: { type: Date },
 }, { versionKey: false });
 
 const Form = mongoose.model("Form", contactRequestSchema, "form_requests");

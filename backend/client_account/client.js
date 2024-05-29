@@ -4,6 +4,7 @@ const moongose = require("mongoose");
 
 const User = require("../models/User");
 const Ordine = require("../models/Ordine");
+const Form = require("../models/Form");
 const ListaFarmacie = require("../models/ListaFarmacie");
 const { isAuthenticated } = require("../middlewares/tokenChecker");
 
@@ -70,5 +71,18 @@ router.put('/editprofile', isAuthenticated, async (req, res) => {
       res.status(500).json({ message: 'Errore interno del server', error });
     }
   });
+
+router.get('/forms', isAuthenticated, async (req, res) => {
+    const userEmail = req.session.user.email;
+    try {
+        const forms = await Form.find
+        ({ email: userEmail }).sort({ createdAt: -1 });
+        res.json(forms);
+    } catch (error) {
+        console.error('Errore nel recuperare i moduli:', error);
+        res.status(500).json({ message: 'Errore interno del server', error });
+    }
+
+});
   
 module.exports = router;
