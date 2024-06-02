@@ -10,6 +10,7 @@ footer {
     background-color: gray;
     text-align: center;
     padding: 10px 0; /* Aggiungi spaziatura al padding sopra e sotto */
+    z-index: 1000;
 }
 
 main {
