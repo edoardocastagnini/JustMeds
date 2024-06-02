@@ -108,26 +108,15 @@
                     cardBody.appendChild(pickupAddress);
                     cardBody.appendChild(deliveryAddress);
 
-                    // Pulsante per accettare l'incarico
-                    const acceptButton = document.createElement("button");
-                    acceptButton.classList.add("btn", "btn-primary", "accept-button");
-                    acceptButton.textContent = "Accetta Incarico";
-                    acceptButton.dataset.orderId = order._id; // per salvare l'id dell'ordine
-                    
-                    // Pulsante per annullare l'accettazione
-                    cancelButton.classList.add("btn", "btn-danger", "cancel-button", "d-none");
-                    cancelButton.textContent = "Annulla Accettazione";
-                    cancelButton.dataset.orderId = order._id;
+                    // Pulsante per visualizzare i dettagli
+                    const detailsButton = document.createElement("button");
+                    detailsButton.classList.add("btn", "btn-primary", "mt-2");
+                    detailsButton.textContent = "Visualizza dettagli";
+                    detailsButton.onclick = () => {
+                        window.location.href = `delivery_management.html`;
+                    };
 
-                    if (isOrderAccepted || order.stato === 'attesa') {
-                        acceptButton.disabled = true;
-                        acceptButton.classList.remove("btn-primary");
-                        acceptButton.classList.add("btn-secondary");
-                        cancelButton.classList.remove("d-none"); // Add btn-secondary class
-                    }
-                    cardBody.appendChild(acceptButton);
-                    cardBody.appendChild(cancelButton);
-
+                    cardBody.appendChild(detailsButton);
                     orderCard.appendChild(cardBody);
                     ordersContainer.appendChild(orderCard);
                         });
@@ -136,59 +125,7 @@
                 console.error("Errore nel caricare gli ordini:", error);
             }
     });
-    // Funzione dell'evento click per accettare l'incarico
-    document.addEventListener("click", async (event) => {
-          if (event.target.classList.contains("accept-button")) {
-              const button = event.target;
-              const orderId = button.dataset.orderId;
-              try {
-                  const response = await fetch(`/api/orders/${orderId}/accept`, { method: "POST" });
-                  if (!response.ok) {
-                      throw new Error("Errore durante l'accettazione dell'incarico");
-                  }
-                  const data = await response.json();
-                isOrderAccepted = true;
-                button.classList.add("d-none");
-                cancelButton.classList.remove("d-none"); 
-                button.disabled = true;
-                button.classList.remove("btn-primary");
-                button.classList.add("btn-secondary");
-                button.textContent = "Incarico accettato";
-                alert("Incarico accettato");
-
-                window.location.href = `delivery_management.html?orderId=${orderId}`;
-              } catch (error) {
-                  console.error("Errore durante l'accettazione dell'incarico:", error);
-                  alert("Errore durante l'accettazione dell'incarico");
-              }
-          }
-      });
-    // Funzione dell'evento click per annullare l'accettazione
-    document.addEventListener("click", async (event) => {
-        if (event.target.classList.contains("cancel-button")) { 
-            const button = event.target;
-            const orderId = button.dataset.orderId;
-            try {
-                const response = await fetch(`/api/orders/${orderId}/cancel`, { method: "POST" });
-                if (!response.ok) {
-                    throw new Error("Errore durante l'annullamento dell'accettazione dell'incarico");
-                }
-            const data = await response.json();
-            const acceptButton = button.previousElementSibling;
-            acceptButton.disabled = false;
-            acceptButton.classList.add("btn-primary");
-            acceptButton.classList.remove("btn-secondary");
-            button.classList.add("d-none");
-            acceptButton.classList.remove("d-none");
-            alert("Accettazione dell'incarico annullata");
-            isOrderAccepted = false;
-            acceptButton.textContent = "Accetta Incarico";
-        } catch (error) {
-            console.error("Errore durante l'annullamento dell'accettazione dell'incarico:", error);
-            alert("Errore durante l'annullamento dell'accettazione dell'incarico");
-            }
-        }
-    });
+    
   </script>
   
 

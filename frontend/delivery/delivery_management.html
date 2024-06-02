@@ -52,6 +52,9 @@
     </div>
 
     <script>
+        let isOrderAccepted = false;
+        const cancelButton = document.createElement("button");
+
         document.addEventListener("DOMContentLoaded", async () => {
             try {
                 console.log("Fetching orders...");
@@ -63,7 +66,7 @@
                 console.log("Orders fetched:", orders);
                 const waitingOrdersContainer = document.getElementById("waitingOrders");
 
-                const waitingOrders = orders.filter(order => order.stato === 'attesa');
+                const waitingOrders = orders.filter(order => order.stato === 'attesa' || order.stato === 'confermato');
                 console.log("Filtered waiting orders:", waitingOrders);
 
                 if (waitingOrders.length === 0) {
@@ -116,6 +119,12 @@
                         showCodeButton.textContent = "Mostra codice segreto";
                         showCodeButton.onclick = () => showSecretCode(order._id, showCodeButton);
                         
+                        const acceptButton = document.createElement("button");
+                        acceptButton.classList.add("btn", "btn-success", "mt-2", "me-2");
+                        acceptButton.textContent = "Accetta incarico";
+                        acceptButton.dataset.orderId = order._id;
+                        acceptButton.classList.add("accept-button");
+                        
                         const secretCode = document.createElement("p");
                         secretCode.classList.add("card-text", `secret-code-${order._id}`);
                         secretCode.style.display = "none";
@@ -124,6 +133,7 @@
                         cardBody.appendChild(pickupAddress);
                         cardBody.appendChild(deliveryAddress);
                         cardBody.appendChild(showCodeButton); 
+                        cardBody.appendChild(acceptButton);
                         cardBody.appendChild(secretCode);
 
                         orderCard.appendChild(cardBody);
@@ -134,6 +144,61 @@
                 console.error("Errore nel caricare gli ordini in attesa:", error);
             }
         });
+
+        // ACCETTAZIONE ORDINE
+        document.addEventListener("click", async (event) => {
+          if (event.target.classList.contains("accept-button")) {
+              const button = event.target;
+              const orderId = button.dataset.orderId;
+              try {
+                  const response = await fetch(`/api/orders/${orderId}/accept`, { method: "POST" });
+                  if (!response.ok) {
+                      throw new Error("Errore durante l'accettazione dell'incarico");
+                  }
+                const data = await response.json();
+                isOrderAccepted = true;
+                button.classList.add("d-none");
+                cancelButton.classList.remove("d-none"); 
+                button.disabled = true;
+                button.classList.remove("btn-primary");
+                button.classList.add("btn-secondary");
+                button.textContent = "Incarico accettato";
+                alert("Incarico accettato");
+
+    
+              } catch (error) {
+                  console.error("Errore durante l'accettazione dell'incarico:", error);
+                  alert("Errore durante l'accettazione dell'incarico");
+              }
+          }
+      });
+
+      // ANNULLAMENTO ORDINE
+      document.addEventListener("click", async (event) => {
+        if (event.target.classList.contains("cancel-button")) { 
+            const button = event.target;
+            const orderId = button.dataset.orderId;
+            try {
+                const response = await fetch(`/api/orders/${orderId}/cancel`, { method: "POST" });
+                if (!response.ok) {
+                    throw new Error("Errore durante l'annullamento dell'accettazione dell'incarico");
+                }
+            const data = await response.json();
+            const acceptButton = button.previousElementSibling;
+            acceptButton.disabled = false;
+            acceptButton.classList.add("btn-primary");
+            acceptButton.classList.remove("btn-secondary");
+            button.classList.add("d-none");
+            acceptButton.classList.remove("d-none");
+            alert("Accettazione dell'incarico annullata");
+            isOrderAccepted = false;
+            acceptButton.textContent = "Accetta Incarico";
+        } catch (error) {
+            console.error("Errore durante l'annullamento dell'accettazione dell'incarico:", error);
+            alert("Errore durante l'annullamento dell'accettazione dell'incarico");
+            }
+        }
+    });
 
         function showSecretCode(orderId, button) {
             const secretCodeElement = document.querySelector(`.secret-code-${orderId}`);
