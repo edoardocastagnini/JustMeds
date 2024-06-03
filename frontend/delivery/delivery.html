@@ -110,7 +110,8 @@
                     detailsButton.classList.add("btn", "btn-primary", "mt-2");
                     detailsButton.textContent = "Visualizza dettagli";
                     detailsButton.onclick = () => {
-                        window.location.href = `delivery_management.html`;
+                        console.log("ID dell'ordine:", order._id);
+                        window.location.href = `delivery_management.html?orderId=${order._id}`;
                     };
 
                     cardBody.appendChild(detailsButton);

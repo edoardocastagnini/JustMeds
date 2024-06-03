@@ -64,150 +64,42 @@
         let isOrderAccepted = false;
         const cancelButton = document.createElement("button");
 
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
         document.addEventListener("DOMContentLoaded", async () => {
             try {
-                console.log("Fetching orders...");
-                const response = await fetch("/api/orders");
+                const orderId = getQueryParam('orderId');
+                if (!orderId) {
+                    console.error("No order ID found in URL");
+                    return;
+                }
+
+                console.log("Fetching order...");
+                const response = await fetch(`/api/orders/${orderId}`);
                 if (!response.ok) {
                     throw new Error("Network response was not ok");
                 }
-                const orders = await response.json();
-                console.log("Orders fetched:", orders);
+                const order = await response.json(); // Ottieni direttamente l'ordine anziché un array di ordini
+                console.log("Order fetched:", order);
                 const waitingOrdersContainer = document.getElementById("waitingOrders");
 
-                const waitingOrders = orders.filter(order => order.stato === 'attesa' || order.stato === 'confermato');
-                console.log("Filtered waiting orders:", waitingOrders);
-
-                if (waitingOrders.length === 0) {
-                    const noOrdersMessage = document.createElement("p");
-                    noOrdersMessage.textContent = "Nessun ordine in attesa di conferma...";
-                    waitingOrdersContainer.appendChild(noOrdersMessage);
-                } else {
-                    waitingOrders.forEach((order, orderIndex) => {
-                        const orderCard = document.createElement("div");
-                        orderCard.classList.add("card", "mb-3");
-
-                        const cardBody = document.createElement("div");
-                        cardBody.classList.add("card-body");
-
-                        const title = document.createElement("h5");
-                        title.classList.add("card-title");
-                        title.textContent = `Ordine #${order._id}`;
-                        cardBody.appendChild(title);
-
-                        const productList = document.createElement("ul");
-                        productList.classList.add("list-group", "list-group-flush");
-
-                        let productCounter = 1; // contatore prodotto per ogni ordine
-
-                        order.prodotti.forEach((product) => {
-                            const productItem = document.createElement("li");
-                            productItem.classList.add("list-group-item");
-                            productItem.textContent = `Farmaco ${productCounter} - Quantità: ${product.quantita} - Prezzo unitario: €${product.prezzo}`;
-                            productList.appendChild(productItem);
-                            productCounter++;
-                        });
-
-                        cardBody.appendChild(productList);
-
-                        const totalPrice = document.createElement("p");
-                        totalPrice.classList.add("card-text", "mt-2");
-                        totalPrice.innerHTML = `<strong>Prezzo Totale:</strong> €${order.prodotti.reduce((acc, item) => acc + (item.quantita * item.prezzo), 0)}`;
-                        cardBody.appendChild(totalPrice);
-
-                        const pickupAddress = document.createElement("p");
-                        pickupAddress.classList.add("card-text");
-                        pickupAddress.innerHTML = `<strong>Indirizzo di ritiro:</strong> ${order.indirizzoFarmacia.via}, ${order.indirizzoFarmacia.cap} ${order.indirizzoFarmacia.provincia}`;
-
-                        const deliveryAddress = document.createElement("p");
-                        deliveryAddress.classList.add("card-text");
-                        deliveryAddress.innerHTML = `<strong>Indirizzo di consegna:</strong> ${order.indirizzoCliente.via}, ${order.indirizzoCliente.cap} ${order.indirizzoCliente.città}`;
-
-                        const showCodeButton = document.createElement("button");
-                        showCodeButton.classList.add("btn", "btn-primary", "mt-2");
-                        showCodeButton.textContent = "Mostra codice segreto";
-                        showCodeButton.onclick = () => showSecretCode(order._id, showCodeButton);
-                        
-                        const acceptButton = document.createElement("button");
-                        acceptButton.classList.add("btn", "btn-success", "mt-2", "me-2");
-                        acceptButton.textContent = "Accetta incarico";
-                        acceptButton.dataset.orderId = order._id;
-                        acceptButton.classList.add("accept-button");
-                        
-                        const secretCode = document.createElement("p");
-                        secretCode.classList.add("card-text", `secret-code-${order._id}`);
-                        secretCode.style.display = "none";
-                        secretCode.innerHTML = `<strong>Secret Code:</strong> ${order.secretcode}`;
-
-                        cardBody.appendChild(pickupAddress);
-                        cardBody.appendChild(deliveryAddress);
-                        cardBody.appendChild(showCodeButton); 
-                        cardBody.appendChild(acceptButton);
-                        cardBody.appendChild(secretCode);
-
-                        orderCard.appendChild(cardBody);
-                        waitingOrdersContainer.appendChild(orderCard);
-                    });
+                if (!order) {
+                    const noOrderMessage = document.createElement("p");
+                    noOrderMessage.textContent = "Ordine non trovato...";
+                    waitingOrdersContainer.appendChild(noOrderMessage);
+                    return;
                 }
+
+                const orderCard = createOrderCard(order);
+                waitingOrdersContainer.appendChild(orderCard);
+
             } catch (error) {
-                console.error("Errore nel caricare gli ordini in attesa:", error);
+                console.error("Errore nel caricare l'ordine:", error);
             }
         });
-
-        // ACCETTAZIONE ORDINE
-        document.addEventListener("click", async (event) => {
-          if (event.target.classList.contains("accept-button")) {
-              const button = event.target;
-              const orderId = button.dataset.orderId;
-              try {
-                  const response = await fetch(`/api/orders/${orderId}/accept`, { method: "POST" });
-                  if (!response.ok) {
-                      throw new Error("Errore durante l'accettazione dell'incarico");
-                  }
-                const data = await response.json();
-                isOrderAccepted = true;
-                button.classList.add("d-none");
-                cancelButton.classList.remove("d-none"); 
-                button.disabled = true;
-                button.classList.remove("btn-primary");
-                button.classList.add("btn-secondary");
-                button.textContent = "Incarico accettato";
-                alert("Incarico accettato");
-
-    
-              } catch (error) {
-                  console.error("Errore durante l'accettazione dell'incarico:", error);
-                  alert("Errore durante l'accettazione dell'incarico");
-              }
-          }
-      });
-
-      // ANNULLAMENTO ORDINE
-      document.addEventListener("click", async (event) => {
-        if (event.target.classList.contains("cancel-button")) { 
-            const button = event.target;
-            const orderId = button.dataset.orderId;
-            try {
-                const response = await fetch(`/api/orders/${orderId}/cancel`, { method: "POST" });
-                if (!response.ok) {
-                    throw new Error("Errore durante l'annullamento dell'accettazione dell'incarico");
-                }
-            const data = await response.json();
-            const acceptButton = button.previousElementSibling;
-            acceptButton.disabled = false;
-            acceptButton.classList.add("btn-primary");
-            acceptButton.classList.remove("btn-secondary");
-            button.classList.add("d-none");
-            acceptButton.classList.remove("d-none");
-            alert("Accettazione dell'incarico annullata");
-            isOrderAccepted = false;
-            acceptButton.textContent = "Accetta Incarico";
-        } catch (error) {
-            console.error("Errore durante l'annullamento dell'accettazione dell'incarico:", error);
-            alert("Errore durante l'annullamento dell'accettazione dell'incarico");
-            }
-        }
-    });
 
         function showSecretCode(orderId, button) {
             const secretCodeElement = document.querySelector(`.secret-code-${orderId}`);
@@ -220,7 +112,7 @@
             }
         }
 
-        function createOrderCard(order, orderIndex) {
+        function createOrderCard(order) {
             const orderCard = document.createElement("div");
             orderCard.classList.add("card", "mb-3");
 
@@ -255,19 +147,18 @@
             const pickupAddress = document.createElement("p");
             pickupAddress.classList.add("card-text");
             pickupAddress.innerHTML = `<strong>Indirizzo di ritiro:</strong> ${order.indirizzoFarmacia.via}, ${order.indirizzoFarmacia.cap} ${order.indirizzoFarmacia.provincia}`;
+            cardBody.appendChild(pickupAddress);
 
             const deliveryAddress = document.createElement("p");
             deliveryAddress.classList.add("card-text");
             deliveryAddress.innerHTML = `<strong>Indirizzo di consegna:</strong> ${order.indirizzoCliente.via}, ${order.indirizzoCliente.cap} ${order.indirizzoCliente.città}`;
-
-            cardBody.appendChild(pickupAddress);
             cardBody.appendChild(deliveryAddress);
 
             orderCard.appendChild(cardBody);
+
             return orderCard;
         }
 
-        
     </script>
 
     <!-- Script per la mappa -->
@@ -306,7 +197,6 @@
             </div>
         </div>
     </div>
-
 
     <footer class="bg-dark text-white text-center p-0 mt-4">
         <div class="container">
