@@ -133,15 +133,26 @@
             }
         });
 
-        function showSecretCode(orderId, button) {
-            const secretCodeElement = document.querySelector(`.secret-code-${orderId}`);
-            if (secretCodeElement) {
-                secretCodeElement.style.display = "block";  // Mostra il codice segreto
-                button.style.display = "none";  // Nascondi il bottone
-                setTimeout(() => {
-                    secretCodeElement.style.display = "none";  // Nascondi il codice segreto dopo 5 minuti
-                }, 300000);  // 300000 millisecondi = 5 minuti
+        function showSecretCode(orderId, secretCode, button) {
+            // Crea l'elemento del codice segreto se non esiste
+            let secretCodeElement = document.querySelector(`.secret-code-${orderId}`);
+            if (!secretCodeElement) {
+                secretCodeElement = document.createElement("div");
+                secretCodeElement.classList.add(`secret-code-${orderId}`, "mt-2");
+                secretCodeElement.style.display = "none"; // Inizia nascosto
+                secretCodeElement.textContent = `Codice Segreto: ${secretCode}`;
+                button.parentElement.appendChild(secretCodeElement);
             }
+
+            // Mostra il codice segreto
+            secretCodeElement.style.display = "block";
+            button.style.display = "none"; // Nascondi il bottone
+
+            // Nascondi il codice segreto dopo 5 minuti e rimuovi il bottone
+            setTimeout(() => {
+                secretCodeElement.style.display = "none"; // Nascondi il codice segreto dopo 5 minuti
+                button.remove(); // Rimuovi definitivamente il bottone
+            }, 300000); // 300000 millisecondi = 5 minuti
         }
 
         function createOrderCard(order) {
@@ -186,9 +197,87 @@
             deliveryAddress.innerHTML = `<strong>Indirizzo di consegna:</strong> ${order.indirizzoCliente.via}, ${order.indirizzoCliente.cap} ${order.indirizzoCliente.città}`;
             cardBody.appendChild(deliveryAddress);
 
+            // Bottone "Mostra Codice Segreto"
+            const secretCodeButton = document.createElement("button");
+            secretCodeButton.classList.add("btn", "btn-primary", "me-2");
+            secretCodeButton.textContent = "Mostra Codice Segreto";
+            secretCodeButton.addEventListener("click", () => showSecretCode(order._id, order.secretcode, secretCodeButton));
+            cardBody.appendChild(secretCodeButton);
+
+            // Bottone "Accetta Incarico"
+            const acceptButton = document.createElement("button");
+            acceptButton.classList.add("btn", "btn-success", "me-2");
+            acceptButton.textContent = "Accetta Incarico";
+            acceptButton.addEventListener("click", async () => {
+                await acceptOrder(order._id, acceptButton);
+            });
+            cardBody.appendChild(acceptButton);
+
+            // Bottone "Annulla Accettazione"
+            const cancelButton = document.createElement("button");
+            cancelButton.classList.add("btn", "btn-danger", "me-2");
+            cancelButton.textContent = "Annulla Accettazione";
+            cancelButton.style.display = "none";
+            cancelButton.addEventListener("click", async () => {
+                await cancelOrderAcceptance(order._id, cancelButton, acceptButton);
+            });
+            cardBody.appendChild(cancelButton);
+
             orderCard.appendChild(cardBody);
 
             return orderCard;
+        }
+
+        async function acceptOrder(orderId, acceptButton) {
+            try {
+                const response = await fetch(`/api/orders/${orderId}/accept`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Errore durante l'accettazione dell'ordine");
+                }
+
+                const result = await response.json();
+                console.log(result.message);
+
+                acceptButton.classList.add("disabled");
+                acceptButton.disabled = true;
+
+                const cancelButton = acceptButton.nextElementSibling;
+                if (cancelButton) {
+                    cancelButton.style.display = "inline-block";
+                }
+            } catch (error) {
+                console.error("Errore nell'accettazione dell'ordine:", error);
+            }
+        }
+
+        async function cancelOrderAcceptance(orderId, cancelButton, acceptButton) {
+            try {
+                const response = await fetch(`/api/orders/${orderId}/cancel`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Errore durante l'annullamento dell'accettazione dell'ordine");
+                }
+
+                const result = await response.json();
+                console.log(result.message);
+
+                cancelButton.style.display = "none";
+                acceptButton.classList.remove("disabled");
+                acceptButton.disabled = false;
+            } catch (error) {
+                console.error("Errore nell'annullamento dell'accettazione dell'ordine:", error);
+            }
         }
 
         async function geocodeAddress(address, mapId, label) {
