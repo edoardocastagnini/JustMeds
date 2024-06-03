@@ -140,7 +140,7 @@
                 secretCodeElement = document.createElement("div");
                 secretCodeElement.classList.add(`secret-code-${orderId}`, "mt-2");
                 secretCodeElement.style.display = "none"; // Inizia nascosto
-                secretCodeElement.textContent = `Codice Segreto: ${secretCode}`;
+                secretCodeElement.innerHTML = `Codice Segreto: ${secretCode} <span class="timer-${orderId}"></span>`;
                 button.parentElement.appendChild(secretCodeElement);
             }
 
@@ -148,11 +148,21 @@
             secretCodeElement.style.display = "block";
             button.style.display = "none"; // Nascondi il bottone
 
-            // Nascondi il codice segreto dopo 5 minuti e rimuovi il bottone
-            setTimeout(() => {
-                secretCodeElement.style.display = "none"; // Nascondi il codice segreto dopo 5 minuti
-                button.remove(); // Rimuovi definitivamente il bottone
-            }, 300000); // 300000 millisecondi = 5 minuti
+            // Avvia il timer
+            let timeLeft = 300; // 300 secondi = 5 minuti
+            const timerElement = document.querySelector(`.timer-${orderId}`);
+            const timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerElement.textContent = ` (Tempo rimanente: ${minutes}:${seconds < 10 ? '0' : ''}${seconds})`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    secretCodeElement.style.display = "none"; // Nascondi il codice segreto
+                    button.remove(); // Rimuovi definitivamente il bottone
+                }
+            }, 1000);
         }
 
         function createOrderCard(order) {
