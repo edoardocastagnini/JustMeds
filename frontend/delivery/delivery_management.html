@@ -8,6 +8,26 @@
     <link rel="stylesheet" href="../style.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        .map-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .map {
+            width: 48%;
+            height: 500px;
+            position: relative;
+        }
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            font-size: 1.5em;
+            color: #000;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -45,8 +65,13 @@
         <div class="card-deck mt-3" id="waitingOrders"></div>
     </div>
 
-    <div class="container mt-4 mb-4">
-        <div id="map" style="height: 500px;"></div>
+    <div class="container mt-4 mb-4 map-container">
+        <div id="pickupMap" class="map">
+            <div class="loading">Caricamento...</div>
+        </div>
+        <div id="deliveryMap" class="map">
+            <div class="loading">Caricamento...</div>
+        </div>
     </div>
 
     <!-- RIEPILOGO GUADAGNI/PERDITE TOTALI -->
@@ -95,6 +120,13 @@
 
                 const orderCard = createOrderCard(order);
                 waitingOrdersContainer.appendChild(orderCard);
+
+                // Geocode addresses and initialize maps in parallel
+                const geocodePromises = [
+                    geocodeAddress(order.indirizzoFarmacia, 'pickupMap', "Indirizzo di ritiro"),
+                    geocodeAddress(order.indirizzoCliente, 'deliveryMap', "Indirizzo di consegna")
+                ];
+                await Promise.all(geocodePromises);
 
             } catch (error) {
                 console.error("Errore nel caricare l'ordine:", error);
@@ -159,24 +191,55 @@
             return orderCard;
         }
 
+        async function geocodeAddress(address, mapId, label) {
+            const query = `${address.via}, ${address.cap} ${address.provincia} ${address.città}`;
+            console.log(`Geocoding for ${label}:`, query); // Log the address being geocoded
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    const lat = data[0].lat;
+                    const lon = data[0].lon;
+                    console.log(`Coordinates for ${label}:`, lat, lon);
+                    initMap(mapId, lat, lon, label);
+                } else {
+                    console.error(`No results found for ${label}`);
+                    handleMapError(mapId, `Nessun risultato trovato per ${label}`);
+                }
+            } catch (error) {
+                console.error(`Geocoding error for ${label}:`, error);
+                handleMapError(mapId, `Errore di geocoding per ${label}`);
+            }
+        }
+
+        function initMap(mapId, lat, lon, label) {
+            const map = L.map(mapId).setView([lat, lon], 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            L.marker([lat, lon]).addTo(map)
+                .bindPopup(label)
+                .openPopup();
+
+            // Remove loading indicator
+            const loadingIndicator = document.querySelector(`#${mapId} .loading`);
+            if (loadingIndicator) {
+                loadingIndicator.remove();
+            }
+        }
+
+        function handleMapError(mapId, message) {
+            const mapContainer = document.getElementById(mapId);
+            mapContainer.innerHTML = `<div class="loading">${message}</div>`;
+        }
     </script>
 
     <!-- Script per la mappa -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            if (document.getElementById('map')) {
-                var map = L.map('map').setView([46.06723541852145, 11.120870099071267], 15); // Imposta la vista iniziale della mappa
-
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                }).addTo(map);
-                
-                // MARKER
-                var marker = L.marker([46.06723541852145, 11.120870099071267]).addTo(map)
-            }
-        });
-    </script>
 
     <!-- POPUP PER LA GESTIONE DELL'ACCOUNT -->
     <div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="accountModalLabel" aria-hidden="true">
@@ -188,7 +251,7 @@
                 </div>
                 <div class="modal-body">
                     <p><strong>Ordini accettati:</strong> 5</p>
-                    <p><strong>Soldo guadagnati:</strong> €50</p>
+                    <p><strong>Soldi guadagnati:</strong> €50</p>
                     <div class="d-grid">
                     <button class="btn btn-secondary mb-2" onclick="window.location.href='delivery_management.html'">Visualizza Ordini Accettati</button>
                     <button class="btn btn-danger" onclick="window.location.href='/logout'">Logout</button>
