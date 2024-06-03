@@ -24,7 +24,9 @@
                     <div class="navbar-nav">
                         <a class="nav-link" href="../about_us/about.html">Chi siamo</a>
                         <a class="nav-link" href="../order/order.html" id="orderLink">Lista Farmaci</a>
-                        <!-- Logout link will be dynamically inserted here if user is logged in -->
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#accountModal">
+                            <i class="fas fa-user-circle" style="font-size: 30px;"></i>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -284,6 +286,26 @@
             }
         });
     </script>
+
+    <!-- POPUP PER LA GESTIONE DELL'ACCOUNT -->
+    <div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="accountModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="accountModalLabel">Il tuo Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Ordini accettati:</strong> 5</p>
+                    <p><strong>Soldo guadagnati:</strong> €50</p>
+                    <div class="d-grid">
+                    <button class="btn btn-secondary mb-2" onclick="window.location.href='delivery_management.html'">Visualizza Ordini Accettati</button>
+                    <button class="btn btn-danger" onclick="window.location.href='/logout'">Logout</button>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <footer class="bg-dark text-white text-center p-0 mt-4">
