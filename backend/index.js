@@ -335,6 +335,7 @@ app.post('/api/orders/:id/accept', async (req, res) => {
     if (order) {
       // Aggiorna lo stato dell'ordine
       order.stato = 'attesa';
+      order.riderID = req.session.user.id; // Imposta l'ID del rider che ha accettato l'ordine
       // Salva l'ordine aggiornato nel database
       await order.save();
       res.status(200).json({ message: 'Ordine accettato' });
