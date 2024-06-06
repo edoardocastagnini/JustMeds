@@ -6,7 +6,9 @@ const passport = require('../backend/auth/authGoogle');
 const User = require('./models/User')
 const app = express();
 const PORT = process.env.PORT || 3000;
+
 require("dotenv").config();
+
 // Middleware per il parsing del corpo delle richieste
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -36,8 +38,14 @@ app.use(
 
 const tokenChecker = require("./middlewares/tokenChecker");
 
-// Importare e utilizzare i router
-const drugRoutes = require("./order/order_cart");
+
+const deliveryRoutes = require("./delivery/delivery");
+app.use("/api", deliveryRoutes);
+const deliveryManagementRoutes = require("./delivery/delivery_management");
+app.use("/api", deliveryManagementRoutes);
+
+const drugRoutes = require("./order/farmaci");
+
 app.use("/api", drugRoutes);
 
 const adminRoutes = require("../backend/admin/admin");
@@ -169,6 +177,7 @@ app.post('/login', async (req, res) => {
   });
 });
 
+
 // Middleware di autenticazione
 function isAuthenticated(req, res, next) {
   if (req.session.user) {
@@ -181,13 +190,16 @@ function isAuthenticated(req, res, next) {
 const checkoutRouter = require("./order/checkout");
 app.use('/api',checkoutRouter);
 
+
 const UserFarmacia = require("./models/UserFarmacia");
 
 // Middleware di autorizzazione
 function checkUserRole(role) {
   return (req, res, next) => {
+
     const userRole = req.session.user && req.session.user.type;
     if (userRole === 'admin' || role.includes(userRole)) {
+
       next();
     } else {
       res.status(403).send("Accesso negato: non hai i permessi per accedere a questa pagina");
