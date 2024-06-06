@@ -7,7 +7,7 @@ const { isAuthenticated } = require("../middlewares/tokenChecker");
 
 // VISUALIZZAZIONE ORDINI
 // Endpoint per recuperare tutti gli ordini
-router.get("/api/orders", isAuthenticated, async (req, res) => {
+router.get("/orders", isAuthenticated, async (req, res) => {
     try {
       const orders = await Ordine.find().populate('prodotti._id');
       res.json(orders);
@@ -19,7 +19,7 @@ router.get("/api/orders", isAuthenticated, async (req, res) => {
   
   // VISUALIZZAZIONE ORDINE SPECIFICO
   // Endpoint per recuperare un singolo ordine
-  router.get("/api/orders/:orderId", isAuthenticated, async (req, res) => {
+  router.get("/orders/:orderId", isAuthenticated, async (req, res) => {
     try {
       const orderId = req.params.orderId;
       const order = await Ordine.findById(orderId).populate('prodotti._id');

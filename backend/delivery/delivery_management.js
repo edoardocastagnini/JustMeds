@@ -6,7 +6,7 @@ const Ordine = require("../models/Ordine");
 const { isAuthenticated } = require("../middlewares/tokenChecker");
 
 // Endpoint per aggiornare lo stato dell'ordine
-router.post('/api/orders/:id/accept', async (req, res) => {
+router.post('/orders/:id/accept', async (req, res) => {
     const orderId = req.params.id;
     console.log(`POST /api/orders/${orderId}/accept`);
   
@@ -31,7 +31,7 @@ router.post('/api/orders/:id/accept', async (req, res) => {
   });
   
   // Endpoint per annullare l'accettazione dell'ordine
-  router.post('/api/orders/:id/cancel', async (req, res) => {
+  router.post('/orders/:id/cancel', async (req, res) => {
     const orderId = req.params.id;
     console.log(`POST /api/orders/${orderId}/cancel`);
   
