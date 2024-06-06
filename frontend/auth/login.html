@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <!-- Questo meta tag imposta la visualizzazione della pagina in base alla larghezza del dispositivo e la scala per adattarsi allo schermo. -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Just Meds</title>
     <link
@@ -12,11 +11,15 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="../style.css" />
+    <link rel="stylesheet" href="./style.css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <meta name="google-signin-client_id" content="935635216258-2d5buca8ipmbk394igdr56kkj8k65pv4.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
   </head>
 
   <body>
     <header>
-      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <nav class="navbar navbar-lg bg-body-tertiary">
         <div class="container-fluid">
           <a href="../index.html"
             ><img
@@ -39,7 +42,6 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-              <a class="nav-link active" aria-current="page" href="../index.html">Home</a>
               <a class="nav-link" href="../about_us/about.html">Chi siamo</a>
               <a class="nav-link" href="../order/order.html">Lista Farmaci</a>
             </div>
@@ -48,7 +50,6 @@
       </nav>
     </header>
 
-    <!-- Il tuo contenuto va qui -->
     <main>
       <div class="container">
         <div class="row justify-content-center" id="loginform">
@@ -58,29 +59,23 @@
                 <h5 class="card-title">Accesso</h5>
                 <form onsubmit="login(event)">
                   <div class="mb-3">
-                    <label for="email" class="form-label"
-                      >Indirizzo email</label
-                    >
-                    <input
-                      type="email"
-                      class="form-control"
-                      id="email"
-                      name="email"
-                      required
-                    />
+                    <label for="email" class="form-label">Indirizzo email</label>
+                    <input type="email" class="form-control" id="email" name="email" required />
                   </div>
                   <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input
-                      type="password"
-                      class="form-control"
-                      id="password"
-                      name="password"
-                      required
-                    />
+                    <input type="password" class="form-control" id="password" name="password" required />
                   </div>
                   <button type="submit" class="btn btn-primary">Invia</button>
                 </form>
+                <hr>
+                <div class="text-center">
+                  <!-- Pulsante Google Sign-In -->
+                  <a href="/auth/google" class="btn btn-danger google-btn">
+                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" />
+                    Accedi con Google
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -92,25 +87,15 @@
               <div class="card-body">
                 <h5 class="card-title">Registrazione</h5>
                 <p class="card-text">
-                  Non hai un account? Clicca il pulsante qui sotto per
-                  registrarti.
+                  Non hai un account? Clicca il pulsante qui sotto per registrarti.
                 </p>
-                <button
-                  class="btn btn-primary"
-                  onclick="showRegistrationForm()"
-                >
-                  Registrati
-                </button>
+                <button class="btn btn-primary" onclick="showRegistrationForm()">Registrati</button>
               </div>
             </div>
           </div>
         </div>
 
-        <div
-          class="row justify-content-center mt-3"
-          id="registrationForm"
-          style="display: none"
-        >
+        <div class="row justify-content-center mt-3" id="registrationForm" style="display: none">
           <div class="col-md-6">
             <div class="card">
               <div class="card-body">
@@ -118,137 +103,54 @@
                 <form action="/sign_up" method="post">
                   <div class="mb-3">
                     <label for="nome" class="form-label">Nome</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="nome"
-                      name="nome"
-                      required
-                    />
+                    <input type="text" class="form-control" id="nome" name="nome" required />
                   </div>
                   <div class="mb-3">
                     <label for="cognome" class="form-label">Cognome</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="cognome"
-                      name="cognome"
-                      required
-                    />
+                    <input type="text" class="form-control" id="cognome" name="cognome" required />
                   </div>
                   <div class="mb-3">
-                    <label for="email" class="form-label"
-                      >Indirizzo email</label
-                    >
-                    <input
-                      type="email"
-                      class="form-control"
-                      id="email"
-                      name="email"
-                      aria-describedby="emailHelp"
-                      required
-                    />
+                    <label for="email" class="form-label">Indirizzo email</label>
+                    <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" required />
                   </div>
                   <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input
-                      type="password"
-                      class="form-control"
-                      id="password"
-                      name="password"
-                      required
-                    />
+                    <input type="password" class="form-control" id="password" name="password" required />
                   </div>
                   <div class="mb-3">
-                    <label for="dataDiNascita" class="form-label"
-                      >Data di nascita</label
-                    >
-                    <input
-                      type="date"
-                      class="form-control"
-                      id="dataDiNascita"
-                      name="dataDiNascita"
-                      required
-                    />
+                    <label for="dataDiNascita" class="form-label">Data di nascita</label>
+                    <input type="date" class="form-control" id="dataDiNascita" name="dataDiNascita" required />
                   </div>
                   <div class="mb-3">
                     <label for="CF" class="form-label">Codice fiscale</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="CF"
-                      name="CF"
-                      required
-                    />
+                    <input type="text" class="form-control" id="CF" name="CF" required />
                   </div>
                   <div class="mb-3">
-                    <label for="paese" class="form-label"
-                      >Paese di nascita</label
-                    >
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="paese"
-                      name="paese"
-                      required
-                    />
+                    <label for="città" class="form-label">Città</label>
+                    <input type="text" class="form-control" id="città" name="città" required />
                   </div>
                   <div class="mb-3">
-                    <label for="città" class="form-label"
-                      >Città residenza</label
-                    >
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="città"
-                      name="città"
-                      required
-                    />
+                    <label for="cap" class="form-label">CAP</label>
+                    <input type="text" class="form-control" id="cap" name="cap" required />
                   </div>
                   <div class="mb-3">
-                    <label for="via" class="form-label">Via residenza</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="via"
-                      name="via"
-                      required
-                    />
+                    <label for="provincia" class="form-label">Provincia</label>
+                    <input type="text" class="form-control" id="provincia" name="provincia" required />
+                  </div>
+                  <div class="mb-3">
+                    <label for="via" class="form-label">Indirizzo</label>
+                    <input type="text" class="form-control" id="via" name="via" required />
                   </div>
                   <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      name="type"
-                      id="rider"
-                      value="rider"
-                    />
-                    <label class="form-check-label" for="rider">
-                      Account Rider
-                    </label>
+                    <input class="form-check-input" type="radio" name="type" id="rider" value="rider" />
+                    <label class="form-check-label" for="rider">Account Rider</label>
                   </div>
                   <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      name="type"
-                      id="ricevente"
-                      value="ricevente"
-                      checked
-                    />
-                    <label class="form-check-label" for="ricevente">
-                      Account Cliente
-                    </label>
+                    <input class="form-check-input" type="radio" name="type" id="ricevente" value="ricevente" checked />
+                    <label class="form-check-label" for="ricevente">Account Cliente</label>
                   </div>
-                  <a
-                    class="nav-link"
-                    href="contattaci.html"
-                    style="color: blue; text-decoration: underline"
-                    >Sei una farmacia? Richiedi il tuo utente speciale</a
-                  >
-                  <button type="submit" class="btn btn-primary" id="registrati">
-                    Registrati
-                  </button>
+                  <a class="nav-link" href="../form_request/contattaci.html" style="color: blue; text-decoration: underline">Sei una farmacia? Richiedi il tuo utente speciale</a>
+                  <button type="submit" class="btn btn-primary" id="registrati">Registrati</button>
                 </form>
               </div>
             </div>
@@ -256,27 +158,17 @@
         </div>
       </div>
     </main>
-    <footer style="background-color: gray">
+
+    <footer>
       <div class="container">
-        <div class="row">
-          <div class="col-md-12 text-center">
-            <p>&copy; 2024 Just Meds. All rights reserved.</p>
-            <p><a href="../form_request/contattaci.html" class="text-white">Contattaci</a></p>
-          </div>
-        </div>
+        <p>&copy; 2024 JustMeds. All rights reserved.</p>
+        <p><a href="../form_request/contattaci.html">Contattaci</a></p>
       </div>
     </footer>
+
     <!-- Bootstrap JS -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-      integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
     <!-- Your custom JS goes here -->
     <script src="login.js"></script>
   </body>

@@ -2,24 +2,32 @@ const express = require("express");
 const session = require("express-session");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
+const passport = require('../backend/auth/authGoogle');
+const User = require('./models/User')
 const app = express();
 const PORT = process.env.PORT || 3000;
-require("dotenv").config(); // console.log(process.env.SUPER_SECRET);à
-const Ordine = require("./models/Ordine");
+
+require("dotenv").config();
+
 // Middleware per il parsing del corpo delle richieste
-app.use(express.json()); // Per supportare il corpo delle richieste in formato JSON
-app.use(express.urlencoded({ extended: true })); // Per supportare il corpo delle richieste URL-encoded
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+const path = require('path');
 
 app.use(express.static("../frontend"));
+
+
+// Configurazione della sessione
 app.use(
   session({
     secret: "sanremo",
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false, httpOnly: true, maxAge: 3600000 }, // Assicurati che 'secure' sia true se sei su HTTPS
+    saveUninitialized: false,
+    cookie: { secure: false, httpOnly: true, maxAge: 3600000 },
   })
 );
 
+// Middleware per il CORS
 const cors = require("cors");
 app.use(
   cors({
@@ -30,79 +38,188 @@ app.use(
 
 const tokenChecker = require("./middlewares/tokenChecker");
 
+
 const deliveryRoutes = require("./delivery/delivery");
 app.use("/api", deliveryRoutes);
 const deliveryManagementRoutes = require("./delivery/delivery_management");
 app.use("/api", deliveryManagementRoutes);
 
 const drugRoutes = require("./order/farmaci");
+
 app.use("/api", drugRoutes);
 
-// Importa e utilizza il router di contattaci.js
+const adminRoutes = require("../backend/admin/admin");
+app.use('/api/admin', adminRoutes);
+
+
 const contattaciRouter = require("./form_request/contattaci");
 app.use('/api', contattaciRouter);
 
-const User = require("./models/User");
+
+const clientRouter = require("./client_account/client");
+app.use('/api',clientRouter);
+
+const farmaciaRoutes = require("../backend/farmacia/farmacia");
+app.use('/api', farmaciaRoutes);
+
+const pagamentoRoutes = require("../backend/pagamento/pagamento");
+app.use('/api', pagamentoRoutes);
+
+
+
 const Carrello = require("./models/Carrello");
 
-// La tua stringa di connessione Atlas
-const DbURI =
-  "mongodb+srv://adminuser:adminuser@justmedsdata.d6avjw7.mongodb.net/Data?retryWrites=true&w=majority&appName=JustMedsData";
-
+// Connessione al database
+const DbURI = "mongodb+srv://adminuser:adminuser@justmedsdata.d6avjw7.mongodb.net/Data?retryWrites=true&w=majority&appName=JustMedsData";
 mongoose
-  .connect(DbURI)
-  .then(() => console.log("MongoDB Atlas connected"))
-  .catch((err) => console.error("Error connecting to MongoDB Atlas:", err));
+.connect(DbURI)
+.then(() => console.log("MongoDB Atlas connected"))
+.catch((err) => console.error("Error connecting to MongoDB Atlas:", err));
 
 app.set("view engine", "ejs");
 app.use(morgan("dev"));
 
-// Ora usa User per interagire con la collezione users
+// Rotte per l'autenticazione con Google
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/loginFail.html' }),
+  function(req, res) {
+    req.session.user = {
+      id: req.user._id,
+      email: req.user.email,
+      type: req.user.type,
+      farmaciaID: req.user.type === 'farmacia' ? req.user._id : undefined
+    };
+    req.session.save(err => {
+      if (err) {
+        console.error('Error saving session:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+      }
+      if (req.session.user.type === 'farmacia') {
+        return res.redirect('/farmacia/farmacia.html');
+      }
+      if (req.session.user.type === 'admin') {
+        return res.redirect('/admin/admin.html');
+      }
+      if (req.session.user.type === 'ricevente') {
+        return res.redirect('/order/order.html');
+      }
+      if (req.session.user.type === 'rider') {
+        return res.redirect('/delivery/delivery.html');
+      }
+    });
+  }
+);
+
+
+
+
+// Rotte per la registrazione e il login
 app.post("/sign_up", async (req, res) => {
   try {
     const user = new User(req.body);
     await user.save();
     console.log("Record inserted successfully");
-
-    //creo il carrello se l'utente è un cliente
-    if(user.type === "ricevente"){
+    
+    if (user.type === "ricevente") {
       const cart = new Carrello({
-        clienteId: user._id, // Utilizzo del codice fiscale
+        clienteId: user._id,
         prodotti: [],
         totale: 0
       });
       await cart.save();
       console.log("Cart created successfully");
     }
-
-
-    setTimeout(() => {
-      res.redirect("../auth/SignupSuccess.html");
-    }, 2000);
+    
+    res.redirect("../auth/SignupSuccess.html");
   } catch (err) {
     console.error(err);
-    res.status(500).send(err.message);
+    
+    if (err.code === 11000) {
+      const field = Object.keys(err.keyValue)[0];
+      const message = `${field} già esistente. Per favore, usa un altro ${field}.`;
+      res.status(409).send({ success: false, message });
+    } else {
+      res.status(500).send({ success: false, message: err.message });
+    }
   }
 });
-const jwt = require("jsonwebtoken");
 
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   
   if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    return res.status(404).json({ message: 'User not found' });
   }
-
+  
   if (password !== user.password) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+    return res.status(401).json({ message: 'Invalid credentials' });
   }
-
-  req.session.user = { id: user._id, email: user.email, type: user.type };
-  res.json({ success: true, message: 'Logged in successfully', role: user.type });
+  
+  req.session.user = {
+    id: user._id,
+    email: user.email,
+    type: user.type,
+    farmaciaID: user.type === 'farmacia' ? user._id : undefined
+  };
+  
+  req.session.save(err => {
+    if (err) {
+      console.error('Error saving session:', err);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+    console.log('User logged in:', req.session.user);
+    res.json({ success: true, message: 'Logged in successfully', role: user.type });
+  });
 });
 
 
+// Middleware di autenticazione
+function isAuthenticated(req, res, next) {
+  if (req.session.user) {
+    next();
+  } else {
+    res.redirect('./auth/login.html');
+  }
+}
+
+const checkoutRouter = require("./order/checkout");
+app.use('/api',checkoutRouter);
+
+
+const UserFarmacia = require("./models/UserFarmacia");
+
+// Middleware di autorizzazione
+function checkUserRole(role) {
+  return (req, res, next) => {
+
+    const userRole = req.session.user && req.session.user.type;
+    if (userRole === 'admin' || role.includes(userRole)) {
+
+      next();
+    } else {
+      res.status(403).send("Accesso negato: non hai i permessi per accedere a questa pagina");
+    }
+  };
+}
+
+// Rotte per le pagine statiche
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// Rotte protette per le pagine HTML
+app.get('/farmacia/farmacia.html', isAuthenticated, checkUserRole(['farmacia']), (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/farmacia/farmacia.html'));
+});
+
+app.get('/admin/admin.html', isAuthenticated, checkUserRole(['admin']), (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/admin/admin.html'));
+});
+
+// Rotte di logout e verifica login
 app.get("/logout", (req, res) => {
   if (req.session) {
     req.session.destroy((err) => {
@@ -113,18 +230,11 @@ app.get("/logout", (req, res) => {
       }
     });
   } else {
-    res.end(); // if not logged in, just end the response
+    res.end();
   }
 });
 
-app.get("/api/check-login", (req, res) => {
-  if (req.session && req.session.user) {
-    res.json({ isLoggedIn: true, userRole: req.session.user.type });
-    console.log("Ruolo:", req.session.user.type);
-  } else {
-    res.json({ isLoggedIn: false });
-  }
-});
+
 
 app.get("/", (req, res) => {
   try {
@@ -134,160 +244,6 @@ app.get("/", (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
-/// Middleware per verificare il ruolo utente
-function checkUserRole(roles) {
-  return (req, res, next) => {
-    const userRole = req.session.user && req.session.user.type; // Assicurati che il ruolo sia memorizzato nella sessione
-    if (roles.includes(userRole)) {
-      next();
-    } else {
-      res
-        .status(403)
-        .send(
-          "Accesso negato: non hai i permessi per accedere a questa pagina"
-        );
-    }
-  };
-}
-
-// Proteggi le rotte con il middleware
-app.get(
-  "../frontend/delivery/delivery.html",
-  checkUserRole(["rider", "admin"]),
-  (req, res) => {
-    res.sendFile(path.join(__dirname, "views", "delivery.html"));
-  }
-);
-
-app.get(
-  "../frontend/order/order.html",
-  checkUserRole(["ricevente", "admin"]),
-  (req, res) => {
-    res.sendFile(path.join(__dirname, "views", "order.html"));
-  }
-);
-
-
-app.post('/api/cart/add', async (req, res) => {
-  const { productId, quantity, price } = req.body;
-  const clienteId = req.session.user.id; // Utilizzo del codice fiscale
-  console.log("productId:", productId, "quantity:", quantity, "clienteId:", clienteId)
-  try {
-      const cart = await Carrello.findOne({ _id: clienteId });
-      console.log("Carrello:", cart);
-      // Se il carrello non esiste, restituisci un errore
-      if (!cart) {
-          return res.status(404).json({ message: 'Carrello non trovato' });
-      }
-        // Trova l'indice del prodotto nel carrello
-        const productIndex = cart.prodotti.findIndex(p => p._id.toString() === productId);
-        let priceCorrect = price.replace(',', '.');
-        let priceNumber = parseFloat(priceCorrect);
-        console.log("priceNumber:", priceNumber);
-        if (productIndex !== -1) {
-            // Prodotto esiste, aggiorna la quantità
-            cart.prodotti[productIndex].quantita += quantity;
-            cart.prodotti[productIndex].prezzo = priceNumber*quantity;
-            console.log("Prodotto esiste, aggiorna la quantità")
-        } else {
-            // Prodotto non esiste, aggiungilo
-            cart.prodotti.push({ productId, quantita: quantity, prezzo: priceNumber});
-            console.log("Prodotto non esiste, aggiungilo")
-        }
-      cart.totale += quantity * priceNumber;  // Aggiorna il totale
-      await cart.save();
-      res.status(200).json({ success: true, message: 'Prodotto aggiunto al carrello', carrello: cart });
-  } catch (error) {
-      console.error('Errore aggiunta al carrello:', error);
-      res.status(500).json({ success: false, message: 'Errore durante l\'aggiunta al carrello', error });
-  }
-});
-
-// ENDPOINT PER VISUALIZZAZIONE DEL CARRELLO
-app.get('/api/cart', isAuthenticated, async (req, res) => {
-  const clienteId = req.session.user.id; // Assume che l'ID dell'utente sia salvato nella sessione al login
-  console.log("clienteId:", clienteId)
-  try {
-      // Popola i dettagli del prodotto nel carrello usando il modello Drug
-      const cart = await Carrello.findOne({ _id: clienteId })
-          .populate({
-              path: 'prodotti._id',
-              model: 'Drug',
-              select: 'Farmaco PrezzoRiferimentoSSN'  // Seleziona solo i campi necessari per il frontend
-          });
-
-      if (!cart || cart.prodotti.length === 0) {
-          return res.status(200).json({ success: true, items: [] });
-      }
-
-      // Mappa gli articoli del carrello per il frontend
-      const items = cart.prodotti.map(item => ({
-          id: item.productId._id,
-          name: item.productId.Farmaco,         // Nome del farmaco
-          quantity: item.quantita,              // Quantità
-          price: item.prezzo                   // Prezzo per unità
-      }));
-
-      res.status(200).json({ success: true, items: items });
-  } catch (error) {
-      console.error('Errore nel recuperare il carrello:', error);
-      res.status(500).json({ success: false, message: 'Errore durante il recupero del carrello', error });
-  }
-});
-
-// RIMOZIONE ARTICOLO DAL CARRELLO
-app.post('/api/cart/remove', isAuthenticated, async (req, res) => {
-  const { id } = req.body;
-  const clienteId = req.session.user.id;
-  try {
-      const cart = await Carrello.findOne({ _id: clienteId });
-      if (!cart) {
-          return res.status(404).json({ message: 'Carrello non trovato' });
-      }
-
-      // Rimuovi l'articolo dal carrello
-      cart.prodotti = cart.prodotti.filter(item => item.productId.toString() !== id);
-      cart.totale = cart.prodotti.reduce((acc, item) => acc + item.prezzo, 0);
-      await cart.save();
-
-      res.json({ success: true, message: 'Articolo rimosso dal carrello' });
-  } catch (error) {
-      console.error('Errore nella rimozione dell\'articolo:', error);
-      res.status(500).json({ success: false, message: 'Errore durante la rimozione dell\'articolo', error });
-  }
-});
-
-
-app.post('/api/cart/change', isAuthenticated, async (req, res) => {
-  const { productId, change } = req.body; // change è il delta, può essere 1 o -1
-  const userId = req.session.user.id;
-
-  try {
-      const cart = await Carrello.findOne({ _id: userId });
-      if (!cart) {
-          return res.status(404).json({ success: false, message: 'Carrello non trovato' });
-      }
-
-      const itemIndex = cart.prodotti.findIndex(item => item.productId.toString() === productId);
-
-      if (itemIndex > -1) {
-          cart.prodotti[itemIndex].quantita += change;
-          if (cart.prodotti[itemIndex].quantita < 1) {
-              cart.prodotti.splice(itemIndex, 1);
-          }
-          cart.totale += change * cart.prodotti[itemIndex].prezzo;
-          await cart.save();
-          res.json({ success: true, message: 'Quantità aggiornata', cart: cart });
-      } else {
-          res.status(404).json({ success: false, message: 'Prodotto non trovato nel carrello' });
-      }
-  } catch (error) {
-      console.error('Errore nella modifica della quantità nel carrello:', error);
-      res.status(500).json({ success: false, message: 'Errore tecnico nel modificare la quantità' });
-  }
-});
-
 
 
 app.listen(3000, () => {

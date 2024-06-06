@@ -13,36 +13,32 @@
   </head>
   <body style="background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);"></body>
     <header>
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <nav class="navbar navbar-lg navbar-light bg-light">
         <div class="container-fluid">
-          <a href="index.html"
-            ><img
-              src="./images/Logo.png"
-              alt="Logo"
-              class="navbar-brand img-fluid"
-              style="width: 40px"
-          /></a>
-          <a class="navbar-brand" href="index.html">JustMeds</a>
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNavAltMarkup"
-            aria-controls="navbarNavAltMarkup"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
+          <a class="navbar-brand" href="#">
+            <img src="images/Logo.png" alt="Logo" style="width: 40px;">
+          </a>
+          <a class="navbar-brand" href="../index.html">JustMeds</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
-          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-              <a class="nav-link" href="./about_us/about.html">Chi siamo</a>
-              <a class="nav-link" href="./order/order.html" id="orderLink"
-                >Lista Farmaci</a
-              >
-              <a class="nav-link" href="auth/login.html" id="loginLink">Registrati/Accedi</a>
-              <!-- Logout link will be dynamically inserted here if user is logged in -->
-            </div>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link" href="about_us/about.html">Chi Siamo</a>
+              </li>
+              <li class="nav-item" id="orderLink">
+                <a class="nav-link" href="./order/order.html">Lista Farmaci</a>
+              </li>
+              <li class="nav-item" id="loginLink">
+                <a class="nav-link" href="./auth/login.html">Registrati/Accedi</a>
+              <li class="nav-item" id="reservedAreaLink_farmacia" style="display: none;">
+                <a class="nav-link" href="./farmacia/farmacia.html">Zona Riservata</a>
+              </li>
+              <li class="nav-item" id="reservedAreaLink_admin" style="display: none;">
+                <a class="nav-link" href="./admin/admin.html">Zona Riservata</a>
+              </li>
+            </ul>
           </div>
         </div>
       </nav>
@@ -75,12 +71,11 @@
         </div>
       </div>
     </main>
-    <footer class="bg-dark text-white text-center p-0 mt-4" style="position: fixed; bottom: 0; height: 12%;">
+    <footer>
       <div class="container">
         <p>&copy; 2024 JustMeds. All rights reserved.</p>
-        <p><a href="form_request/contattaci.html" class="text-white">Contattaci</a></p>
+        <p><a href="form_request/contattaci.html">Contattaci</a></p>
       </div>
-    </footer>
     </footer>
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"

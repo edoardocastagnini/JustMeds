@@ -1,0 +1,59 @@
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+.wrapper {
+  display: flex;
+  flex: 1;
+}
+#sidebar {
+  min-width: 250px;
+  max-width: 250px;
+  background-color: #05ffc5;
+  color: #fff;
+  padding-top: 20px;
+  height: 100vh;
+}
+#sidebar a {
+  color: #fff;
+  text-decoration: none;
+  padding: 15px;
+  display: block;
+}
+#sidebar a:hover {
+  background-color: #05ffc5;
+}
+#content {
+  flex: 1;
+  padding: 20px;
+}
+.hidden {
+  display: none;
+}
+#map {
+  height: 400px;
+  width: 100%;
+}
+.profile-info {
+  display: flex;
+  flex-wrap: wrap;
+}
+.profile-details {
+  flex: 1;
+  min-width: 300px;
+}
+.map-container {
+  flex: 1;
+  min-width: 300px;
+  z-index: 0;
+}
+
+footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 10%;
+  background-color: rgb(76, 76, 76);
+  text-align: center;
+}

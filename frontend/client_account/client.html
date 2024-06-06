@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account Cliente Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="../style.css" />
+  <body>
+  <header>
+    <nav class="navbar navbar-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a href="../index.html"
+          ><img
+            src="../images/Logo.png"
+            alt="Logo"
+            class="navbar-brand img-fluid"
+            style="width: 40px"
+        /></a>
+        <a class="navbar-brand" href="../index.html">JustMeds</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNavAltMarkup"
+          aria-controls="navbarNavAltMarkup"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-link" href="../about_us/about.html">Chi siamo</a>
+            <a class="nav-link" href="../order/order.html" id="orderLink"
+              >Lista Farmaci</a
+            >
+            <!-- Logout link will be dynamically inserted here if user is logged in -->
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+ </body>
+ <style>
+    body {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+    .wrapper {
+      display: flex;
+      flex: 1;
+    }
+    #sidebar {
+      min-width: 250px;
+      max-width: 250px;
+      background-color: #00e7b9;
+      color: #fff;
+      padding-top: 20px;
+      height: 100vh;
+    }
+
+    #sidebar a {
+      color: #fff;
+      text-decoration: none;
+      padding: 15px;
+      display: block;
+    }
+    #sidebar a:hover {
+      background-color: #00e7b9;
+    }
+    #content {
+      flex: 1;
+      padding: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <nav id="sidebar">
+      <div class="sidebar-header text-center">
+        <h3>Il tuo Account</h3>
+      </div>
+      <ul class="list-unstyled components">
+        <li>
+          <a href="#" onclick="showSection('orderSection')">I miei ordini</a>
+        </li>
+        <li>
+          <a href="#" onclick="showSection('formSection')">Richieste Assistenza</a>
+        </li>
+        <li>
+          <a href="#" onclick="showSection('impostazioniSection')">Impostazioni</a>
+        </li>
+      </ul>
+    </nav>
+
+    
+    <div id="content">    
+      <div id="orderSection" class="hidden">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2>Ordini</h2>
+          <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#stateLegendModal">Legenda Stati</button>
+        </div>
+        
+        <h3>Ordini in Corso</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Stato</th>
+              <th>Prodotti</th>
+              <th>Prezzo</th>
+              <th>Farmacia</th>
+              <th>Indirizzo</th>
+              <th>Azioni</th>
+            </tr>
+          </thead>
+          <tbody id="ongoingOrders">
+            <!-- Ordini in corso -->
+          </tbody>
+        </table>
+    
+        <h3>Storico Ordini</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Stato</th>
+              <th>Prodotti</th>
+              <th>Prezzo</th>
+              <th>Farmacia</th>
+              <th>Indirizzo</th>
+            </tr>
+          </thead>
+          <tbody id="historicalOrders">
+            <!-- Storico ordini -->
+          </tbody>
+        </table>
+      </div>
+    <div id="formSection" class="hidden">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2>Richieste Assistenza</h2>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Messaggio</th>
+              <th>Data Invio</th>
+              <th>Risposta</th>
+              <th>Data Risposta</th>
+            </tr>
+            <button type="button" class="btn btn-primary" onclick="window.location.href='../form_request/contattaci.html'">Nuova Richiesta</button>
+          </thead>
+          <tbody id="formRequestsTable">
+            <!-- Richieste assistenza -->
+          </tbody>
+        </table>
+      </div>
+    
+
+      <div id="impostazioniSection" class="hidden">
+        <div id="profileInfo">
+          <h3>Informazioni Profilo</h3>
+          <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+          <p><strong>Nome:</strong> <span id="profileName"></span></p>
+          <p><strong>Cognome:</strong> <span id="profileSurname"></span></p>
+          <p><strong>Città:</strong> <span id="profileCity"></span></p>
+          <p><strong>Cap:</strong> <span id="profileCap"></span></p>
+          <p><strong>Provincia:</strong> <span id="profileProvince"></span></p>
+          <p><strong>Indirizzo:</strong> <span id="profileAddress"></span></p>
+          <button class="btn btn-primary" onclick="enableEditProfile()">Modifica</button>
+          <button class="btn btn-success hidden" id="saveProfileBtn" onclick="saveProfile()">Salva</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modale per la legenda degli stati -->
+    <div class="modal fade" id="stateLegendModal" tabindex="-1" aria-labelledby="stateLegendModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="stateLegendModalLabel">Legenda Stati</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <ul>
+              <li><strong>Inviato:</strong> Il tuo ordine è stato inviato alla farmacia, rimani in attesa di una risposta dalla farmacia</li>
+              <li><strong>Accettato:</strong> Il tuo ordine è stato accettato dalla farmacia, procedi al pagamento</li>
+              <li><strong>Rifiutato:</strong> Il tuo ordine è stato rifiutato dalla farmacia per mancata disponibilità di prodotti</li>
+              <li><strong>Confermato:</strong> Il tuo ordine è stato pagato e sta aspettando di essere assegnato ad un rider</li>
+              <li><strong>Cancellato:</strong> Hai annullato l'ordine</li>
+              <li><strong>Attesa:</strong> Il tuo ordine sta per essere ritirato dal rider</li>
+              <li><strong>In consegna:</strong> Il tuo ordine è stato ritirato dal rider e arriverà presto</li>
+              <li><strong>Consegnato:</strong> Il tuo ordine è stato consegnato</li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="container">
+        <p>&copy; 2024 JustMeds. All rights reserved.</p>
+        <p><a href="../form_request/contattaci.html">Contattaci</a></p>
+      </div>
+    </footer>
+    
+    
+   
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <script src="client.js"></script>
+  </body>
+</html>

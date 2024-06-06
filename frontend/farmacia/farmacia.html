@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Farmacia Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="style.css" rel="stylesheet" />
+  <link href="../style.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+   
+</head>
+<body>
+  <header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a href="../index.html">
+          <img src="../images/Logo.png" alt="Logo" class="navbar-brand img-fluid" style="width: 40px" />
+        </a>
+        <a class="navbar-brand" href="../index.html">JustMeds</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNavAltMarkup"
+          aria-controls="navbarNavAltMarkup"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-link" href="../about_us/about.html">Chi siamo</a>
+            <a class="nav-link" href="../order/order.html" id="orderLink">Lista Farmaci</a>
+            <!-- Logout link will be dynamically inserted here if user is logged in -->
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="wrapper">
+    <nav id="sidebar">
+      <div class="sidebar-header text-center">
+        <h3>Farmacia</h3>
+      </div>
+      <ul class="list-unstyled components">
+        <li>
+          <a href="#storicoOrdiniSection">Storico Ordini</a>
+        </li>
+        <li>
+          <a href="#ordiniInCorsoSection">Ordini in Corso</a>
+        </li>
+        <li>
+          <a href="#listaOrdiniCandidatiSection">Lista Ordini Candidati</a>
+        </li>
+        <li>
+          <a href="#impostazioniSection">Impostazioni</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div id="content">
+      <div id="storicoOrdiniSection" class="hidden">
+        <h2>Storico Ordini</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>ID</th>
+              <th>Azione</th>
+            </tr>
+          </thead>
+          <tbody id="storicoOrdiniTableBody">
+            <!-- Contenuto dello storico ordini -->
+          </tbody>
+        </table>
+      </div>
+      <div id="ordiniInCorsoSection" class="hidden">
+        <h2>Ordini in Corso</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Ordine ID</th>
+                    <th>Prodotti</th>
+                    <th>Quantità</th>
+                    <th>Prezzo Totale</th>
+                    <th>Cliente</th>
+                    <th>Rider</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody id="ordiniInCorsoTableBody">
+                <!-- Ordini in corso saranno inseriti qui -->
+            </tbody>
+        </table>
+      </div>
+      
+      <div id="listaOrdiniCandidatiSection" class="hidden">
+        <h2>Lista Ordini Candidati</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>ID</th>
+              <th>Prodotti</th>
+              <th>Quantità</th>
+              <th>Prezzo</th>
+              <th>Cliente</th>
+              <th>Azione</th>
+            </tr>
+          </thead>
+          <tbody id="listaOrdiniCandidatiTableBody">
+            <!-- Contenuto della lista ordini candidati -->
+          </tbody>
+        </table>
+      </div>
+      <div id="impostazioniSection">
+        <h2>Impostazioni</h2>
+        <div class="profile-info">
+          <div class="profile-details">
+            <div id="profileInfo">
+              <h3>Informazioni Profilo</h3>
+              <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+              <p><strong>Ruolo:</strong> <span id="profileRole"></span></p>
+            </div>
+            <div id="farmaciaInfo">
+              <h3>Informazioni Farmacia</h3>
+              <p><strong>Nome Farmacia:</strong> <span id="farmaciaNome"></span></p>
+              <p><strong>Codice Farmacia:</strong> <span id="farmaciaCodice"></span></p>
+              <p><strong>IVA:</strong> <span id="farmaciaIVA"></span></p>
+              <p><strong>CAP:</strong> <span id="farmaciaCAP"></span></p>
+              <p><strong>Comune:</strong> <span id="farmaciaComune"></span></p>
+              <p><strong>Provincia:</strong> <span id="farmaciaProvincia"></span></p>
+              <p><strong>Regione:</strong> <span id="farmaciaRegione"></span></p>
+              <p><strong>Indirizzo:</strong> <span id="farmaciaIndirizzo"></span></p>
+            </div>
+          </div>
+          <div id="map" class="map-container"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="verifyCodeModal" tabindex="-1" aria-labelledby="verifyCodeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="verifyCodeModalLabel">Verifica Codice</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="currentOrderId" />
+          <div class="mb-3">
+            <label for="verificationCode" class="form-label">Codice di Verifica</label>
+            <input type="text" class="form-control" id="verificationCode" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+          <button type="button" class="btn btn-primary" onclick="verifyCode()">Conferma</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 JustMeds. All rights reserved.</p>
+      <p><a href="../form_request/contattaci.html">Contattaci</a></p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="farmacia.js"></script>
+</body>
+</html>

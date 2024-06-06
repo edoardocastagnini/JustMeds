@@ -23,20 +23,21 @@ const prodottoSchema = new mongoose.Schema({
 const ordineSchema = new mongoose.Schema({
     utenteID: String,
     farmaciaID: String,
+    prezzoFinale: Number,
     prodotti: [prodottoSchema],
     riderID: String,
     stato: {
         type: String,
-        enum: ['inviato', 'accettato', 'rifiutato', 'confermato', 'attesa', 'consegnato', 'cancellato'],
-        default: 'In attesa'
+        enum: ['inviato', 'accettato', 'rifiutato', 'confermato', 'attesa', 'consegnato','inconsegna','cancellato'],
     },
     secretcode: String,
     indirizzoCliente: {
         nome: String,
         cognome: String,
-        via: String,
         città: String,
-        paese: String
+        cap: String,
+        provincia: String,
+        via: String,
     },
     indirizzoFarmacia: {
         via: String,

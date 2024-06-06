@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Just Meds</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar navbar-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a href="../index.html"
+            ><img
+              src="../images/Logo.png"
+              alt="Logo"
+              class="navbar-brand img-fluid"
+              style="width: 40px"
+          /></a>
+          <a class="navbar-brand" href="../index.html">JustMeds</a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+              <a class="nav-link" href="../about_us/about.html">Chi siamo</a>
+              <a class="nav-link" href="../order/order.html" id="orderLink">Lista Farmaci</a>
+              <!-- Logout link will be dynamically inserted here if user is logged in -->
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <div class="container my-5">
+        <h2>Checkout</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Indirizzo di Spedizione</h4>
+                <div id="user-address" class="p-3 border bg-light">
+                    Caricamento indirizzo...
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h4>Riepilogo Ordine</h4>
+                <div class="p-3 border bg-light">
+                    <ul id="cart-items" class="list-unstyled"></ul>
+                    <p id="total-price">Caricamento prezzo totale...</p>
+                </div>
+            </div>
+        </div>
+        <!-- Aggiungi il menu a tendina per la selezione della farmacia -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h4>Seleziona Farmacia</h4>
+                <select id="farmacia-select" class="form-select">
+                    <option selected disabled>Seleziona una farmacia</option>
+                    <!-- Le opzioni verranno caricate dinamicamente -->
+                </select>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col text-center">
+                <button id="submit-order" class="btn btn-primary">Invia Ordine alla Farmacia</button>
+            </div>
+        </div>
+    </div>
+    <footer>
+      <div class="container">
+        <p>&copy; 2024 JustMeds. All rights reserved.</p>
+        <p><a href="../form_request/contattaci.html">Contattaci</a></p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <script src="checkout.js"></script>
+  </body>
+</html>

@@ -28,10 +28,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('cartIcon').style.display = 'block';
                 document.getElementById('logoutLink').style.display = 'block';
                 document.getElementById('loginLink').style.display = 'none';
+                document.getElementById('accountIcon').style.display = 'block';
             } else {
                 document.getElementById('logoutLink').style.display = 'none';
                 document.getElementById('loginLink').style.display = 'block';
                 document.getElementById('cartIcon').style.display = 'none';
+                document.getElementById('accountIcon').style.display = 'none';
             }
         })
         .catch(error => console.error('Error checking login status:', error));
