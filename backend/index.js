@@ -44,7 +44,7 @@ app.use("/api", deliveryRoutes);
 const deliveryManagementRoutes = require("./delivery/delivery_management");
 app.use("/api", deliveryManagementRoutes);
 
-const drugRoutes = require("./order/farmaci");
+const drugRoutes = require("./order/order_cart");
 
 app.use("/api", drugRoutes);
 
