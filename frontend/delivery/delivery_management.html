@@ -1,372 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>JustMeds</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="../style.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
     <style>
-        .map-container {
-            display: flex;
-            justify-content: space-between;
-        }
-        .map {
-            width: 48%;
-            height: 500px;
-            position: relative;
-        }
-        .loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-            font-size: 1.5em;
-            color: #000;
-        }
+      .map-container {
+        display: flex;
+        justify-content: space-between;
+      }
+      .map {
+        width: 48%;
+        height: 500px;
+        position: relative;
+      }
+      .loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        font-size: 1.5em;
+        color: #000;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container-fluid">
-                <a href="../index.html">
-                    <img src="../images/Logo.png" alt="Logo" class="navbar-brand img-fluid" style="width: 40px">
-                </a>
-                <a class="navbar-brand" href="../index.html">JustMeds</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                    <div class="navbar-nav">
-                        <a class="nav-link" href="../about_us/about.html">Chi siamo</a>
-                        <a class="nav-link" href="../order/order.html" id="orderLink">Lista Farmaci</a>
-                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#accountModal">
-                            <i class="fas fa-user-circle" style="font-size: 30px;"></i>
-                        </a>
-                    </div>
-                </div>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a href="../index.html">
+            <img
+              src="../images/Logo.png"
+              alt="Logo"
+              class="navbar-brand img-fluid"
+              style="width: 40px"
+            />
+          </a>
+          <a class="navbar-brand" href="../index.html">JustMeds</a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+              <a class="nav-link" href="../about_us/about.html">Chi siamo</a>
+              <a class="nav-link" href="../order/order.html" id="orderLink"
+                >Lista Farmaci</a
+              >
+              <a
+                class="nav-link"
+                href="#"
+                data-bs-toggle="modal"
+                data-bs-target="#accountModal"
+              >
+                <i class="fas fa-user-circle" style="font-size: 30px"></i>
+              </a>
             </div>
-        </nav>
+          </div>
+        </div>
+      </nav>
     </header>
     <!-- Back button container -->
     <div class="back-button-container">
-        <button class="btn btn-link" onclick="window.location.href='delivery.html'">
-            <i class="fas fa-arrow-left" style="font-size: 1.5em;"></i>
-        </button>
+      <button
+        class="btn btn-link"
+        onclick="window.location.href='delivery.html'"
+      >
+        <i class="fas fa-arrow-left" style="font-size: 1.5em"></i>
+      </button>
     </div>
 
     <!-- STORICO -->
     <div class="container mt-4">
-        <h2>Ordine attuale</h2>
-        <div class="card-deck mt-3" id="waitingOrders"></div>
+      <h2>Ordine attuale</h2>
+      <div class="card-deck mt-3" id="waitingOrders"></div>
     </div>
 
     <div class="container mt-4 mb-4 map-container">
-        <div id="pickupMap" class="map">
-            <div class="loading">Caricamento...</div>
-        </div>
-        <div id="deliveryMap" class="map">
-            <div class="loading">Caricamento...</div>
-        </div>
+      <div id="pickupMap" class="map">
+        <div class="loading">Caricamento...</div>
+      </div>
+      <div id="deliveryMap" class="map">
+        <div class="loading">Caricamento...</div>
+      </div>
     </div>
 
     <!-- RIEPILOGO GUADAGNI/PERDITE TOTALI -->
     <div class="container mt-4 mb-5">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Riepilogo Guadagni</h5>
-                <p class="card-text"><strong>Soldi Guadagnati:</strong> €5</p>
-                <!-- Aggiungi qui il calcolo del totale dei guadagni (o perdite) -->
-            </div>
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Riepilogo Guadagni</h5>
+          <p class="card-text"><strong>Soldi Guadagnati:</strong> €5</p>
+          <!-- Aggiungi qui il calcolo del totale dei guadagni (o perdite) -->
         </div>
+      </div>
     </div>
-
-    <script>
-        let isOrderAccepted = false;
-        const cancelButton = document.createElement("button");
-
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
-        }
-
-        document.addEventListener("DOMContentLoaded", async () => {
-            try {
-                const orderId = getQueryParam('orderId');
-                if (!orderId) {
-                    console.error("No order ID found in URL");
-                    return;
-                }
-
-                console.log("Fetching order...");
-                const response = await fetch(`/api/orders/${orderId}`);
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                const order = await response.json(); // Ottieni direttamente l'ordine anziché un array di ordini
-                console.log("Order fetched:", order);
-                const waitingOrdersContainer = document.getElementById("waitingOrders");
-
-                if (!order) {
-                    const noOrderMessage = document.createElement("p");
-                    noOrderMessage.textContent = "Ordine non trovato...";
-                    waitingOrdersContainer.appendChild(noOrderMessage);
-                    return;
-                }
-
-                const orderCard = createOrderCard(order);
-                waitingOrdersContainer.appendChild(orderCard);
-
-                // Geocode addresses and initialize maps in parallel
-                const geocodePromises = [
-                    geocodeAddress(order.indirizzoFarmacia, 'pickupMap', "Indirizzo di ritiro"),
-                    geocodeAddress(order.indirizzoCliente, 'deliveryMap', "Indirizzo di consegna")
-                ];
-                await Promise.all(geocodePromises);
-
-            } catch (error) {
-                console.error("Errore nel caricare l'ordine:", error);
-            }
-        });
-
-        function showSecretCode(orderId, secretCode, button) {
-            // Crea l'elemento del codice segreto se non esiste
-            let secretCodeElement = document.querySelector(`.secret-code-${orderId}`);
-            if (!secretCodeElement) {
-                secretCodeElement = document.createElement("div");
-                secretCodeElement.classList.add(`secret-code-${orderId}`, "mt-2");
-                secretCodeElement.style.display = "none"; // Inizia nascosto
-                secretCodeElement.innerHTML = `Codice Segreto: ${secretCode} <span class="timer-${orderId}"></span>`;
-                button.parentElement.appendChild(secretCodeElement);
-            }
-
-            // Mostra il codice segreto
-            secretCodeElement.style.display = "block";
-            button.style.display = "none"; // Nascondi il bottone
-
-            // Avvia il timer
-            let timeLeft = 300; // 300 secondi = 5 minuti
-            const timerElement = document.querySelector(`.timer-${orderId}`);
-            const timerInterval = setInterval(() => {
-                timeLeft--;
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                timerElement.textContent = ` (Tempo rimanente: ${minutes}:${seconds < 10 ? '0' : ''}${seconds})`;
-
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    secretCodeElement.style.display = "none"; // Nascondi il codice segreto
-                    button.remove(); // Rimuovi definitivamente il bottone
-                }
-            }, 1000);
-        }
-
-        function createOrderCard(order) {
-            const orderCard = document.createElement("div");
-            orderCard.classList.add("card", "mb-3");
-
-            const cardBody = document.createElement("div");
-            cardBody.classList.add("card-body");
-
-            const title = document.createElement("h5");
-            title.classList.add("card-title");
-            title.textContent = `Ordine #${order._id}`;
-            cardBody.appendChild(title);
-
-            const productList = document.createElement("ul");
-            productList.classList.add("list-group", "list-group-flush");
-
-            let productCounter = 1;
-
-            order.prodotti.forEach((product) => {
-                const productItem = document.createElement("li");
-                productItem.classList.add("list-group-item");
-                productItem.textContent = `Farmaco ${productCounter} - Quantità: ${product.quantita} - Prezzo unitario: €${product.prezzo}`;
-                productList.appendChild(productItem);
-                productCounter++;
-            });
-
-            cardBody.appendChild(productList);
-
-            const totalPrice = document.createElement("p");
-            totalPrice.classList.add("card-text", "mt-2");
-            totalPrice.innerHTML = `<strong>Prezzo Totale:</strong> €${order.prodotti.reduce((acc, item) => acc + (item.quantita * item.prezzo), 0)}`;
-            cardBody.appendChild(totalPrice);
-
-            const pickupAddress = document.createElement("p");
-            pickupAddress.classList.add("card-text");
-            pickupAddress.innerHTML = `<strong>Indirizzo di ritiro:</strong> ${order.indirizzoFarmacia.via}, ${order.indirizzoFarmacia.cap} ${order.indirizzoFarmacia.provincia}`;
-            cardBody.appendChild(pickupAddress);
-
-            const deliveryAddress = document.createElement("p");
-            deliveryAddress.classList.add("card-text");
-            deliveryAddress.innerHTML = `<strong>Indirizzo di consegna:</strong> ${order.indirizzoCliente.via}, ${order.indirizzoCliente.cap} ${order.indirizzoCliente.città}`;
-            cardBody.appendChild(deliveryAddress);
-
-            // Bottone "Mostra Codice Segreto"
-            const secretCodeButton = document.createElement("button");
-            secretCodeButton.classList.add("btn", "btn-primary", "me-2");
-            secretCodeButton.textContent = "Mostra Codice Segreto";
-            secretCodeButton.addEventListener("click", () => showSecretCode(order._id, order.secretcode, secretCodeButton));
-            cardBody.appendChild(secretCodeButton);
-
-            // Bottone "Accetta Incarico"
-            const acceptButton = document.createElement("button");
-            acceptButton.classList.add("btn", "btn-success", "me-2");
-            acceptButton.textContent = "Accetta Incarico";
-            acceptButton.addEventListener("click", async () => {
-                await acceptOrder(order._id, acceptButton);
-            });
-            cardBody.appendChild(acceptButton);
-
-            // Bottone "Annulla Accettazione"
-            const cancelButton = document.createElement("button");
-            cancelButton.classList.add("btn", "btn-danger", "me-2");
-            cancelButton.textContent = "Annulla Accettazione";
-            cancelButton.style.display = "none";
-            cancelButton.addEventListener("click", async () => {
-                await cancelOrderAcceptance(order._id, cancelButton, acceptButton);
-            });
-            cardBody.appendChild(cancelButton);
-
-            orderCard.appendChild(cardBody);
-
-            return orderCard;
-        }
-
-        async function acceptOrder(orderId, acceptButton) {
-            try {
-                const response = await fetch(`/api/orders/${orderId}/accept`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error("Errore durante l'accettazione dell'ordine");
-                }
-
-                const result = await response.json();
-                console.log(result.message);
-
-                acceptButton.classList.add("disabled");
-                acceptButton.disabled = true;
-
-                const cancelButton = acceptButton.nextElementSibling;
-                if (cancelButton) {
-                    cancelButton.style.display = "inline-block";
-                }
-            } catch (error) {
-                console.error("Errore nell'accettazione dell'ordine:", error);
-            }
-        }
-
-        async function cancelOrderAcceptance(orderId, cancelButton, acceptButton) {
-            try {
-                const response = await fetch(`/api/orders/${orderId}/cancel`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error("Errore durante l'annullamento dell'accettazione dell'ordine");
-                }
-
-                const result = await response.json();
-                console.log(result.message);
-
-                cancelButton.style.display = "none";
-                acceptButton.classList.remove("disabled");
-                acceptButton.disabled = false;
-            } catch (error) {
-                console.error("Errore nell'annullamento dell'accettazione dell'ordine:", error);
-            }
-        }
-
-        async function geocodeAddress(address, mapId, label) {
-            const query = `${address.via}, ${address.cap} ${address.provincia} ${address.città}`;
-            console.log(`Geocoding for ${label}:`, query); // Log the address being geocoded
-            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                if (data && data.length > 0) {
-                    const lat = data[0].lat;
-                    const lon = data[0].lon;
-                    console.log(`Coordinates for ${label}:`, lat, lon);
-                    initMap(mapId, lat, lon, label);
-                } else {
-                    console.error(`No results found for ${label}`);
-                    handleMapError(mapId, `Nessun risultato trovato per ${label}`);
-                }
-            } catch (error) {
-                console.error(`Geocoding error for ${label}:`, error);
-                handleMapError(mapId, `Errore di geocoding per ${label}`);
-            }
-        }
-
-        function initMap(mapId, lat, lon, label) {
-            const map = L.map(mapId).setView([lat, lon], 15);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            L.marker([lat, lon]).addTo(map)
-                .bindPopup(label)
-                .openPopup();
-
-            // Remove loading indicator
-            const loadingIndicator = document.querySelector(`#${mapId} .loading`);
-            if (loadingIndicator) {
-                loadingIndicator.remove();
-            }
-        }
-
-        function handleMapError(mapId, message) {
-            const mapContainer = document.getElementById(mapId);
-            mapContainer.innerHTML = `<div class="loading">${message}</div>`;
-        }
-    </script>
-
-    <!-- Script per la mappa -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
     <!-- POPUP PER LA GESTIONE DELL'ACCOUNT -->
-    <div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="accountModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="accountModalLabel">Il tuo Account</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p><strong>Ordini accettati:</strong> 5</p>
-                    <p><strong>Soldi guadagnati:</strong> €50</p>
-                    <div class="d-grid">
-                    <button class="btn btn-secondary mb-2" onclick="window.location.href='delivery_management.html'">Visualizza Ordini Accettati</button>
-                    <button class="btn btn-danger" onclick="window.location.href='/logout'">Logout</button>
-                  </div>
-                </div>
+    <div
+      class="modal fade"
+      id="accountModal"
+      tabindex="-1"
+      aria-labelledby="accountModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="accountModalLabel">Il tuo Account</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p><strong>Ordini accettati:</strong> 5</p>
+            <p><strong>Soldi guadagnati:</strong> €50</p>
+            <div class="d-grid">
+              <button
+                class="btn btn-secondary mb-2"
+                onclick="window.location.href='delivery_management.html'"
+              >
+                Visualizza Ordini Accettati
+              </button>
+              <button
+                class="btn btn-danger"
+                onclick="window.location.href='/logout'"
+              >
+                Logout
+              </button>
             </div>
+          </div>
         </div>
+      </div>
     </div>
-
-    <footer class="bg-dark text-white text-center p-0 mt-4">
-        <div class="container">
-            <p>&copy; 2024 JustMeds. All rights reserved.</p>
-        </div>
-    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-</body>
+
+    <script src="delivery_management.js"></script>
+
+    <!-- Script per la mappa -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  </body>
 </html>

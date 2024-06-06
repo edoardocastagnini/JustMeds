@@ -16,4 +16,12 @@ const tokenChecker = (req, res, next) => {
     }
 };
 
-module.exports = tokenChecker;
+function isAuthenticated(req, res, next) {
+    if (req.session.user) {
+      next();
+    } else {
+      res.status(401).send({ success: false, message: "Not authenticated" });
+    }
+  }
+
+module.exports = { tokenChecker, isAuthenticated };

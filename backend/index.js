@@ -30,6 +30,11 @@ app.use(
 
 const tokenChecker = require("./middlewares/tokenChecker");
 
+const deliveryRoutes = require("./delivery/delivery");
+app.use("/api", deliveryRoutes);
+const deliveryManagementRoutes = require("./delivery/delivery_management");
+app.use("/api", deliveryManagementRoutes);
+
 const drugRoutes = require("./order/farmaci");
 app.use("/api", drugRoutes);
 
@@ -97,18 +102,6 @@ app.post('/login', async (req, res) => {
   res.json({ success: true, message: 'Logged in successfully', role: user.type });
 });
 
-
-function isAuthenticated(req, res, next) {
-  if (req.session.user) {
-    next();
-  } else {
-    res.status(401).send({ success: false, message: "Not authenticated" });
-  }
-}
-
-app.get("/protected-route", isAuthenticated, (req, res) => {
-  res.send("Access to protected route!");
-});
 
 app.get("/logout", (req, res) => {
   if (req.session) {
@@ -294,80 +287,6 @@ app.post('/api/cart/change', isAuthenticated, async (req, res) => {
       res.status(500).json({ success: false, message: 'Errore tecnico nel modificare la quantità' });
   }
 });
-
-// VISUALIZZAZIONE ORDINI
-// Endpoint per recuperare tutti gli ordini
-app.get("/api/orders", isAuthenticated, async (req, res) => {
-  try {
-    const orders = await Ordine.find().populate('prodotti._id');
-    res.json(orders);
-  } catch (error) {
-    console.error("Errore nel recuperare gli ordini:", error);
-    res.status(500).json({ success: false, message: "Errore durante il recupero degli ordini" });
-  }
-});
-
-// VISUALIZZAZIONE ORDINE SPECIFICO
-// Endpoint per recuperare un singolo ordine
-app.get("/api/orders/:orderId", isAuthenticated, async (req, res) => {
-  try {
-    const orderId = req.params.orderId;
-    const order = await Ordine.findById(orderId).populate('prodotti._id');
-    if (!order) {
-      return res.status(404).json({ success: false, message: "Ordine non trovato" });
-    }
-    res.json(order);
-  } catch (error) {
-    console.error("Errore nel recuperare l'ordine:", error);
-    res.status(500).json({ success: false, message: "Errore durante il recupero dell'ordine" });
-  }
-});
-
-// Endpoint per aggiornare lo stato dell'ordine
-app.post('/api/orders/:id/accept', async (req, res) => {
-  const orderId = req.params.id;
-  console.log(`POST /api/orders/${orderId}/accept`);
-
-  try {
-    // Recupera l'ordine dal database utilizzando il modello Ordine
-    const order = await Ordine.findById(orderId);
-
-    if (order) {
-      // Aggiorna lo stato dell'ordine
-      order.stato = 'attesa';
-      order.riderID = req.session.user.id; // Imposta l'ID del rider che ha accettato l'ordine
-      // Salva l'ordine aggiornato nel database
-      await order.save();
-      res.status(200).json({ message: 'Ordine accettato' });
-    } else {
-      res.status(404).json({ message: 'Ordine non trovato' });
-    }
-  } catch (error) {
-    console.error('Errore durante l\'accettazione dell\'ordine:', error);
-    res.status(500).json({ message: 'Errore durante l\'accettazione dell\'ordine', error });
-  }
-});
-
-// Endpoint per annullare l'accettazione dell'ordine
-app.post('/api/orders/:id/cancel', async (req, res) => {
-  const orderId = req.params.id;
-  console.log(`POST /api/orders/${orderId}/cancel`);
-
-  try {
-      const order = await Ordine.findById(orderId);
-      if (order) {
-          order.stato = 'confermato'; // Imposta lo stato dell'ordine su 'confermato'
-          await order.save();
-          res.status(200).json({ message: 'Accettazione dell\'incarico annullata' });
-      } else {
-          res.status(404).json({ message: 'Ordine non trovato' });
-      }
-  } catch (error) {
-      console.error('Errore durante l\'annullamento dell\'accettazione dell\'incarico:', error);
-      res.status(500).json({ message: 'Errore durante l\'annullamento dell\'accettazione dell\'incarico', error });
-  }
-});
-
 
 
 
