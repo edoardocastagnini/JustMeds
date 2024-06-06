@@ -104,7 +104,7 @@ router.get('/ordini_f/incorso', isAuthenticated, async (req, res) => {
 });
 
 
-// Endpoint per ottenere lo storico ordini (in attesa o consegnato)
+// Endpoint per ottenere lo storico ordini (inconsegna o consegnato)
 router.get('/ordini_f/storico', isAuthenticated, async (req, res) => {
   const farmaciaID = req.session.user && req.session.user.type === 'farmacia' ? req.session.user.farmaciaID : undefined;
 
@@ -113,7 +113,7 @@ router.get('/ordini_f/storico', isAuthenticated, async (req, res) => {
   }
 
   try {
-    const ordini = await Ordine.find({ stato: { $in: ['in attesa', 'consegnato'] }, farmaciaID });
+    const ordini = await Ordine.find({ stato: { $in: ['inconsegna', 'consegnato'] }, farmaciaID });
     res.status(200).json(ordini);
   } catch (error) {
     console.error('Errore durante il recupero dello storico ordini:', error);
@@ -198,6 +198,36 @@ router.get('/ordini_f/storico', isAuthenticated, async (req, res) => {
     res.status(500).json({ success: false, message: 'Errore durante il recupero dello storico ordini', error });
   }
 });
+
+router.post('/ordini_f/:orderId/verifyCode', async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { verificationCode } = req.body;
+
+
+    const order = await Ordine.findById(orderId);
+
+    if (!order) {
+      return res.status(404).send({ message: 'Ordine non trovato.' });
+    }
+
+    if (order.secretcode === verificationCode) {
+      order.stato = 'inconsegna';
+      await order.save();
+      res.send({ valid: true });
+    } else {
+      res.send({ valid: false });
+    }
+  } catch (error) {
+    console.error('Errore durante la verifica del codice:', error);
+    res.status(500).send({ message: 'Errore durante la verifica del codice.' });
+  }
+});
+
+
+
+
+
 
 
 

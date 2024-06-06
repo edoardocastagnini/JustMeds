@@ -245,7 +245,7 @@ async function loadStoricoOrders(stato, containerId, endpoint) {
       `;
       container.appendChild(orderElement);
 
-      const indirizzoCliente = `${order.indirizzoCliente.via}, ${order.indirizzoCliente.città}, ${order.indirizzoCliente.paese}`;
+      const indirizzoCliente = `${order.indirizzoCliente.via}, ${order.indirizzoCliente.città}, ${order.indirizzoCliente.cap}`;
 
       const detailsRow = document.createElement('tr');
       detailsRow.innerHTML = `
