@@ -2,8 +2,7 @@ const express = require("express");
 const session = require("express-session");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
-const passport = require('../backend/auth/authGoogle');
-const User = require('./models/User')
+const passport = require('./auth/authGoogle'); 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -14,7 +13,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static("../frontend"));
-
 
 // Configurazione della sessione
 app.use(
@@ -46,16 +44,16 @@ const deliveryManagementRoutes = require("./delivery/delivery_management");
 app.use("/api", deliveryManagementRoutes);
 
 const drugRoutes = require("./order/order_cart");
-
 app.use("/api", drugRoutes);
 
 const adminRoutes = require("../backend/admin/admin");
 app.use('/api/admin', adminRoutes);
 
+const authGoogleRoutes = require("./auth/authGoogleRoutes"); // Aggiungi questa riga
+app.use("/api", authGoogleRoutes); // Aggiungi questa riga
 
 const contattaciRouter = require("./form_request/contattaci");
 app.use('/api', contattaciRouter);
-
 
 const clientRouter = require("./client_account/client");
 app.use('/api',clientRouter);
@@ -65,8 +63,6 @@ app.use('/api', farmaciaRoutes);
 
 const pagamentoRoutes = require("../backend/pagamento/pagamento");
 app.use('/api', pagamentoRoutes);
-
-
 
 const Carrello = require("./models/Carrello");
 
@@ -80,40 +76,8 @@ mongoose
 app.set("view engine", "ejs");
 app.use(morgan("dev"));
 
-// Rotte per l'autenticazione con Google
-app.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
-
-app.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/loginFail.html' }),
-  function(req, res) {
-    req.session.user = {
-      id: req.user._id,
-      email: req.user.email,
-      type: req.user.type,
-      farmaciaID: req.user.type === 'farmacia' ? req.user._id : undefined
-    };
-    req.session.save(err => {
-      if (err) {
-        console.error('Error saving session:', err);
-        return res.status(500).json({ message: 'Internal server error' });
-      }
-      if (req.session.user.type === 'farmacia') {
-        return res.redirect('/farmacia/farmacia.html');
-      }
-      if (req.session.user.type === 'admin') {
-        return res.redirect('/admin/admin.html');
-      }
-      if (req.session.user.type === 'ricevente') {
-        return res.redirect('/order/order.html');
-      }
-      if (req.session.user.type === 'rider') {
-        return res.redirect('/delivery/delivery.html');
-      }
-    });
-  }
-);
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Middleware di autenticazione
 function isAuthenticated(req, res, next) {
@@ -127,13 +91,8 @@ function isAuthenticated(req, res, next) {
 const checkoutRouter = require("./order/checkout");
 app.use('/api',checkoutRouter);
 
-
 const UserFarmacia = require("./models/UserFarmacia");
 
-
-
-
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
-
