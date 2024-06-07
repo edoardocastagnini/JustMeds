@@ -1,80 +1,974 @@
 FORMAT: 1A
-HOST: https://polls.apiblueprint.org/
+HOST: http://localhost:3000/
+
 
 # Just Meds API V2
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+## Group Google Auth
 
-## Questions Collection [/questions]
+### Google Login [GET /auth/google]
++ Request
+    + Headers
 
-### List All Questions [GET]
+            Authorization: `Bearer {token}`
+
++ Response 302 (text/plain)
+    + Headers
+    
+            Location: `https://accounts.google.com/o/oauth2/auth`
+
+### Google Callback [GET /auth/google/callback]
++ Request
+    + Headers
+
+            Authorization: `Bearer {token}`
+
++ Response 302 (text/plain)
+    + Headers
+    
+            Location: `https://justmeds.onrender.com/api/google/callback`
+
+## Group Auth
+
+### SignUp [POST /sign_up]
++ Request (application/json)
+
+    + Attributes (object)
+        + nome: `Giovanni` (string, required) - Nome dell'utente
+        + cognome: `Bianchi` (string, required) - Cognome dell'utente
+        + email: `gb@example.com` (string, required) - Indirizzo email dell'utente
+        + password: `securePassword123` (string, required) - Password dell'utente
+        + dataDiNascita: `1985-10-15` (string, required) - Data di nascita dell'utente
+        + CF: `BNCGVN85O15H501K` (string, required) - Codice fiscale
+        + paese: `Italia` (string, required) - Paese di nascita dell'utente
+        + citta: `Milano` (string, required) - Città di residenza dell'utente
+        + via: `Via Larga 4` (string, required) - Via di residenza
+        + type: `ricevente` (string, required) - Tipo di account (rider o ricevente)
 
 + Response 200 (application/json)
 
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
+    + Attributes (object)
+        + message: "Registration successful" (string)
 
-### Create a New Question [POST]
-
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
-
+### Login [POST /login]
 + Request (application/json)
 
-        {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
-        }
+    + Attributes (object)
+        + email: `gb@example.com` (string, required) - Email dell'utente
+        + password: `securePassword123` (string, required) - Password dell'utente
 
-+ Response 201 (application/json)
++ Response 200 (application/json)
 
+    + Attributes (object)
+        + success: true (boolean)
+        + message: "Logged in successfully" (string)
+        + role: `ricevente` (string)
+        + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c` (string)
+
++ Response 401 (application/json)
+    + Attributes (object)
+        + message: "Invalid credentials" (string)
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "User not found" (string)
+
+### Check Login Status [GET /api/check-login]
++ Request
     + Headers
+    
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
 
-            Location: /questions/2
++ Response 200 (application/json)
 
+    + Attributes (object)
+        + isLoggedIn: true (boolean)
+        + userRole: `ricevente` (string)
+
++ Response 401 (application/json)
+    + Attributes (object)
+        + isLoggedIn: false (boolean)
+
+### Logout [GET /logout]
++ Request
+    + Headers
+    
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
+
++ Response 200 (text/plain)
     + Body
 
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
-            }
+            "You have been logged out successfully."
+
++ Response 500 (text/plain)
+    + Body
+
+            "Failed to log out."
+            
+## Group Admin Account
+
+### Get Pharmacies list [GET /api/pharmacies]
++ Request
+    + Headers
+
+            Authorization: `Bearer {admin_token}`
+
++ Response 200 (application/json)
+    + Attributes (array[Pharmacy])
+        + (object)
+            + _id: `60d21b4667d0d8992e610c85` (string) - ID della farmacia
+            + COD_FARMACIA: `001` (string) - Codice farmacia
+            + FARMACIA: `Farmacia Roma` (string) - Nome della farmacia
+            + IVA: `12345678901` (string) - Partita IVA
+            + CAP: `00100` (string) - CAP
+            + COD_COMUNE: `RM` (string) - Codice comune
+            + COMUNE: `Roma` (string) - Comune
+            + FRAZIONE: `Centro` (string) - Frazione
+            + COD_PROVINCIA: `RM` (string) - Codice provincia
+            + PROVINCIA: `Roma` (string) - Provincia
+            + COD_REGIONE: `LAZ` (string) - Codice regione
+            + REGIONE: `Lazio` (string) - Regione
+            + DATA_INIZIO: `2000-01-01` (string) - Data di inizio attività
+            + INDIRIZZO: `Via Roma 1` (string) - Indirizzo
+            + TIPOLOGIA: `Privata` (string) - Tipologia
+            + LATITUDINE_P: `41.9028` (string) - Latitudine principale
+            + LONGITUDINE_P: `12.4964` (string) - Longitudine principale
+            + LATITUDINE_V: `41.9028` (string) - Latitudine varia
+            + LONGITUDINE_V: `12.4964` (string) - Longitudine varia
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore del server" (string)
+
+### Create Pharmacy Account [POST /api/create_pharmacy]
++ Request (application/json)
+    + Headers
+
+            Authorization: `Bearer {admin_token}`
+
+    + Attributes (object)
+        + name: `Farmacia Nuova` (string, required) - Name of the pharmacy
+        + email: `newpharmacy@example.com` (string, required) - Email for the pharmacy
+        + password: `securePassword123` (string, required) - Initial password for the pharmacy account
+        + country: `Italia` (string, required) - Country of the pharmacy
+        + city: `Roma` (string, required) - City of the pharmacy
+        + address: `Via Roma 100` (string, required) - Physical address of the pharmacy
+
++ Response 201 (application/json)
+    + Attributes (object)
+        + message: "Pharmacy account created successfully" (string)
+        + pharmacyId: `5678` (string) - Newly created pharmacy ID
+
++ Response 400 (application/json)
+    + Attributes (object)
+        + message: "Invalid input" (string)
+
++ Response 403 (application/json)
+    + Attributes (object)
+        + message: "Access denied" (string)
+
+### Get Form Requests [GET /api/form_requests]
++ Request
+    + Headers
+
+            Authorization: `Bearer {admin_token}`
+
++ Response 200 (application/json)
+    + Attributes (array[Form])
+        + (object)
+            + formId: `67890` (string) - The form's unique identifier
+            + name: `John Doe` (string) - Name of the person who submitted the form
+            + email: `john.doe@example.com` (string) - Email of the form submitter
+            + message: `Need help with an order` (string) - The message from the user
+            + createdAt: `2021-12-01` (string) - When the form was submitted
+
++ Response 403 (application/json)
+    + Attributes (object)
+        + message: "Access denied" (string)
+
+### Answer Form  [PATCH /api/form_requests/answare/{formId}]
++ Parameters
+    + formId: `67890` (string) - The unique identifier of the form to be updated
+
++ Request (application/json)
+    + Headers
+
+            Authorization: `Bearer {admin_token}`
+
+    + Attributes (object)
+        + response: `We are processing your request` (string) - Admin's response to the form
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + message: "Form updated successfully" (string)
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Form not found" (string)
+
++ Response 403 (application/json)
+    + Attributes (object)
+        + message: "Access denied" (string)
+
+
+### Delete Form [DELETE /api/admin/forms/{formId}]
++ Parameters
+    + formId: `67890` (string) - The unique identifier of the form to delete
+
++ Request
+    + Headers
+
+            Authorization: `Bearer {admin_token}`
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + message: "Form deleted successfully" (string)
+        
++ Response 403 (application/json)
+    + Attributes (object)
+        + message: "Access denied" (string) - Error message when the user is not authorized to perform this action.
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Form not found" (string) - Error message when the specified form does not exist.
+
+
+### Fetch Statistics [GET /api/stats]
++ Request
+    + Headers
+
+            Authorization: `Bearer {admin_token}`
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + totalUsers: 150 (number) - Total number of users in the system
+        + activeOrders: 45 (number) - Currently active orders
+        + totalRevenue: 5000.00 (number) - Total revenue in euros
+
++ Response 403 (application/json)
+    + Attributes (object)
+        + message: "Access denied" (string)
+
+
+## Group Ricevente Account
+
+### Profile Information [GET /api/profile]
++ Request (application/json)
+    + Headers
+
+            Authorization: `Bearer {token}`
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + nome: `Giovanni` (string) - User's first name
+        + cognome: `Bianchi` (string) - User's last name
+        + email: `gb@example.com` (string) - User's email
+        + via: `Via Larga 4` (string) - User's street address
+        + cap: `20100` (string) - Postal code
+        + provincia: `Milano` (string) - Province
+        + città: `Milano` (string) - City
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "User not found" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Internal server error" (string)
+
+### Update Profile [PUT /api/editprofile]
++ Request (application/json)
+    + Headers
+
+            Authorization: `Bearer {token}`
+
+    + Attributes (object)
+        + città: `Roma` (string) - New city
+        + cap: `00100` (string) - New postal code
+        + provincia: `Roma` (string) - New province
+        + via: `Via Nuova 2` (string) - New street address
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + message: "Profile updated successfully" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Internal server error" (string)
+
+### View Orders [GET /api/ordini]
++ Request
+    + Headers
+
+            Authorization: `Bearer {token}`
+
++ Response 200 (application/json)
+    + Attributes (array[Order])
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Internal server error" (string)
+
+### View Forms [GET /api/forms]
++ Request
+    + Headers
+
+            Authorization: `Bearer {token}`
+
++ Response 200 (application/json)
+    + Attributes (array[Form])
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Internal server error" (string)
+
+
+## Group Drugs
+
+### Get Lista Farmaci [GET /api/drugs]
++ Response 200 (application/json)
+    + Attributes (array[Product])
+
+### Search Farmaci [GET /api/drugs/search{?farmaco}]
++ Parameters
+    + farmaco: `Aspirina` (string, required) - Nome del farmaco o principio attivo da cercare
+
++ Response 200 (application/json)
+    + Attributes (array[Product])
+
+
+## Group Cart
+
+### View Cart [GET /api/cart]
++ Request
+    + Headers
+
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
+
++ Response 200 (application/json)
+
+    + Attributes (array[Product])
+
+### Add Item to Cart [POST /api/cart/add]
++ Request (application/json)
+    + Headers
+    
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
+
+    + Attributes (object)
+        + productId: `5fbc110fa7b11b5f5c8e4e46` (string, required) - ID del prodotto
+        + quantity: 1 (number, required) - Quantità da aggiungere
+        + price: `19.99` (string, required) - Prezzo del prodotto
+
++ Response 200 (application/json)
+
+    + Attributes (object)
+        + success: true (boolean)
+        + message: "Prodotto aggiunto al carrello" (string)
+        + carrello (object) - Dettagli aggiornati del carrello
+
+### Update Product Quantity in Cart [POST /api/cart/change]
++ Request (application/json)
+    + Headers
+    
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
+
+    + Attributes (object)
+        + productId: `12345` (string, required) - ID del prodotto nel carrello
+        + change: 1 (number, required) - Quantità da aggiungere o sottrarre (es. 1 per aggiungere, -1 per rimuovere)
+
++ Response 200 (application/json)
+
+    + Attributes (object)
+        + success: true (boolean)
+        + message: "Quantità aggiornata" (string)
+        + cart (object) - Dettagli aggiornati del carrello
+            + total: 150.50 (number) - Totale aggiornato del carrello
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Prodotto non trovato nel carrello" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore tecnico nel modificare la quantità" (string)
+
+### Remove Item from Cart [POST /api/cart/remove]
++ Request (application/json)
+    + Headers
+    
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
+
+    + Attributes (object)
+        + id: `5fbc110fa7b11b5f5c8e4e46` (string, required) - ID del prodotto nel carrello
+
++ Response 200 (application/json)
+
+    + Attributes (object)
+        + success: true (boolean)
+        + message: "Articolo rimosso dal carrello" (string)
+
+
+## Group Order Checkout
+
+### Ottieni indirizzo utente [GET /api/user/address]
++ Request
+    + Headers
+
+            Authorization: `Bearer {token}`
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + nome: `Giovanni` (string) - Nome dell'utente
+        + cognome: `Bianchi` (string) - Cognome dell'utente
+        + città: `Milano` (string) - Città dell'utente
+        + cap: `20100` (string) - CAP dell'utente
+        + provincia: `MI` (string) - Provincia dell'utente
+        + via: `Via Larga 4` (string) - Via dell'utente
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Utente non trovato" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore interno del server" (string)
+
+### Dettagli del carrello [GET /api/cart/details]
++ Request
+    + Headers
+
+            Authorization: `Bearer {token}`
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + items: [] (array[Item])
+        + totalPrice: 39.98 (number) - Prezzo totale del carrello
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Carrello non trovato" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore interno del server" (string)
+
+### Lista delle farmacie [GET /api/farmacie]
++ Response 200 (application/json)
+    + Attributes (object)
+        + success: true (boolean)
+        + farmacie: [] (array[Pharmacy])
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore del server" (string)
+
+### Crea ordine [POST /api/order/create]
++ Request (application/json)
+    + Headers
+
+            Authorization: `Bearer {token}`
+
+    + Attributes (object)
+        + farmaciaId: `12345` (string, required) - ID della farmacia
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + success: true (boolean)
+        + message: "Ordine creato con successo" (string)
+
++ Response 400 (application/json)
+    + Attributes (object)
+        + message: "Il carrello è vuoto" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore tecnico nella creazione dell'ordine" (string)
+
+
+
+## Group Order Payment
+
+### Ottieni dettagli dell'ordine [GET /api/ordini/{orderId}]
++ Parameters
+    + orderId: `12345` (string) - ID dell'ordine
+
++ Request
+    + Headers
+
+            Authorization: `Bearer {token}`
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + _id: `12345` (string) - ID dell'ordine
+        + prodotti: [] (array[Product]) - Lista dei prodotti nell'ordine
+        + stato: `inviato` (string) - Stato dell'ordine
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Ordine non trovato" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore interno del server" (string)
+
+### Annulla un ordine [POST /api/ordini/{orderId}/cancella]
++ Parameters
+    + orderId: `12345` (string) - ID dell'ordine
+
++ Request
+    + Headers
+
+            Authorization: `Bearer {token}`
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + message: "Ordine annullato con successo" (string)
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Ordine non trovato" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore durante l'annullamento dell'ordine" (string)
+
+### Simula pagamento [POST /api/payment]
++ Request (application/json)
+    + Headers
+
+            Authorization: `Bearer {token}`
+
+    + Attributes (object)
+        + orderId: `12345` (string) - ID dell'ordine
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + message: "Pagamento simulato con successo" (string)
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Ordine non trovato" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore durante il pagamento simulato" (string)
+
+
+
+## Group Rider Account
+
+### Visualizzazione di tutti gli ordini [GET /api/orders]
++ Request
+    + Headers
+
+            Authorization: `Bearer {token}`
+
++ Response 200 (application/json)
+    + Attributes (array[Order])
+        + (object)
+            + _id: `12345` (string) - ID dell'ordine
+            + prodotti: [] (array[Product]) - Lista dei prodotti nell'ordine
+            + stato: `inviato` (string) - Stato dell'ordine
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + success: false (boolean)
+        + message: "Errore durante il recupero degli ordini" (string)
+
+### Visualizzazione di un ordine specifico [GET /api/orders/{orderId}]
++ Parameters
+    + orderId: `12345` (string) - ID dell'ordine
+
++ Request
+    + Headers
+
+            Authorization: `Bearer {token}`
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + _id: `12345` (string) - ID dell'ordine
+        + prodotti: [] (array[Product]) - Lista dei prodotti nell'ordine
+        + stato: `inviato` (string) - Stato dell'ordine
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + success: false (boolean)
+        + message: "Ordine non trovato" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + success: false (boolean)
+        + message: "Errore durante il recupero dell'ordine" (string)
+
+
+## Group Delivery Management
+### Accetta un ordine [POST /api/orders/{id}/accept]
++ Parameters
+    + id: `123` (string) - ID dell'ordine
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + message: "Ordine accettato con successo" (string)
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Ordine non trovato" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore durante l'accettazione dell'ordine" (string)
+
+### Annulla l'accettazione di un ordine [POST /api/orders/{id}/cancel]
++ Parameters
+    + id: `123` (string) - ID dell'ordine
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + message: "Accettazione dell'ordine annullata con successo" (string)
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Ordine non trovato" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore durante l'annullamento dell'accettazione dell'ordine" (string)
+
+
+## Group Farmacia Account
+### Ottiene gli ordini in base allo stato e alla farmacia [GET /api/ordini_f{?stato}]
++ Parameters
+    + stato: `inviato` (string, optional) - Stato degli ordini
+
++ Request
+    + Headers
+
+            Authorization: `Bearer {farmacia_token}`
+
++ Response 200 (application/json)
+    + Attributes (array[Order])
+
++ Response 400 (application/json)
+    + Attributes (object)
+        + message: "FarmaciaID is missing or user is not authorized" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore durante il recupero degli ordini" (string)
+
+
+### Ottiene i dettagli di un farmaco [GET /api/farmaci/{id}]
++ Parameters
+    + id: `123` (string) - ID del farmaco
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + _id: `123` (string) - ID del farmaco
+        + PrincipioAttivo: `Acido Acetilsalicilico` (string) - Principio attivo
+        + Farmaco: `Aspirina` (string) - Nome del farmaco
+        + ConfezioneRiferimento: `20 compresse` (string) - Confezione di riferimento
+        + ATC: `B01AC06` (string) - Codice ATC
+        + AIC: `12345678` (string) - Codice AIC
+        + Confezione: `20 compresse` (string) - Confezione
+        + Ditta: `Bayer` (string) - Ditta produttrice
+        + PrezzoRiferimentoSSN: `2.50` (string) - Prezzo di riferimento SSN
+        + CodiceGruppoEquivalenza: `78910` (string) - Codice del gruppo di equivalenza
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Farmaco non trovato" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore durante il recupero del farmaco" (string)
+
+### Ottiene le informazioni del profilo [GET /api/profile_f]
++ Request
+    + Headers
+
+            Authorization: `Bearer {farmacia_token}`
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + id: `farmacia123` (string)
+        + nomeFarmacia: `Farmacia Roma` (string)
+        + email: `farmacia.roma@example.com` (string)
+        + indirizzo (object)
+            + paese: `Italia` (string)
+            + città: `Roma` (string)
+            + via: `Via Roma 1` (string)
+        + numeroTelefono: `1234567890` (string)
+        + responsabile (object)
+            + nome: `Mario` (string)
+            + cognome: `Rossi` (string)
+
++ Response 401 (application/json)
+    + Attributes (object)
+        + message: "Non autenticato" (string)
+
+### Ottiene le informazioni della farmacia [GET /api/farmacia/{id}]
++ Parameters
+    + id: `123` (string) - ID della farmacia
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + _id: `123` (string) - ID della farmacia
+        + COD_FARMACIA: `001` (string) - Codice farmacia
+        + FARMACIA: `Farmacia Roma` (string) - Nome della farmacia
+        + IVA: `12345678901` (string) - Partita IVA
+        + CAP: `00100` (string) - CAP
+        + COD_COMUNE: `RM` (string) - Codice comune
+        + COMUNE: `Roma` (string) - Comune
+        + FRAZIONE: `Centro` (string) - Frazione
+        + COD_PROVINCIA: `RM` (string) - Codice provincia
+        + PROVINCIA: `Roma` (string) - Provincia
+        + COD_REGIONE: `LAZ` (string) - Codice regione
+        + REGIONE: `Lazio` (string) - Regione
+        + DATA_INIZIO: `2000-01-01` (string) - Data di inizio attività
+        + INDIRIZZO: `Via Roma 1` (string) - Indirizzo
+        + TIPOLOGIA: `Privata` (string) - Tipologia
+        + LATITUDINE_P: `41.9028` (string) - Latitudine principale
+        + LONGITUDINE_P: `12.4964` (string) - Longitudine principale
+        + LATITUDINE_V: `41.9028` (string) - Latitudine varia
+        + LONGITUDINE_V: `12.4964` (string) - Longitudine varia
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Farmacia non trovata" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore nel recuperare le informazioni della farmacia" (string)
+
+
+### Ottiene gli ordini candidati [GET /api/ordini_f/candidati]
++ Request
+    + Headers
+
+            Authorization: `Bearer {farmacia_token}`
+
++ Response 200 (application/json)
+    + Attributes (array[Order])
+
++ Response 400 (application/json)
+    + Attributes (object)
+        + message: "FarmaciaID is missing or user is not authorized" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore durante il recupero degli ordini candidati" (string)
+
+
+### Ottiene gli ordini in corso [GET /api/ordini_f/incorso]
++ Request
+    + Headers
+
+            Authorization: `Bearer {farmacia_token}`
+
++ Response 200 (application/json)
+    + Attributes (array[Order])
+
++ Response 400 (application/json)
+    + Attributes (object)
+        + message: "FarmaciaID is missing or user is not authorized" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore durante il recupero degli ordini in corso" (string)
+
+### Ottiene lo storico ordini [GET /api/ordini_f/storico]
++ Request
+    + Headers
+
+            Authorization: `Bearer {farmacia_token}`
+
++ Response 200 (application/json)
+    + Attributes (array[Order])
+
++ Response 400 (application/json)
+    + Attributes (object)
+        + message: "FarmaciaID is missing or user is not authorized" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore durante il recupero dello storico ordini" (string)
+
+### Ottiene i dettagli di un ordine [GET /api/ordini_f/{id}]
++ Parameters
+    + id: `123` (string) - ID dell'ordine
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + _id: `123` (string) - ID dell'ordine
+        + utenteID: `456` (string) - ID dell'utente
+        + farmaciaID: `789` (string) - ID della farmacia
+        + riderID: `321` (string) - ID del rider
+        + secretcode: `1234` (string) - Codice segreto
+        + prodotti (array[Product]) - Lista dei prodotti
+        + indirizzoCliente (object)
+            + nome: `Mario` (string) - Nome del cliente
+            + cognome: `Rossi` (string) - Cognome del cliente
+            + città: `Roma` (string) - Città del cliente
+            + cap: `00100` (string) - CAP del cliente
+            + provincia: `RM` (string) - Provincia del cliente
+            + via: `Via Roma 1` (string) - Indirizzo del cliente
+        + indirizzoFarmacia (object)
+            + via: `Via Milano 2` (string) - Indirizzo della farmacia
+            + cap: `20100` (string) - CAP della farmacia
+            + provincia: `MI` (string) - Provincia della farmacia
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Ordine non trovato" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore durante il recupero dell'ordine" (string)
+
+### Aggiorna il prezzo dell'ordine [POST /api/ordini_f/{id}/aggiornaPrezzo]
++ Parameters
+    + id: `123` (string) - ID dell'ordine
+
++ Request (application/json)
+    + Attributes (object)
+        + prezzoFinale: 100.50 (number)
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + message: "Prezzo aggiornato con successo" (string)
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Ordine non trovato" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore durante l'aggiornamento del prezzo dell'ordine" (string)
+
+### Cambia lo stato di un ordine [POST /api/ordini_f/{id}/cambiaStato]
++ Parameters
+    + id: `123` (string) - ID dell'ordine
+
++ Request (application/json)
+    + Attributes (object)
+        + stato: `consegnato` (string)
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + message: "Stato aggiornato con successo" (string)
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Ordine non trovato" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore durante l'aggiornamento dello stato dell'ordine" (string)
+
+### Verifica il codice di un ordine [POST /api/ordini_f/{orderId}/verifyCode]
++ Parameters
+    + orderId: `123` (string) - ID dell'ordine
+
++ Request (application/json)
+    + Attributes (object)
+        + verificationCode: `1234` (string)
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + valid: true (boolean)
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Ordine non trovato" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore durante la verifica del codice" (string)
+ 
+       
+## Group Form Request
+
+### Invia Messaggio di Assistenza [POST /api/contact]
++ Request (application/json)
+    + Attributes (object)
+        + name: `Giovanni` (string, required) - Nome della persona che invia il messaggio
+        + email: `giovanni@example.com` (string, required) - Email della persona che invia il messaggio
+        + orderNumber: `12345` (string, required) - Numero d'ordine relativo al messaggio
+        + message: `Ho bisogno di assistenza con il mio ordine` (string, required) - Contenuto del messaggio
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + success: true (boolean)
+        + message: "Messaggio inviato con successo! la risposta sarà visibile all'interno del tuo account" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + success: false (boolean)
+        + message: "Errore durante il salvataggio dei dati" (string)
+
+
+## Data Structures
+
+### Product (object)
+    + _id: `5fbc110fa7b11b5f5c8e4e46` (string) - ID univoco del prodotto
+    + PrincipioAttivo: `Acarbosio` (string) - Principio attivo
+    + ConfezioneRiferimento: `40 UNITA' 100 MG - USO ORALE` (string) - Nome confezione prodotto
+    + ATC: `A10BF01` (string) - Codice ATC
+    + AIC: `26851016` (string) - Codice AIC
+    + Farmaco: `Glucobay` (string) - Nome del prodotto
+    + Confezione: `100 MG COMPRESSE" 40 COMPRESSE` (string) - Confezione
+    + Ditta: `BAYER S.P.A` (string) - Ditta produttrice
+    + PrezzoRiferimentoSSN: `5,63` (string) - Prezzo del prodotto
+    + CodiceGruppoEquivalenza: `H1A` (string) - Gruppo equivalenza
+
+### Form (object)
+    + _id: `67890` (string) - Unique identifier for the form
+    + name: `Giovanni` (string) - Name of the user who submitted the form
+    + email: `gb@example.com` (string) - Email of the user
+    + orderNumber: `12345` (string) - Order number related to the form
+    + message: `Need help` (string) - Content of the form
+    + createdAt: `2021-12-01` (string) - Date the form was created
+    + answer: `We are on it` (string) - Response to the form
+    + answeredAt: `2021-12-02` (string) - Date the form was answered
+
+### Order (object)
+    + _id: `5fbc110fa7b11b5f5c8e4e46` (string) - Unique identifier for the order
+    + farmaciaID: `pharmacy123` (string) - ID of the pharmacy
+    + prezzoFinale: `59.99` (number) - Final price of the order
+    + prodotti (array[Product]) - List of products
+    + stato: `inviato` (string) - Current status of the order
+    + secretcode: `AB1234` (string) - A secret code associated with the order
+    + indirizzoCliente (object) - Customer's address
+        + nome: `Giovanni` (string)
+        + cognome: `Bianchi` (string)
+        + città: `Milano` (string)
+        + cap: `20100` (string)
+        + provincia: `Milano` (string)
+        + via: `Via Larga 4` (string)
+
+### Item (object)
++ nome: `Farmaco A` (string) - Nome del farmaco
++ quantità: 2 (number) - Quantità del farmaco
++ prezzo: 19.99 (number) - Prezzo del farmaco
+
+### Pharmacy (object)
+    + _id: `60d21b4667d0d8992e610c85` (string) - ID della farmacia
+    + COD_FARMACIA: `001` (string) - Codice farmacia
+    + FARMACIA: `Farmacia Roma` (string) - Nome della farmacia
+    + IVA: `12345678901` (string) - Partita IVA
+    + CAP: `00100` (string) - CAP
+    + COD_COMUNE: `RM` (string) - Codice comune
+    + COMUNE: `Roma` (string) - Comune
+    + FRAZIONE: `Centro` (string) - Frazione
+    + COD_PROVINCIA: `RM` (string) - Codice provincia
+    + PROVINCIA: `Roma` (string) - Provincia
+    + COD_REGIONE: `LAZ` (string) - Codice regione
+    + REGIONE: `Lazio` (string) - Regione
+    + DATA_INIZIO: `2000-01-01` (string, date) - Data di inizio attività
+    + INDIRIZZO: `Via Roma 1` (string) - Indirizzo
+    + TIPOLOGIA: `Privata` (string) - Tipologia
+    + LATITUDINE_P: `41.9028` (string) - Latitudine principale
+    + LONGITUDINE_P: `12.4964` (string) - Longitudine principale
+    + LATITUDINE_V: `41.9028` (string) - Latitudine varia
+    + LONGITUDINE_V: `12.4964` (string) - Longitudine varia
