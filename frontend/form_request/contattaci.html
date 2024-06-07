@@ -17,45 +17,30 @@
 <body>
   <header>
     <nav class="navbar navbar-lg bg-body-tertiary">
-      <div class="container-fluid">
-        <a href="../index.html">
-          <img
-            src="../images/Logo.png"
-            alt="Logo"
-            class="navbar-brand img-fluid"
-            style="width: 40px"
-          />
-        </a>
-        <a class="navbar-brand" href="../index.html">JustMeds</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNavAltMarkup"
-          aria-controls="navbarNavAltMarkup"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-          <div class="navbar-nav">
-            <a class="nav-link" href="../about_us/about.html">Chi siamo</a>
-            <a class="nav-link" href="../order/order.html">Lista Farmaci</a>
-            <a class="nav-link" id="cartIcon" href="../order/cart.html" style="display: none;">
-              <i class="fas fa-shopping-cart"></i>
-              Carrello
-          </a>
-          <a class="nav-link" id="accountIcon" href="../client_account/client.html" style="display: none;">
-            <i class="fas fa-user"></i>
-            Il mio Account
-          <a class="nav-link" href="/logout" id="logoutLink" style="display: none;">Logout</a>
-          <a class="nav-link" href="../auth/login.html" id="loginLink" style="display: none;">Registrati/Login</a>
-          </div>
+        <div class="container-fluid">
+            <a href="../index.html"><img src="../images/Logo.png" alt="Logo" class="navbar-brand img-fluid" style="width: 40px;"></a>
+            <a class="navbar-brand" href="../index.html">JustMeds</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="../order/order.html">Lista farmaci</a>
+                    <!-- Icona del carrello -->                   
+                    <a class="nav-link" id="cartIcon" href="javascript:void(0);" style="display: none;">
+                        <i class="fas fa-shopping-cart"></i>
+                    </a>
+                    <!-- icona dell'account-->
+                    <a class="nav-link" id="accountIcon" href="../client_account/client.html" style="display: none;">
+                        <i class="fas fa-user"></i>
+                    </a>
+                    <!-- Logout link will be dynamically inserted here if user is logged in -->
+                </div>
+            </div>
+            
         </div>
-      </div>
     </nav>
-  </header>
+</header> 
   <section>
     <div class="container">
       <div class="row">
@@ -90,11 +75,6 @@
       <p>Se sei qui per creare un account <b>farmacia </b>, indica in modo specifico a quale sede farmacia ti riferisci, e il nome del responsabile in modo da poter collegare il tuo account alla sede fisica.</p>
     </div>
   </div>
-  <footer>
-    <div class="container">
-      <p>&copy; 2024 JustMeds. All rights reserved.</p>
-    </div>
-  </footer>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
   <script src="contattaci.js"></script>

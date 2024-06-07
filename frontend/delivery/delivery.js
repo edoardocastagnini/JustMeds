@@ -1,3 +1,27 @@
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/check-login', { method: 'GET', credentials: 'include' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.isLoggedIn) {
+                const navBar = document.querySelector('#navbarNavAltMarkup .navbar-nav');
+                const logoutLink = document.createElement('a');
+                logoutLink.className = 'nav-link';
+                logoutLink.href = '/api/logout';
+                logoutLink.textContent = 'Logout';
+                navBar.appendChild(logoutLink);
+        
+            }else{
+                const navBar = document.querySelector('#navbarNavAltMarkup .navbar-nav');
+                const loginLink = document.createElement('a');
+                loginLink.className = 'nav-link';
+                loginLink.href = '../auth/login.html';
+                loginLink.textContent = 'Registrati/Accedi';
+                navBar.appendChild(loginLink);
+            }
+        })
+        .catch(error => console.error('Error checking login status:', error));
+  });
+  
   
     document.addEventListener("DOMContentLoaded", async () => {
             try {

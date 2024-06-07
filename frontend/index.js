@@ -62,7 +62,7 @@ function setupLogoutLink() {
   const navBar = document.querySelector(".navbar-nav");
   const logoutLink = document.createElement("a");
   logoutLink.className = "nav-link";
-  logoutLink.href = "/logout";
+  logoutLink.href = "/api/logout";
   logoutLink.textContent = "Logout";
   navBar.appendChild(logoutLink);
 }
