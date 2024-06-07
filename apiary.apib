@@ -1,7 +1,6 @@
 FORMAT: 1A
 HOST: https://private-c12cbb-justmedsapiv2.apiary-mock.com
 
-
 # Just Meds API V2
 
 ## Group Google Auth
@@ -15,7 +14,7 @@ HOST: https://private-c12cbb-justmedsapiv2.apiary-mock.com
 + Response 302 (text/plain)
     + Headers
     
-            Location: `https://accounts.google.com/o/oauth2/auth`
+            Location: https://accounts.google.com/o/oauth2/auth
 
 ### Google Callback [GET /auth/google/callback]
 + Request
@@ -26,7 +25,9 @@ HOST: https://private-c12cbb-justmedsapiv2.apiary-mock.com
 + Response 302 (text/plain)
     + Headers
     
-            Location: `https://justmeds.onrender.com/api/google/callback`
+            Location: https://justmeds.onrender.com/api/google/callback
+
+
 
 ## Group Auth
 
