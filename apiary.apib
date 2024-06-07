@@ -1,5 +1,5 @@
 FORMAT: 1A
-HOST: http://localhost:3000/
+HOST: https://justmeds.onrender.com/api
 
 
 # Just Meds API V2
@@ -34,16 +34,16 @@ HOST: http://localhost:3000/
 + Request (application/json)
 
     + Attributes (object)
-        + nome: `Giovanni` (string, required) - Nome dell'utente
-        + cognome: `Bianchi` (string, required) - Cognome dell'utente
-        + email: `gb@example.com` (string, required) - Indirizzo email dell'utente
-        + password: `securePassword123` (string, required) - Password dell'utente
+        + nome: `Edoardo` (string, required) - Nome dell'utente
+        + cognome: `Castagnini` (string, required) - Cognome dell'utente
+        + email: `edoardo1604@gmail.com` (string, required) - Indirizzo email dell'utente
+        + password: `123` (string, required) - Password dell'utente
         + dataDiNascita: `1985-10-15` (string, required) - Data di nascita dell'utente
-        + CF: `BNCGVN85O15H501K` (string, required) - Codice fiscale
+        + CF: `CSTDRD` (string, required) - Codice fiscale
         + paese: `Italia` (string, required) - Paese di nascita dell'utente
-        + citta: `Milano` (string, required) - Città di residenza dell'utente
+        + citta: `Verona` (string, required) - Città di residenza dell'utente
         + via: `Via Larga 4` (string, required) - Via di residenza
-        + type: `ricevente` (string, required) - Tipo di account (rider o ricevente)
+        + type: `ricevente` (string)
 
 + Response 200 (application/json)
 
@@ -54,8 +54,8 @@ HOST: http://localhost:3000/
 + Request (application/json)
 
     + Attributes (object)
-        + email: `gb@example.com` (string, required) - Email dell'utente
-        + password: `securePassword123` (string, required) - Password dell'utente
+        + email: `edoardo1604@gmail.com` (string, required) - Email dell'utente
+        + password: `123` (string, required) - Password dell'utente
 
 + Response 200 (application/json)
 
@@ -118,16 +118,16 @@ HOST: http://localhost:3000/
         + (object)
             + _id: `60d21b4667d0d8992e610c85` (string) - ID della farmacia
             + COD_FARMACIA: `001` (string) - Codice farmacia
-            + FARMACIA: `Farmacia Roma` (string) - Nome della farmacia
+            + FARMACIA: `Farmacia Test` (string) - Nome della farmacia
             + IVA: `12345678901` (string) - Partita IVA
             + CAP: `00100` (string) - CAP
-            + COD_COMUNE: `RM` (string) - Codice comune
-            + COMUNE: `Roma` (string) - Comune
+            + COD_COMUNE: `TN` (string) - Codice comune
+            + COMUNE: `Trento` (string) - Comune
             + FRAZIONE: `Centro` (string) - Frazione
-            + COD_PROVINCIA: `RM` (string) - Codice provincia
-            + PROVINCIA: `Roma` (string) - Provincia
-            + COD_REGIONE: `LAZ` (string) - Codice regione
-            + REGIONE: `Lazio` (string) - Regione
+            + COD_PROVINCIA: `TN` (string) - Codice provincia
+            + PROVINCIA: `TN` (string) - Provincia
+            + COD_REGIONE: `TN` (string) - Codice regione
+            + REGIONE: `Trento` (string) - Regione
             + DATA_INIZIO: `2000-01-01` (string) - Data di inizio attività
             + INDIRIZZO: `Via Roma 1` (string) - Indirizzo
             + TIPOLOGIA: `Privata` (string) - Tipologia
@@ -151,7 +151,7 @@ HOST: http://localhost:3000/
         + email: `newpharmacy@example.com` (string, required) - Email for the pharmacy
         + password: `securePassword123` (string, required) - Initial password for the pharmacy account
         + country: `Italia` (string, required) - Country of the pharmacy
-        + city: `Roma` (string, required) - City of the pharmacy
+        + city: `Trento` (string, required) - City of the pharmacy
         + address: `Via Roma 100` (string, required) - Physical address of the pharmacy
 
 + Response 201 (application/json)
@@ -177,8 +177,8 @@ HOST: http://localhost:3000/
     + Attributes (array[Form])
         + (object)
             + formId: `67890` (string) - The form's unique identifier
-            + name: `John Doe` (string) - Name of the person who submitted the form
-            + email: `john.doe@example.com` (string) - Email of the form submitter
+            + name: `Edo` (string) - Name of the person who submitted the form
+            + email: `edoardo1604@gmail.com` (string) - Email of the form submitter
             + message: `Need help with an order` (string) - The message from the user
             + createdAt: `2021-12-01` (string) - When the form was submitted
 
@@ -260,13 +260,13 @@ HOST: http://localhost:3000/
 
 + Response 200 (application/json)
     + Attributes (object)
-        + nome: `Giovanni` (string) - User's first name
-        + cognome: `Bianchi` (string) - User's last name
-        + email: `gb@example.com` (string) - User's email
+        + nome: `Edoardo` (string) - User's first name
+        + cognome: `Castagnini` (string) - User's last name
+        + email: `edoardo1604@gmail.com` (string) - User's email
         + via: `Via Larga 4` (string) - User's street address
         + cap: `20100` (string) - Postal code
-        + provincia: `Milano` (string) - Province
-        + città: `Milano` (string) - City
+        + provincia: `VR` (string) - Province
+        + citta: `Verona` (string) - City
 
 + Response 404 (application/json)
     + Attributes (object)
@@ -283,9 +283,9 @@ HOST: http://localhost:3000/
             Authorization: `Bearer {token}`
 
     + Attributes (object)
-        + città: `Roma` (string) - New city
+        + citta: `Trento` (string) - New city
         + cap: `00100` (string) - New postal code
-        + provincia: `Roma` (string) - New province
+        + provincia: `VN` (string) - New province
         + via: `Via Nuova 2` (string) - New street address
 
 + Response 200 (application/json)
@@ -419,11 +419,11 @@ HOST: http://localhost:3000/
 
 + Response 200 (application/json)
     + Attributes (object)
-        + nome: `Giovanni` (string) - Nome dell'utente
-        + cognome: `Bianchi` (string) - Cognome dell'utente
-        + città: `Milano` (string) - Città dell'utente
+        + nome: `Edoardo` (string) - Nome dell'utente
+        + cognome: `Castagnini` (string) - Cognome dell'utente
+        + citta: `Trento` (string) - Città dell'utente
         + cap: `20100` (string) - CAP dell'utente
-        + provincia: `MI` (string) - Provincia dell'utente
+        + provincia: `TN` (string) - Provincia dell'utente
         + via: `Via Larga 4` (string) - Via dell'utente
 
 + Response 404 (application/json)
@@ -692,11 +692,11 @@ HOST: http://localhost:3000/
 + Response 200 (application/json)
     + Attributes (object)
         + id: `farmacia123` (string)
-        + nomeFarmacia: `Farmacia Roma` (string)
-        + email: `farmacia.roma@example.com` (string)
+        + nomeFarmacia: `Farmacia Test` (string)
+        + email: `farmacia@example.com` (string)
         + indirizzo (object)
             + paese: `Italia` (string)
-            + città: `Roma` (string)
+            + citta: `Trento` (string)
             + via: `Via Roma 1` (string)
         + numeroTelefono: `1234567890` (string)
         + responsabile (object)
@@ -715,16 +715,16 @@ HOST: http://localhost:3000/
     + Attributes (object)
         + _id: `123` (string) - ID della farmacia
         + COD_FARMACIA: `001` (string) - Codice farmacia
-        + FARMACIA: `Farmacia Roma` (string) - Nome della farmacia
+        + FARMACIA: `Farmacia Test` (string) - Nome della farmacia
         + IVA: `12345678901` (string) - Partita IVA
         + CAP: `00100` (string) - CAP
-        + COD_COMUNE: `RM` (string) - Codice comune
-        + COMUNE: `Roma` (string) - Comune
+        + COD_COMUNE: `TN` (string) - Codice comune
+        + COMUNE: `Trento` (string) - Comune
         + FRAZIONE: `Centro` (string) - Frazione
-        + COD_PROVINCIA: `RM` (string) - Codice provincia
-        + PROVINCIA: `Roma` (string) - Provincia
-        + COD_REGIONE: `LAZ` (string) - Codice regione
-        + REGIONE: `Lazio` (string) - Regione
+        + COD_PROVINCIA: `TN` (string) - Codice provincia
+        + PROVINCIA: `TN` (string) - Provincia
+        + COD_REGIONE: `TN` (string) - Codice regione
+        + REGIONE: `Trentino` (string) - Regione
         + DATA_INIZIO: `2000-01-01` (string) - Data di inizio attività
         + INDIRIZZO: `Via Roma 1` (string) - Indirizzo
         + TIPOLOGIA: `Privata` (string) - Tipologia
@@ -811,12 +811,12 @@ HOST: http://localhost:3000/
             + cognome: `Rossi` (string) - Cognome del cliente
             + città: `Roma` (string) - Città del cliente
             + cap: `00100` (string) - CAP del cliente
-            + provincia: `RM` (string) - Provincia del cliente
+            + provincia: `TN` (string) - Provincia del cliente
             + via: `Via Roma 1` (string) - Indirizzo del cliente
         + indirizzoFarmacia (object)
             + via: `Via Milano 2` (string) - Indirizzo della farmacia
             + cap: `20100` (string) - CAP della farmacia
-            + provincia: `MI` (string) - Provincia della farmacia
+            + provincia: `TN` (string) - Provincia della farmacia
 
 + Response 404 (application/json)
     + Attributes (object)
@@ -940,11 +940,11 @@ HOST: http://localhost:3000/
     + stato: `inviato` (string) - Current status of the order
     + secretcode: `AB1234` (string) - A secret code associated with the order
     + indirizzoCliente (object) - Customer's address
-        + nome: `Giovanni` (string)
-        + cognome: `Bianchi` (string)
-        + città: `Milano` (string)
+        + nome: `Edoardo` (string)
+        + cognome: `Castagnini` (string)
+        + citta: `Trento` (string)
         + cap: `20100` (string)
-        + provincia: `Milano` (string)
+        + provincia: `TN` (string)
         + via: `Via Larga 4` (string)
 
 ### Item (object)
@@ -955,16 +955,16 @@ HOST: http://localhost:3000/
 ### Pharmacy (object)
     + _id: `60d21b4667d0d8992e610c85` (string) - ID della farmacia
     + COD_FARMACIA: `001` (string) - Codice farmacia
-    + FARMACIA: `Farmacia Roma` (string) - Nome della farmacia
+    + FARMACIA: `Farmacia Test` (string) - Nome della farmacia
     + IVA: `12345678901` (string) - Partita IVA
     + CAP: `00100` (string) - CAP
-    + COD_COMUNE: `RM` (string) - Codice comune
-    + COMUNE: `Roma` (string) - Comune
+    + COD_COMUNE: `TN` (string) - Codice comune
+    + COMUNE: `Trento` (string) - Comune
     + FRAZIONE: `Centro` (string) - Frazione
-    + COD_PROVINCIA: `RM` (string) - Codice provincia
-    + PROVINCIA: `Roma` (string) - Provincia
-    + COD_REGIONE: `LAZ` (string) - Codice regione
-    + REGIONE: `Lazio` (string) - Regione
+    + COD_PROVINCIA: `TN` (string) - Codice provincia
+    + PROVINCIA: `Trento` (string) - Provincia
+    + COD_REGIONE: `TN` (string) - Codice regione
+    + REGIONE: `TN` (string) - Regione
     + DATA_INIZIO: `2000-01-01` (string, date) - Data di inizio attività
     + INDIRIZZO: `Via Roma 1` (string) - Indirizzo
     + TIPOLOGIA: `Privata` (string) - Tipologia
