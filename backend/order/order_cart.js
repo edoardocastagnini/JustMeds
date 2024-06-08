@@ -54,7 +54,7 @@ router.get("/drugs/search", async (req, res) => {
   }
 });
 
-
+// Endpoint per il recupero dei dettagli di un farmaco
 router.get('/cart', isAuthenticated, async (req, res) => {
   const clienteId = req.session.user.id; 
   console.log("clienteId:", clienteId)
@@ -74,9 +74,9 @@ router.get('/cart', isAuthenticated, async (req, res) => {
       
       const items = cart.prodotti.map(item => ({
           id: item.productId._id,
-          name: item.productId.Farmaco,         // Nome del farmaco
-          quantity: item.quantita,              // Quantità
-          price: item.prezzo                   // Prezzo per unità
+          name: item.productId.Farmaco,         
+          quantity: item.quantita,              
+          price: item.prezzo                   
       }));
 
       res.status(200).json({ success: true, items: items });
@@ -109,7 +109,7 @@ router.post('/cart/remove', isAuthenticated, async (req, res) => {
   }
 });
 
-
+// MODIFICA QUANTITA' NEL CARRELLO
 router.post('/cart/change', isAuthenticated, async (req, res) => {
   const { productId, change } = req.body; // change è il delta, può essere 1 o -1
   const userId = req.session.user.id;
@@ -140,7 +140,7 @@ router.post('/cart/change', isAuthenticated, async (req, res) => {
 });
 
 
-
+// AGGIUNTA AL CARRELLO
 router.post('/cart/add', async (req, res) => {
   const { productId, quantity, price } = req.body;
   const clienteId = req.session.user.id; // Utilizzo del codice fiscale

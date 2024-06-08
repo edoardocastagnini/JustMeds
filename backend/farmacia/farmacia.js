@@ -225,10 +225,4 @@ router.post('/ordini_f/:orderId/verifyCode', async (req, res) => {
 });
 
 
-
-
-
-
-
-
 module.exports = router;

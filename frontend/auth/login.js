@@ -3,7 +3,7 @@ function login(event) {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  fetch("/api/login", {
+  fetch("/api/v1/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const data = Object.fromEntries(formData.entries());
 
     try {
-      const response = await fetch("/api/sign_up", {
+      const response = await fetch("/api/v1/sign_up", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -15,7 +15,7 @@ let isOrderAccepted = false;
                 }
 
                 console.log("Fetching order...");
-                const response = await fetch(`/api/orders/${orderId}`);
+                const response = await fetch(`/api/v1/orders/${orderId}`);
                 if (!response.ok) {
                     throw new Error("Network response was not ok");
                 }
@@ -151,7 +151,7 @@ let isOrderAccepted = false;
 
         async function acceptOrder(orderId, acceptButton) {
             try {
-                const response = await fetch(`/api/orders/${orderId}/accept`, {
+                const response = await fetch(`/api/v1/orders/${orderId}/accept`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -179,7 +179,7 @@ let isOrderAccepted = false;
 
         async function cancelOrderAcceptance(orderId, cancelButton, acceptButton) {
             try {
-                const response = await fetch(`/api/orders/${orderId}/cancel`, {
+                const response = await fetch(`/api/v1/orders/${orderId}/cancel`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const navBar = document.querySelector('#navbarNavAltMarkup .navbar-nav');
                 const logoutLink = document.createElement('a');
                 logoutLink.className = 'nav-link';
-                logoutLink.href = '/api/logout';
+                logoutLink.href = '/api/v1/logout';
                 logoutLink.textContent = 'Logout';
                 navBar.appendChild(logoutLink);
         
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
     document.addEventListener("DOMContentLoaded", async () => {
             try {
-                const response = await fetch("/api/orders");
+                const response = await fetch("/api/v1/orders");
                 if (!response.ok) {
                     throw new Error("Network response was not ok");
                 }

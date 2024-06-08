@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Funzione per recuperare e visualizzare le richieste di assistenza
   function fetchFormRequests() {
-    fetch("/api/admin/form_requests")
+    fetch("/api/admin/v1/form_requests")
       .then(response => response.json())
       .then(data => {
         const tableBody = document.querySelector("#requestsTable tbody");
@@ -85,7 +85,7 @@ window.showSection = function(sectionId) {
     const row = button.closest("tr");
     const message = prompt("Inserisci la risposta alla richiesta:");
     if (message) {
-      fetch(`/api/admin/form_requests/answer/${requestId}`, {
+      fetch(`/api/admin/v1/form_requests/answer/${requestId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -107,7 +107,7 @@ window.showSection = function(sectionId) {
   // Funzione per eliminare una richiesta
   window.deleteRequest = function(requestId, button) {
     if (confirm("Sei sicuro di voler eliminare questa richiesta?")) {
-      fetch(`/api/admin/form_requests/delete/${requestId}`, {
+      fetch(`/api/admin/v1/form_requests/delete/${requestId}`, {
         method: 'DELETE'
       })
       .then(response => {
@@ -136,7 +136,7 @@ window.showSection = function(sectionId) {
     const formData = new FormData(this);
     const data = Object.fromEntries(formData.entries());
 
-    fetch("/api/admin/create_pharmacy", {
+    fetch("/api/admin/v1/create_pharmacy", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -202,7 +202,7 @@ function selectPharmacy(pharmacy) {
 
   // Funzione per recuperare e visualizzare le statistiche
   function fetchStats() {
-    fetch("/api/admin/stats")
+    fetch("/api/admin/v1/stats")
       .then(response => response.json())
       .then(stats => {
         const tableBody = document.querySelector("#statsTable tbody");
@@ -233,7 +233,7 @@ function selectPharmacy(pharmacy) {
   });
 
   // Recupera la lista delle farmacie
-  fetch("/api/admin/pharmacies")
+  fetch("/api/admin/v1/pharmacies")
     .then(response => response.json())
     .then(data => {
       pharmacies = data;

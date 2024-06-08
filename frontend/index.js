@@ -62,7 +62,7 @@ function setupLogoutLink() {
   const navBar = document.querySelector(".navbar-nav");
   const logoutLink = document.createElement("a");
   logoutLink.className = "nav-link";
-  logoutLink.href = "/api/logout";
+  logoutLink.href = "/api/v1/logout";
   logoutLink.textContent = "Logout";
   navBar.appendChild(logoutLink);
 }
@@ -75,7 +75,7 @@ function removeLoginLink() {
 }
 
 function fetchLoginStatus() {
-  return fetch("/api/check-login", { credentials: "include" })
+  return fetch("/api/v1/check-login", { credentials: "include" })
     .then(response => response.json())
     .then(data => {
       return data;

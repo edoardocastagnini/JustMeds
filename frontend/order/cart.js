@@ -28,13 +28,13 @@ function addAccountIcon(){
     const navBar = document.querySelector(".navbar-nav");
     const logoutLink = document.createElement("a");
     logoutLink.className = "nav-link";
-    logoutLink.href = "/api/logout";
+    logoutLink.href = "/api/v1/logout";
     logoutLink.textContent = "Logout";
     navBar.appendChild(logoutLink);
   }
 
   function fetchLoginStatus() {
-    return fetch("/api/check-login", { credentials: "include" })
+    return fetch("/api/v1/check-login", { credentials: "include" })
       .then((response) => response.json())
       .then((data) => {
         return data; 
@@ -50,7 +50,7 @@ function addAccountIcon(){
   });
 
   function fetchCartItems() {
-    fetch("/api/cart", { credentials: "include" })
+    fetch("/api/v1/cart", { credentials: "include" })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -125,7 +125,7 @@ function addAccountIcon(){
   }
 
   function removeFromCart(id) {
-    fetch("/api/cart/remove", {
+    fetch("/api/v1/cart/remove", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -149,7 +149,7 @@ function addAccountIcon(){
   }
 
   function changeItemQuantity(productId, change) {
-    fetch(`/api/cart`, { method: "GET", credentials: "include" }) 
+    fetch(`/api/v1/cart`, { method: "GET", credentials: "include" }) 
       .then((response) => response.json())
       .then((cart) => {
         const item = cart.items.find((item) => item.id === productId);
@@ -162,7 +162,7 @@ function addAccountIcon(){
           removeFromCart(productId); // Chiama una funzione per rimuovere l'articolo
           updateCheckoutButton();
         } else {
-          fetch(`/api/cart/change`, {
+          fetch(`/api/v1/cart/change`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function updateCheckoutButton() {
-  fetch('/api/cart', { credentials: 'include' })
+  fetch('/api/v1/cart', { credentials: 'include' })
   .then(response => {
       if (!response.ok) {
           throw new Error('Network response was not ok');

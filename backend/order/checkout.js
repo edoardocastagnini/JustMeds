@@ -8,7 +8,7 @@ const Ordine = require("../models/Ordine.js");
 
 const { isAuthenticated } = require("../middlewares/tokenChecker.js");
 
-
+// Recupero dei dati utente
 router.get('/user/address', isAuthenticated, async (req, res) => {
     const userId = req.session.user.id;  
     try {
@@ -30,7 +30,7 @@ router.get('/user/address', isAuthenticated, async (req, res) => {
     }
   });
 
-
+// Recupero dei dettagli del carrello
 router.get('/cart/details', isAuthenticated, async (req, res) => {
     const clienteId = req.session.user.id;
     try {
@@ -61,7 +61,7 @@ router.get('/farmacie', async (req, res) => {
 });
 
 
-
+// Creazione dell'ordine
 router.post('/order/create', isAuthenticated, async (req, res) => {
   const userId = req.session.user.id; 
   const userAddress = await User.findById(userId).select('nome cognome città cap provincia via');

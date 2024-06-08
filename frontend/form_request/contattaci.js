@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-  fetch('/api/check-login', { method: 'GET', credentials: 'include' })
+  fetch('/api/v1/check-login', { method: 'GET', credentials: 'include' })
       .then(response => response.json())
       .then(data => {
           if (data.isLoggedIn) {
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
               }
               const logoutLink = document.createElement('a');
               logoutLink.className = 'nav-link';
-              logoutLink.href = '/api/logout';
+              logoutLink.href = '/api/v1/logout';
               logoutLink.textContent = 'Logout';
               navBar.appendChild(logoutLink);
       
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
         message: document.getElementById('message').value
       };
   
-      fetch('/api/contact', {
+      fetch('/api/v1/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
       .catch(error => console.error('Error:', error));
     });
 
-    fetch('/api/check-login', { method: 'GET', credentials: 'include' })
+    fetch('/api/v1/check-login', { method: 'GET', credentials: 'include' })
         .then(response => response.json())
         .then(data => {
             if (data.isLoggedIn) {

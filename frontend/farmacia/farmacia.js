@@ -9,7 +9,7 @@ async function aggiornaPrezzo(index, orderId) {
     return;
   }
 
-  const url = `/api/ordini_f/${orderId}/aggiornaPrezzo`;
+  const url = `/api/v1/ordini_f/${orderId}/aggiornaPrezzo`;
   console.log(`Chiamata API a: ${url} con prezzoFinale: ${nuovoPrezzo}`);
 
   try {
@@ -46,7 +46,7 @@ async function aggiornaPrezzo(index, orderId) {
 }
 
 async function cambiaStatoOrdine(index, orderId, stato) {
-  const url = `/api/ordini_f/${orderId}/cambiaStato`;
+  const url = `/api/v1/ordini_f/${orderId}/cambiaStato`;
   console.log(`Chiamata API a: ${url} con stato: ${stato}`);
 
   try {
@@ -66,9 +66,9 @@ async function cambiaStatoOrdine(index, orderId, stato) {
     console.log(`Stato aggiornato per l'ordine ${orderId}:`, result);
     alert(`Stato dell'ordine aggiornato con successo a ${stato}`);
 
-    loadOrders('storico', 'storicoOrdiniTableBody', '/api/ordini_f/storico', 'storicoOrdiniSection');
-    loadOrders('in_corso', 'ordiniInCorsoTableBody', '/api/ordini_f/incorso', 'ordiniInCorsoSection');
-    loadOrders('candidati', 'listaOrdiniCandidatiTableBody', '/api/ordini_f/candidati', 'listaOrdiniCandidatiSection');
+    loadOrders('storico', 'storicoOrdiniTableBody', '/apiv1//ordini_f/storico', 'storicoOrdiniSection');
+    loadOrders('in_corso', 'ordiniInCorsoTableBody', '/api/v1/ordini_f/incorso', 'ordiniInCorsoSection');
+    loadOrders('candidati', 'listaOrdiniCandidatiTableBody', '/api/v1/ordini_f/candidati', 'listaOrdiniCandidatiSection');
   } catch (error) {
     console.error('Errore durante l\'aggiornamento dello stato:', error);
     alert('Errore durante l\'aggiornamento dello stato.');
@@ -77,7 +77,7 @@ async function cambiaStatoOrdine(index, orderId, stato) {
 
 async function getFarmacoNome(id) {
   try {
-    const response = await fetch(`/api/farmaci/${id}`);
+    const response = await fetch(`/api/v1/farmaci/${id}`);
     if (!response.ok) {
       throw new Error(`Errore nel recuperare il farmaco con ID ${id}`);
     }
@@ -91,7 +91,7 @@ async function getFarmacoNome(id) {
 
 async function mostraInfoOrdine(orderId) {
   try {
-    const response = await fetch(`/api/ordini_f/${orderId}`);
+    const response = await fetch(`/api/v1/ordini_f/${orderId}`);
     if (!response.ok) {
       throw new Error(`Errore durante il recupero dell'ordine con ID ${orderId}`);
     }
@@ -108,7 +108,7 @@ async function mostraInfoOrdine(orderId) {
 async function verifyCode() {
   const orderId = document.getElementById('currentOrderId').value;
   const verificationCode = document.getElementById('verificationCode').value;
-  const url = `/api/ordini_f/${orderId}/verifyCode`;
+  const url = `/api/v1/ordini_f/${orderId}/verifyCode`;
 
   try {
     const response = await fetch(url, {
@@ -278,13 +278,13 @@ function setupLogoutLink() {
   const navBar = document.querySelector(".navbar-nav");
   const logoutLink = document.createElement("a");
   logoutLink.className = "nav-link";
-  logoutLink.href = "/api/logout";
+  logoutLink.href = "/api/v1/logout";
   logoutLink.textContent = "Logout";
   navBar.appendChild(logoutLink);
 }
 
 function fetchLoginStatus() {
-  return fetch("/api/check-login", { credentials: "include" })
+  return fetch("/api/v1/check-login", { credentials: "include" })
     .then((response) => response.json())
     .then((data) => {
       return data; 
@@ -297,7 +297,7 @@ function fetchLoginStatus() {
 
 async function loadProfileSettings() {
   try {
-    const profileResponse = await fetch('/api/profile_f', {
+    const profileResponse = await fetch('/api/v1/profile_f', {
       credentials: 'include'
     });
     if (!profileResponse.ok) {
@@ -307,7 +307,7 @@ async function loadProfileSettings() {
     document.getElementById('profileEmail').textContent = profile.email;
     document.getElementById('profileRole').textContent = profile.type;
 
-    const farmaciaResponse = await fetch(`/api/farmacia/${profile.farmaciaID}`, {
+    const farmaciaResponse = await fetch(`/api/v1/farmacia/${profile.farmaciaID}`, {
       credentials: 'include'
     });
     if (!farmaciaResponse.ok) {
@@ -437,9 +437,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   loadProfileSettings();
-  loadStoricoOrders('storico', 'storicoOrdiniTableBody', '/api/ordini_f/storico');
-  loadInCorsoOrders('ordiniInCorsoTableBody', '/api/ordini_f/incorso');
-  loadOrders('candidati', 'listaOrdiniCandidatiTableBody', '/api/ordini_f/candidati', 'listaOrdiniCandidatiSection');
+  loadStoricoOrders('storico', 'storicoOrdiniTableBody', '/api/v1/ordini_f/storico');
+  loadInCorsoOrders('ordiniInCorsoTableBody', '/api/v1/ordini_f/incorso');
+  loadOrders('candidati', 'listaOrdiniCandidatiTableBody', '/api/v1/ordini_f/candidati', 'listaOrdiniCandidatiSection');
 
   // Mostra la sezione "Impostazioni" di default
   showSection('impostazioniSection');
@@ -452,7 +452,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  fetch('/api/check-login', {
+  fetch('/api/v1/check-login', {
     credentials: 'include'
   })
   .then(response => response.json())

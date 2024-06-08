@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function updateNavigation() {
-    fetch('/api/check-login', { method: 'GET', credentials: 'include' })
+    fetch('/api/v1/check-login', { method: 'GET', credentials: 'include' })
         .then(response => response.json())
         .then(data => {
             if (data.isLoggedIn) {
@@ -39,7 +39,7 @@ function updateNavigation() {
                 }
                 const logoutLink = document.createElement('a');
                 logoutLink.className = 'nav-link';
-                logoutLink.href = '/api/logout';
+                logoutLink.href = '/api/v1/logout';
                 logoutLink.textContent = 'Logout';
                 navBar.appendChild(logoutLink);
         
@@ -56,7 +56,7 @@ function updateNavigation() {
         .catch(error => console.error('Error checking login status:', error));
 }
 function fetchDrugs() {
-    fetch('/api/drugs', { method: 'GET', credentials: 'include' }) 
+    fetch('/api/v1/drugs', { method: 'GET', credentials: 'include' }) 
     .then(response => {
         if (!response.ok) {
             throw new Error('HTTP error, status = ' + response.status);
@@ -85,7 +85,7 @@ function updateDrugCards(drugs, isLoggedIn) {
 
 
 function searchDrugs(searchTerm) {
-    fetch(`/api/drugs/search?farmaco=${encodeURIComponent(searchTerm)}`, { method: 'GET', credentials: 'include' })
+    fetch(`/api/v1/drugs/search?farmaco=${encodeURIComponent(searchTerm)}`, { method: 'GET', credentials: 'include' })
         .then(handleResponse)
         .then(data => updateDrugCards(data.drugs, data.isLoggedIn, searchTerm)) 
         .catch(error => {
@@ -155,7 +155,7 @@ cartIcon.addEventListener('click', function() {
 });
 
 function fetchCartItems() {
-     fetch('/api/cart', { credentials: 'include' })
+     fetch('/api/v1/cart', { credentials: 'include' })
     .then(response => response.json())
     .then(data => {
         updateCartPopup(data.items); // Aggiorna il popup con gli articoli del carrello
@@ -209,7 +209,7 @@ cartContent.addEventListener('click', function(event) {
 
 
 function removeFromCart(id) {
-      fetch('/api/cart/remove', {
+      fetch('/api/v1/cart/remove', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
@@ -233,7 +233,7 @@ function removeFromCart(id) {
   }
 
  function changeItemQuantity(productId, change) {
-    fetch(`/api/cart`, { method: 'GET', credentials: 'include' }) // Ottieni i dettagli correnti del carrello
+    fetch(`/api/v1/cart`, { method: 'GET', credentials: 'include' }) // Ottieni i dettagli correnti del carrello
       .then(response => response.json())
       .then(cart => {
           const item = cart.items.find(item => item.id === productId);
@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const productId = button.getAttribute('data-id');
             const quantity = 1;
             const price = button.getAttribute('data-price');
-            fetch('/api/cart/add', {
+            fetch('/api/v1/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -36,33 +36,33 @@ app.use(
 const tokenChecker = require("./middlewares/tokenChecker");
 
 const loginRoutes = require("./auth/login");
-app.use("/api", loginRoutes);
+app.use("/api/v1", loginRoutes);
 
 const deliveryRoutes = require("./delivery/delivery");
-app.use("/api", deliveryRoutes);
+app.use("/api/v1", deliveryRoutes);
 const deliveryManagementRoutes = require("./delivery/delivery_management");
-app.use("/api", deliveryManagementRoutes);
+app.use("/api/v1", deliveryManagementRoutes);
 
 const drugRoutes = require("./order/order_cart");
-app.use("/api", drugRoutes);
+app.use("/api/v1", drugRoutes);
 
 const adminRoutes = require("../backend/admin/admin");
-app.use('/api/admin', adminRoutes);
+app.use('/api/admin/v1', adminRoutes);
 
 const authGoogleRoutes = require("./auth/authGoogleRoutes"); // Aggiungi questa riga
-app.use("/api", authGoogleRoutes); // Aggiungi questa riga
+app.use("/api/v1", authGoogleRoutes); // Aggiungi questa riga
 
 const contattaciRouter = require("./form_request/contattaci");
-app.use('/api', contattaciRouter);
+app.use('/api/v1', contattaciRouter);
 
 const clientRouter = require("./client_account/client");
-app.use('/api',clientRouter);
+app.use('/api/v1',clientRouter);
 
 const farmaciaRoutes = require("../backend/farmacia/farmacia");
-app.use('/api', farmaciaRoutes);
+app.use('/api/v1', farmaciaRoutes);
 
 const pagamentoRoutes = require("../backend/pagamento/pagamento");
-app.use('/api', pagamentoRoutes);
+app.use('/api/v1', pagamentoRoutes);
 
 const Carrello = require("./models/Carrello");
 
@@ -89,7 +89,7 @@ function isAuthenticated(req, res, next) {
 }
 
 const checkoutRouter = require("./order/checkout");
-app.use('/api',checkoutRouter);
+app.use('/api/v1',checkoutRouter);
 
 const UserFarmacia = require("./models/UserFarmacia");
 
