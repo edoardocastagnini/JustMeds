@@ -50,7 +50,7 @@ const adminRoutes = require("../backend/admin/admin");
 app.use('/api/admin/v1', adminRoutes);
 
 const authGoogleRoutes = require("./auth/authGoogleRoutes"); // Aggiungi questa riga
-app.use("/api/v1", authGoogleRoutes); // Aggiungi questa riga
+app.use("/api", authGoogleRoutes); // Aggiungi questa riga
 
 const contattaciRouter = require("./form_request/contattaci");
 app.use('/api/v1', contattaciRouter);
