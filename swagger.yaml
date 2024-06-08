@@ -11,7 +11,6 @@ servers:
 
 paths:
 
-  
   /auth/google:
     get:
       summary: Autentica con Google OAuth
@@ -20,6 +19,11 @@ paths:
       responses:
         '302':
           description: Redirect alla pagina di autenticazione di Google
+          headers:
+            Location:
+              description: URL di autenticazione di Google
+              schema:
+                type: string
 
   /auth/google/callback:
     get:
@@ -33,8 +37,7 @@ paths:
           description: Autenticazione fallita
         '500':
           description: Errore del server
-          
-          
+
   /sign_up:
     post:
       summary: Registra un nuovo utente
@@ -113,8 +116,6 @@ paths:
           description: Logout effettuato con successo
         '500':
           description: Errore del server
-
-
 
   /form_requests:
     get:
@@ -254,7 +255,6 @@ paths:
         '500':
           description: Errore del server
 
-
   /profile:
     get:
       summary: Ottiene il profilo dell'utente
@@ -355,7 +355,7 @@ paths:
           description: Non autorizzato
         '500':
           description: Errore interno del server
-  
+
   /drugs:
     get:
       summary: Ottiene una lista di farmaci
@@ -513,7 +513,6 @@ paths:
           description: Carrello non trovato
         '500':
           description: Errore durante l'aggiunta dell'articolo
-  
 
   /user/address:
     get:
@@ -624,6 +623,7 @@ paths:
           description: Non autorizzato
         '500':
           description: Errore tecnico nella creazione dell'ordine
+
   /payment:
     post:
       summary: Simula il pagamento di un ordine
@@ -644,6 +644,7 @@ paths:
           description: Ordine non trovato
         '500':
           description: Errore durante il pagamento simulato
+
   /ordini/{orderId}:
     get:
       summary: Ottiene i dettagli di un ordine
@@ -685,12 +686,12 @@ paths:
           description: Ordine non trovato
         '500':
           description: Errore durante l'annullamento dell'ordine
-          
+
   /orders:
     get:
       summary: Recupera tutti gli ordini
       tags:
-        - Rider Account
+        - Delivery
       responses:
         '200':
           description: Lista di tutti gli ordini
@@ -709,7 +710,7 @@ paths:
     get:
       summary: Recupera un singolo ordine
       tags:
-        - Rider Account
+        - Delivery
       parameters:
         - name: orderId
           in: path
@@ -730,7 +731,6 @@ paths:
         '500':
           description: Errore durante il recupero dell'ordine
 
-  
   /orders/{id}/accept:
     post:
       summary: Accetta un ordine
@@ -749,12 +749,72 @@ paths:
           description: Ordine non trovato
         '500':
           description: Errore durante l'accettazione dell'ordine
+  /rider_account/earnings:
+    get:
+      summary: Ottiene i guadagni del rider
+      tags:
+        - Rider Account
+      responses:
+        '200':
+          description: Guadagni del rider
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+        '404':
+          description: Rider non trovato
+        '500':
+          description: Errore durante il recupero dei guadagni
 
+  /rider/ongoing_order:
+    get:
+      summary: Ottiene gli ordini in corso del rider
+      tags:
+        - Ongoing Delivery
+      responses:
+        '200':
+          description: Lista degli ordini in corso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '500':
+          description: Errore nel recuperare gli ordini
+
+  /orders/{orderId}/complete:
+    post:
+      summary: Completa un ordine
+      tags:
+        - Ongoing Delivery
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ordine completato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Ordine non trovato
+        '400':
+          description: Ordine non in consegna
+        '500':
+          description: Errore nel completare l'ordine
   /orders/{id}/cancel:
     post:
       summary: Annulla l'accettazione di un ordine
       tags:
-        - Delivery Management
+        - Ongoing Delivery 
       parameters:
         - name: id
           in: path
@@ -1051,8 +1111,6 @@ paths:
                   type: string
                 message:
                   type: string
-                createdAt:
-                  type: string
       responses:
         '200':
           description: Messaggio inviato con successo
@@ -1077,7 +1135,6 @@ paths:
                   message:
                     type: string
 
-
   /check-login:
     get:
       summary: Verifica lo stato di login dell'utente
@@ -1097,6 +1154,7 @@ paths:
                     type: string
         '403':
           description: Accesso proibito
+
 
 
 components:
@@ -1174,7 +1232,6 @@ components:
         answer:
           type: string
 
-
     Drug:
       type: object
       properties:
@@ -1241,5 +1298,3 @@ components:
           type: string
         LONGITUDINE_V:
           type: string
-
-
