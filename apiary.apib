@@ -557,7 +557,7 @@ HOST: https://private-c12cbb-justmedsapiv2.apiary-mock.com
 
 
 
-## Group Rider Account
+## Group Delivery
 
 ### Visualizzazione di tutti gli ordini [GET /api/orders]
 + Request
@@ -620,13 +620,59 @@ HOST: https://private-c12cbb-justmedsapiv2.apiary-mock.com
     + Attributes (object)
         + message: "Errore durante l'accettazione dell'ordine" (string)
 
+
+## Group Ongoing Delivery
+### Visualizza ordini in corso per il rider [GET /api/rider/ongoing_order]
++ Request
+    + Headers
+
+            Authorization: `Bearer {token}`
+
++ Response 200 (application/json)
+    + Attributes (array[Order])
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore nel recuperare gli ordini" (string)
+
+### Completa un ordine [POST /api/orders/{orderId}/complete]
++ Parameters
+    + orderId: `123` (string) - ID dell'ordine
+
++ Request
+    + Headers
+
+            Authorization: `Bearer {token}`
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + _id: `123` (string) - ID dell'ordine
+        + stato: `consegnato` (string) - Stato aggiornato dell'ordine
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + message: "Ordine non trovato" (string)
+
++ Response 400 (application/json)
+    + Attributes (object)
+        + message: "Ordine non in consegna" (string)
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + message: "Errore nel completare l'ordine" (string)
+
 ### Annulla l'accettazione di un ordine [POST /api/orders/{id}/cancel]
 + Parameters
     + id: `123` (string) - ID dell'ordine
 
++ Request
+    + Headers
+
+            Authorization: `Bearer {token}`
+
 + Response 200 (application/json)
     + Attributes (object)
-        + message: "Accettazione dell'ordine annullata con successo" (string)
+        + message: "Accettazione dell'incarico annullata" (string)
 
 + Response 404 (application/json)
     + Attributes (object)
@@ -634,8 +680,23 @@ HOST: https://private-c12cbb-justmedsapiv2.apiary-mock.com
 
 + Response 500 (application/json)
     + Attributes (object)
-        + message: "Errore durante l'annullamento dell'accettazione dell'ordine" (string)
+        + message: "Errore durante l'annullamento dell'accettazione dell'incarico" (string)
 
+
+## Group Rider Account
+### Visualizza i guadagni del rider [GET /api/rider_account/earnings]
++ Request
+    + Headers
+    
+            Authorization: `Bearer {token}`
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + total: 1500.00 (number) - Guadagni totali del rider
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + error: "Rider not found" (string)
 
 ## Group Farmacia Account
 ### Ottiene gli ordini in base allo stato e alla farmacia [GET /api/ordini_f{?stato}]
