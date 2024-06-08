@@ -7,11 +7,11 @@ const userSchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   dataDiNascita: Date,
-  guadagni: Number,
   città: String,
   cap: String,
   provincia: String,
   via: String,
+  guadagni: Number,
   type: String
 }, { id: false, versionKey: false  }); 
 
