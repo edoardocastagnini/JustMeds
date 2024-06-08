@@ -45,38 +45,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-function showSecretCode(orderId, secretCode, button) {
-    // Crea l'elemento del codice segreto se non esiste
-    let secretCodeElement = document.querySelector(`.secret-code-${orderId}`);
-    if (!secretCodeElement) {
-        secretCodeElement = document.createElement("div");
-        secretCodeElement.classList.add(`secret-code-${orderId}`, "mt-2");
-        secretCodeElement.style.display = "none"; // Inizia nascosto
-        secretCodeElement.innerHTML = `Codice Segreto: ${secretCode} <span class="timer-${orderId}"></span>`;
-        button.parentElement.appendChild(secretCodeElement);
-    }
-
-    // Mostra il codice segreto
-    secretCodeElement.style.display = "block";
-    button.style.display = "none"; // Nascondi il bottone
-
-    // Avvia il timer
-    let timeLeft = 300; // 300 secondi = 5 minuti
-    const timerElement = document.querySelector(`.timer-${orderId}`);
-    const timerInterval = setInterval(() => {
-        timeLeft--;
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        timerElement.textContent = ` (Tempo rimanente: ${minutes}:${seconds < 10 ? '0' : ''}${seconds})`;
-
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            secretCodeElement.style.display = "none"; // Nascondi il codice segreto
-            button.remove(); // Rimuovi definitivamente il bottone
-        }
-    }, 1000);
-}
-
 // CREA VISUALIZZATORE ORDINE
 function createOrderCard(order) {
     const orderCard = document.createElement("div");
@@ -120,33 +88,14 @@ function createOrderCard(order) {
     deliveryAddress.innerHTML = `<strong>Indirizzo di consegna:</strong> ${order.indirizzoCliente.via}, ${order.indirizzoCliente.cap} ${order.indirizzoCliente.città}`;
     cardBody.appendChild(deliveryAddress);
 
-    // Bottone "Mostra Codice Segreto"
-    const secretCodeButton = document.createElement("button");
-    secretCodeButton.classList.add("btn", "btn-primary", "me-2");
-    secretCodeButton.textContent = "Mostra Codice Segreto";
-    secretCodeButton.disabled = true; // Disabilitato all'inizio
-    secretCodeButton.addEventListener("click", () => showSecretCode(order._id, order.secretcode, secretCodeButton));
-    cardBody.appendChild(secretCodeButton);
-
     // Bottone "Accetta Incarico"
     const acceptButton = document.createElement("button");
     acceptButton.classList.add("btn", "btn-success", "me-2");
     acceptButton.textContent = "Accetta Incarico";
     acceptButton.addEventListener("click", async () => {
         await acceptOrder(order._id, acceptButton);
-        secretCodeButton.disabled = false; // Dopo che viene accettato l'ordine, abilita il pulsante "Mostra Codice Segreto"
     });
     cardBody.appendChild(acceptButton);
-
-    // Bottone "Annulla Accettazione"
-    const cancelButton = document.createElement("button");
-    cancelButton.classList.add("btn", "btn-danger", "me-2");
-    cancelButton.textContent = "Annulla Accettazione";
-    cancelButton.style.display = "none";
-    cancelButton.addEventListener("click", async () => {
-        await cancelOrderAcceptance(order._id, cancelButton, acceptButton, secretCodeButton);
-    });
-    cardBody.appendChild(cancelButton);
 
     orderCard.appendChild(cardBody);
 
@@ -192,47 +141,14 @@ async function acceptOrder(orderId, acceptButton) {
         acceptButton.classList.add("disabled");
         acceptButton.disabled = true;
 
-        const cancelButton = acceptButton.nextElementSibling;
-        if (cancelButton) {
-            cancelButton.style.display = "inline-block";
-        }
-
         showAlert("Ordine accettato con successo!");
+
+        // Reindirizza a ongoing_delivery.html con l'ID dell'ordine
+        window.location.href = `ongoing_delivery.html?orderId=${orderId}`;
 
     } catch (error) {
         console.error("Errore nell'accettazione dell'ordine:", error);
         showAlert("Errore durante l'accettazione dell'ordine", 'danger');
-    }
-}
-
-// CANCELLAZIONE INCARICO
-async function cancelOrderAcceptance(orderId, cancelButton, acceptButton, secretCodeButton) {
-    try {
-        const response = await fetch(`/api/orders/${orderId}/cancel`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error("Errore durante l'annullamento dell'accettazione dell'ordine");
-        }
-
-        const result = await response.json();
-        console.log(result.message);
-
-        cancelButton.style.display = "none";
-        acceptButton.classList.remove("disabled");
-        acceptButton.disabled = false;
-
-        secretCodeButton.disabled = true;
-
-        showAlert("Accettazione dell'ordine annullata con successo!");
-
-    } catch (error) {
-        console.error("Errore nell'annullamento dell'accettazione dell'ordine:", error);
-        showAlert("Errore durante l'annullamento dell'accettazione dell'ordine", 'danger');
     }
 }
 
