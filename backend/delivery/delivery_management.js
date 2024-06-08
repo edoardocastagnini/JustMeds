@@ -10,14 +10,11 @@ router.post('/orders/:id/accept', async (req, res) => {
     console.log(`POST /api/orders/${orderId}/accept`);
   
     try {
-      // Recupera l'ordine dal database utilizzando il modello Ordine
       const order = await Ordine.findById(orderId);
   
       if (order) {
-        // Aggiorna lo stato dell'ordine
         order.stato = 'attesa';
-        order.riderID = req.session.user.id; // Imposta l'ID del rider che ha accettato l'ordine
-        // Salva l'ordine aggiornato nel database
+        order.riderID = req.session.user.id; 
         await order.save();
         res.status(200).json({ message: 'Ordine accettato' });
       } else {

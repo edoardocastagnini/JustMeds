@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
   
-  
+  // Aggiunta dell'icona account per la sezione utente
   function addAccountIcon(){
   const navBar = document.querySelector(".navbar-nav");
     const accountIconLink = document.createElement("a");
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return fetch("/api/v1/check-login", { credentials: "include" })
       .then((response) => response.json())
       .then((data) => {
-        return data; // Assicurati che data sia l'oggetto che include isLoggedIn e userRole
+        return data; 
       })
       .catch((error) => {
         console.error("Error fetching login status:", error);
@@ -52,6 +52,7 @@ function getQueryParam(param) {
     return urlParams.get(param);
 }
 
+// Carica gli ordini dato l'ID
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         const orderId = getQueryParam('orderId');
@@ -65,7 +66,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!response.ok) {
             throw new Error("Network response was not ok");
         }
-        const order = await response.json(); // Ottieni direttamente l'ordine anziché un array di ordini
+        const order = await response.json(); 
         console.log("Order fetched:", order);
         const waitingOrdersContainer = document.getElementById("waitingOrders");
 
@@ -79,7 +80,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const orderCard = createOrderCard(order);
         waitingOrdersContainer.appendChild(orderCard);
 
-        // Geocode addresses and initialize maps in parallel
         const geocodePromises = [
             geocodeAddress(order.indirizzoFarmacia, 'pickupMap', "Indirizzo di ritiro"),
             geocodeAddress(order.indirizzoCliente, 'deliveryMap', "Indirizzo di consegna")
@@ -154,7 +154,6 @@ function showAlert(message, type = 'success') {
     alertContainer.classList.add("alert", `alert-${type}`, "mt-2");
     alertContainer.textContent = message;
 
-    // Posizionamento avviso
     const mainContainer = document.querySelector(".container");
     if (mainContainer) {
         mainContainer.prepend(alertContainer); // Aggiungi l'avviso in cima alla pagina
@@ -246,7 +245,6 @@ function initMap(mapId, lat, lon, label) {
         .bindPopup(label)
         .openPopup();
 
-    // Remove loading indicator
     const loadingIndicator = document.querySelector(`#${mapId} .loading`);
     if (loadingIndicator) {
         loadingIndicator.remove();

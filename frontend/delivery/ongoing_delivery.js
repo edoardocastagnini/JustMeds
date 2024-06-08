@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return fetch("/api/v1/check-login", { credentials: "include" })
       .then((response) => response.json())
       .then((data) => {
-        return data; // Assicurati che data sia l'oggetto che include isLoggedIn e userRole
+        return data; 
       })
       .catch((error) => {
         console.error("Error fetching login status:", error);
@@ -77,7 +77,6 @@ async function fetchRiderAcceptedOrders() {
             const orderCard = createOrderCard(order);
             waitingOrdersContainer.appendChild(orderCard);
 
-            // Geocode addresses and initialize maps in parallel
             const geocodePromises = [
                 geocodeAddress(order.indirizzoFarmacia, 'pickupMap', "Indirizzo di ritiro"),
                 geocodeAddress(order.indirizzoCliente, 'deliveryMap', "Indirizzo di consegna")
@@ -215,7 +214,7 @@ function showSecretCode(orderId, secretCode, button) {
             button.remove();
         }
     }, 1000);
-    //elimina pulsante di annullamento
+    // Elimina pulsante di annullamento
     const cancelButton = document.querySelector(".btn-danger");
     cancelButton.style.display = "none";
 
@@ -243,7 +242,7 @@ async function cancelOrderAcceptance(orderId, cancelButton, secretCodeButton, de
 
 
         showAlert("Accettazione dell'ordine annullata con successo!");
-        //reindrezza alla pagina principale
+        // Reindirizza alla pagina principale
         window.location.href = '/delivery/delivery.html';
 
     } catch (error) {

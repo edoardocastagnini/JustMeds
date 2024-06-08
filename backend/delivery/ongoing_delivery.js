@@ -49,7 +49,7 @@ router.get("/rider/ongoing_order", isAuthenticated, async (req, res) => {
     try {
         const order = await Ordine.findById(orderId);
         if (order) {
-            order.stato = 'confermato'; // Imposta lo stato dell'ordine su 'confermato'
+            order.stato = 'confermato'; 
             await order.save();
             res.status(200).json({ message: 'Accettazione dell\'incarico annullata' });
         } else {

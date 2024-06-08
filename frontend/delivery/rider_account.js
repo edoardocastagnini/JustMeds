@@ -25,25 +25,25 @@ function setupLogoutLink() {
     // Mostra Guadagni button click event
     showEarningsBtn.addEventListener('click', function () {
  
-    //recupera i guadagni 
+    // Recupera i guadagni 
         fetch('/api/v1/rider_account/earnings')
         .then((response) => response.json())
         .then((earnings) => {
           console.log(earnings);
-          // Mostra i guadagni nel popup
+          // Mostra i guadagni nel pop up
           earningsDetails.innerHTML = `
             <p>Guadagni a consegna: 5€</p>
             <p>Totale Guadagni: ${earnings.total}€</p>
             <p>Numero di consegne effettuate: ${earnings.total / 5}</p>
           `;
   
-          // Mostra il popup
+          // Mostra il pop up
           const earningsModal = new bootstrap.Modal(document.getElementById('earningsModal'));
           earningsModal.show();
         });
     });
   
-    // Consegna Attuale button click event
+    // Reindirizza alla consegna attuale
     currentDeliveryBtn.addEventListener('click', function () {
       window.location.href = 'ongoing_delivery.html';
     });
@@ -55,7 +55,7 @@ function setupLogoutLink() {
     return fetch("/api/v1/check-login", { credentials: "include" })
       .then((response) => response.json())
       .then((data) => {
-        return data; // Assicurati che data sia l'oggetto che include isLoggedIn e userRole
+        return data; 
       })
       .catch((error) => {
         console.error("Error fetching login status:", error);
