@@ -11,8 +11,8 @@ const userSchema = new mongoose.Schema({
   cap: String,
   provincia: String,
   via: String,
-  guadagni: Number,
-  type: String
+  type: String,
+  guadagni: Number
 }, { id: false, versionKey: false  }); 
 
 userSchema.set('toJSON', { virtuals: true });
