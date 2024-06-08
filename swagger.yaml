@@ -4,9 +4,9 @@ info:
   title: JustMeds API
   description: API per la gestione del servizio di consegna farmaci a domicilio.
 servers:
-  - url: http://localhost:3000/api
+  - url: http://localhost:3000/api/v1
     description: Local server
-  - url: https://justmeds.onrender.com
+  - url: https://justmeds.onrender.com/api/v1
     description: Deploy server
 
 paths:
