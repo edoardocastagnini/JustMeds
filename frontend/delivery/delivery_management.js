@@ -238,7 +238,14 @@ async function cancelOrderAcceptance(orderId, cancelButton, acceptButton, secret
 
 // VISUALIZZAZIONE MAPPA
 async function geocodeAddress(address, mapId, label) {
-    const query = `${address.via}, ${address.cap} ${address.provincia} ${address.città}`;
+    // Costruisci la query con le proprietà disponibili
+    const queryParts = [];
+    if (address.via) queryParts.push(address.via.toLowerCase());
+    if (address.cap) queryParts.push(address.cap);
+    if (address.provincia) queryParts.push(address.provincia.toLowerCase());
+    if (address.città) queryParts.push(address.città.toLowerCase());
+    
+    const query = queryParts.join(", ");
     console.log(`Geocoding for ${label}:`, query); // Log the address being geocoded
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
 
@@ -261,6 +268,12 @@ async function geocodeAddress(address, mapId, label) {
 }
 
 function initMap(mapId, lat, lon, label) {
+    const mapContainer = document.getElementById(mapId);
+    if (!mapContainer) {
+        console.error(`Map container not found: ${mapId}`);
+        return;
+    }
+
     const map = L.map(mapId).setView([lat, lon], 15);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -280,5 +293,9 @@ function initMap(mapId, lat, lon, label) {
 
 function handleMapError(mapId, message) {
     const mapContainer = document.getElementById(mapId);
-    mapContainer.innerHTML = `<div class="loading">${message}</div>`;
+    if (mapContainer) {
+        mapContainer.innerHTML = `<div class="loading">${message}</div>`;
+    } else {
+        console.error(`Map container not found for error handling: ${mapId}`);
+    }
 }
