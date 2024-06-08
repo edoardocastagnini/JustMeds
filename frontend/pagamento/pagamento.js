@@ -3,14 +3,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function updateNavigation() {
-    fetch('/api/check-login', { method: 'GET', credentials: 'include' })
+    fetch('/api/v1/check-login', { method: 'GET', credentials: 'include' })
         .then(response => response.json())
         .then(data => {
             if (data.isLoggedIn) {
                 const navBar = document.querySelector('#navbarNavAltMarkup .navbar-nav');
                 const logoutLink = document.createElement('a');
                 logoutLink.className = 'nav-link';
-                logoutLink.href = '/logout';
+                logoutLink.href = '/api/logout';
                 logoutLink.textContent = 'Logout';
                 navBar.appendChild(logoutLink);
 
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const orderId = urlParams.get('orderId');
     
     try {
-        const response = await fetch(`/api/ordini/${orderId}`);
+        const response = await fetch(`/api/v1/ordini/${orderId}`);
         if (!response.ok) {
             throw new Error('Errore nel recuperare i dettagli dell\'ordine');
         }
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('paymentForm').addEventListener('submit', async function(event) {
         event.preventDefault();
         try {
-            const response = await fetch('/api/payment', {
+            const response = await fetch('/api/v1/payment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     document.getElementById('cancelOrder').addEventListener('click', async function() {
         try {
-            const response = await fetch(`/api/ordini/${orderId}/cancella`, {
+            const response = await fetch(`/api/v1/ordini/${orderId}/cancella`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

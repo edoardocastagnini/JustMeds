@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Schema per un singolo prodotto nel carrello
+
 const prodottoSchema = new mongoose.Schema({
     _id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -20,10 +20,9 @@ const prodottoSchema = new mongoose.Schema({
     }
 },{id: false, versionKey: false});
 
-// Schema per il carrello
 const carrelloSchema = new mongoose.Schema({
     _id: {
-        type: String,  //l'id del cliente, ovvero il suo CF
+        type: String,  
         required: true,
         alias: 'clienteId'
     },

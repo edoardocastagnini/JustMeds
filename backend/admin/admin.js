@@ -9,7 +9,7 @@ const ListaFarmaci = require("../models/Drug");
 const Carrello = require("../models/Carrello");
 const Ordini = require("../models/Ordine");
 
-// Endpoint per ottenere le richieste di assistenza
+// Endpoint assistenza
 router.get('/form_requests', async (req, res) => {
   try {
     const requests = await Form.find();
@@ -62,7 +62,7 @@ router.post('/create_pharmacy', async (req, res) => {
       }
     };
 
-    const pharmacy = new Farmacia(pharmacyData); // Usa il modello Farmacia
+    const pharmacy = new Farmacia(pharmacyData); 
     await pharmacy.save();
     res.status(201).json({ success: true, message: 'Account farmacia creato con successo' });
   } catch (error) {
@@ -84,7 +84,7 @@ router.get('/pharmacies', async (req, res) => {
   }
 });
 
-// Endpoint per ottenere le statistiche
+// Endpoint statistiche
 router.get('/stats', async (req, res) => {
   try {
     const collections = await mongoose.connection.db.listCollections().toArray();

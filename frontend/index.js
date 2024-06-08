@@ -17,9 +17,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         setupLogoutLink();
         removeLoginLink();
-        setupButtons(data.userRole); // Assicurati che il ruolo utente sia passato correttamente
+        setupButtons(data.userRole); 
       } else {
-        setupUnauthenticatedButtons(); // Setup per utenti non autenticati
+        setupUnauthenticatedButtons(); 
       }
     })
     .catch((error) => {
@@ -34,22 +34,22 @@ function setupButtons(userRole) {
   const deliveryButton = document.getElementById("deliveryButton");
 
   if (!userRole) {
-    // Se non c'è un ruolo utente definito, reindirizza alla pagina di login
+    
     orderNowButton.onclick = () => (window.location.href = "./auth/login.html");
     deliveryButton.onclick = () => (window.location.href = "./auth/login.html");
   } else if (userRole === "rider") {
     deliveryButton.onclick = () =>
       (window.location.href = "./delivery/delivery.html");
-    orderNowButton.onclick = () => alert("Accesso non autorizzato."); // O reindirizza dove desiderato
+    orderNowButton.onclick = () => alert("Accesso non autorizzato."); 
   } else if (userRole === "ricevente") {
     orderNowButton.onclick = () =>
       (window.location.href = "./order/order.html");
-    deliveryButton.onclick = () => alert("Accesso non autorizzato."); // O reindirizza dove desiderato
+    deliveryButton.onclick = () => alert("Accesso non autorizzato."); 
   } else if (userRole === "farmacia") {
-    orderNowButton.onclick = () => alert("Accesso non autorizzato."); // O reindirizza dove desiderato
-    deliveryButton.onclick = () => alert("Accesso non autorizzato."); // O reindirizza dove desiderato
+    orderNowButton.onclick = () => alert("Accesso non autorizzato."); 
+    deliveryButton.onclick = () => alert("Accesso non autorizzato."); 
   } else {
-    // Gestisci altri ruoli o impostazioni di default
+   
     orderNowButton.onclick = () => alert("Ruolo non autorizzato.");
     deliveryButton.onclick = () => alert("Ruolo non autorizzato.");
   }
@@ -66,7 +66,7 @@ function setupLogoutLink() {
   const navBar = document.querySelector(".navbar-nav");
   const logoutLink = document.createElement("a");
   logoutLink.className = "nav-link";
-  logoutLink.href = "/logout";
+  logoutLink.href = "/api/v1/logout";
   logoutLink.textContent = "Logout";
   navBar.appendChild(logoutLink);
 }
@@ -82,7 +82,7 @@ function fetchLoginStatus() {
   return fetch("/api/v1/check-login", { credentials: "include" })
     .then(response => response.json())
     .then(data => {
-      return data; // Assicurati che data sia l'oggetto che include isLoggedIn e userRole
+      return data;
     })
     .catch(error => {
       console.error("Error fetching login status:", error);

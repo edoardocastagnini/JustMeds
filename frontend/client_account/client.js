@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchLoginStatus().then((data) => {
     if (data.isLoggedIn) {
       if (data.userRole === 'admin') {
-        window.location.href = '../admin/admin.html'; // Reindirizza l'admin a admin.html
+        window.location.href = '../admin/admin.html'; 
       } else {
         addCartIcon();
         setupLogoutLink();
@@ -32,16 +32,16 @@ function setupLogoutLink() {
   const navBar = document.querySelector(".navbar-nav");
   const logoutLink = document.createElement("a");
   logoutLink.className = "nav-link";
-  logoutLink.href = "/logout";
+  logoutLink.href = "/api/v1/logout";
   logoutLink.textContent = "Logout";
   navBar.appendChild(logoutLink);
 }
 
 function fetchLoginStatus() {
-  return fetch("/api/check-login", { credentials: "include" })
+  return fetch("/api/v1/check-login", { credentials: "include" })
     .then((response) => response.json())
     .then((data) => {
-      return data; // Assicurati che data sia l'oggetto che include isLoggedIn e userRole
+      return data; 
     })
     .catch((error) => {
       console.error("Error fetching login status:", error);
@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function loadForms() {
     try {
-      const response = await fetch('/api/forms', { credentials: 'include' });
+      const response = await fetch('/api/v1/forms', { credentials: 'include' });
       if (!response.ok) {
         throw new Error('Errore durante il caricamento dei forms');
       }
@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function loadProfile() {
     try {
-      const response = await fetch('/api/profile', { credentials: 'include' });
+      const response = await fetch('/api/v1/profile', { credentials: 'include' });
       if (!response.ok) {
         throw new Error('Errore durante il caricamento del profilo');
       }
@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function loadOrders() {
     try {
-      const response = await fetch('/api/ordini', { credentials: 'include' });
+      const response = await fetch('/api/v1/ordini', { credentials: 'include' });
       if (!response.ok) {
         throw new Error('Errore durante il caricamento degli ordini');
       }
@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function cancelOrder(orderId) {
     try {
-      const response = await fetch(`/api/ordini/${orderId}/cancella`, {
+      const response = await fetch(`/api/v1/ordini/${orderId}/cancella`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const province = document.getElementById('profileProvince').textContent;
 
     try {
-      const response = await fetch('/api/editprofile', {
+      const response = await fetch('/api/v1/editprofile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

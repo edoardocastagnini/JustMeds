@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    fetch('/api/user/address', { credentials: 'include' })
+    fetch('/api/v1/user/address', { credentials: 'include' })
         .then(response => response.json())
         .then(data => {
             if(data) {
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('user-address').textContent = 'Errore nel caricare l\'indirizzo.';
         });
 
-    fetch('/api/cart/details', { credentials: 'include' })
+    fetch('/api/v1/cart/details', { credentials: 'include' })
         .then(response => response.json())
         .then(data => {
             if (data.items && data.items.length > 0) {
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
     // Carica la lista delle farmacie
-    fetch('/api/farmacie', { credentials: 'include' })
+    fetch('/api/v1/farmacie', { credentials: 'include' })
         .then(response => response.json())
         .then(data => {
             console.log('Farmacie:', data); // Log per verificare i dati ricevuti
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
 
-        fetch('/api/order/create', {
+        fetch('/api/v1/order/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -119,16 +119,16 @@ function setupLogoutLink() {
     const navBar = document.querySelector(".navbar-nav");
     const logoutLink = document.createElement("a");
     logoutLink.className = "nav-link";
-    logoutLink.href = "/logout";
+    logoutLink.href = "/api/v1/logout";
     logoutLink.textContent = "Logout";
     navBar.appendChild(logoutLink);
 }
 
 function fetchLoginStatus() {
-    return fetch("/api/check-login", { credentials: "include" })
+    return fetch("/api/v1/check-login", { credentials: "include" })
       .then((response) => response.json())
       .then((data) => {
-        return data; // Assicurati che data sia l'oggetto che include isLoggedIn e userRole
+        return data; 
       })
       .catch((error) => {
         console.error("Error fetching login status:", error);

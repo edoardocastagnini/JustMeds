@@ -1,0 +1,1245 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: JustMeds API
+  description: API per la gestione del servizio di consegna farmaci a domicilio.
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local server
+  - url: https://justmeds.onrender.com/api/v1
+    description: Deploy server
+
+paths:
+
+  
+  /auth/google:
+    get:
+      summary: Autentica con Google OAuth
+      tags:
+        - Auth Google
+      responses:
+        '302':
+          description: Redirect alla pagina di autenticazione di Google
+
+  /auth/google/callback:
+    get:
+      summary: Callback per Google OAuth
+      tags:
+        - Auth Google
+      responses:
+        '200':
+          description: Login con Google completato con successo
+        '401':
+          description: Autenticazione fallita
+        '500':
+          description: Errore del server
+          
+          
+  /sign_up:
+    post:
+      summary: Registra un nuovo utente
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                cognome:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                dataDiNascita:
+                  type: string
+                  format: date
+                CF:
+                  type: string
+                città:
+                  type: string
+                cap:
+                  type: string
+                provincia:
+                  type: string
+                via:
+                  type: string
+                type:
+                  type: string
+                  enum: [rider, ricevente, farmacia]
+      responses:
+        '201':
+          description: Utente registrato con successo
+        '409':
+          description: Email o ID già esistente
+        '500':
+          description: Errore del server
+
+  /login:
+    post:
+      summary: Effettua il login
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login effettuato con successo
+        '401':
+          description: Credenziali non valide
+        '404':
+          description: Utente non trovato
+        '500':
+          description: Errore del server
+
+  /logout:
+    get:
+      summary: Effettua il logout
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: Logout effettuato con successo
+        '500':
+          description: Errore del server
+
+
+
+  /form_requests:
+    get:
+      summary: Ottiene tutte le richieste di assistenza
+      tags:
+        - Admin Account
+      responses:
+        '200':
+          description: Lista delle richieste di assistenza
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Form'
+        '500':
+          description: Errore del server
+
+  /form_requests/delete/{id}:
+    delete:
+      summary: Elimina una richiesta di assistenza
+      tags:
+        - Admin Account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Richiesta eliminata con successo
+        '500':
+          description: Errore del server
+
+  /form_requests/answer/{id}:
+    patch:
+      summary: Risponde a una richiesta di assistenza
+      tags:
+        - Admin Account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                answer:
+                  type: string
+      responses:
+        '200':
+          description: Risposta inviata con successo
+        '500':
+          description: Errore del server
+
+  /create_pharmacy:
+    post:
+      summary: Crea un account farmacia
+      tags:
+        - Admin Account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                _id:
+                  type: string
+                nomeFarmacia:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                indirizzo:
+                  type: object
+                  properties:
+                    paese:
+                      type: string
+                    città:
+                      type: string
+                    via:
+                      type: string
+                numeroTelefono:
+                  type: string
+                responsabile:
+                  type: object
+                  properties:
+                    nome:
+                      type: string
+                    cognome:
+                      type: string
+      responses:
+        '201':
+          description: Account farmacia creato con successo
+        '409':
+          description: Email o ID già esistente
+        '500':
+          description: Errore del server
+
+  /pharmacies:
+    get:
+      summary: Ottiene la lista delle farmacie
+      tags:
+        - Admin Account
+      responses:
+        '200':
+          description: Lista delle farmacie
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Farmacia'
+        '500':
+          description: Errore del server
+
+  /stats:
+    get:
+      summary: Ottiene le statistiche del database
+      tags:
+        - Admin Account
+      responses:
+        '200':
+          description: Statistiche del database
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+        '500':
+          description: Errore del server
+
+
+  /profile:
+    get:
+      summary: Ottiene il profilo dell'utente
+      tags:
+        - Ricevente Account
+      responses:
+        '200':
+          description: Dati del profilo utente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  surname:
+                    type: string
+                  email:
+                    type: string
+                  address:
+                    type: string
+                  cap:
+                    type: string
+                  province:
+                    type: string
+                  city:
+                    type: string
+        '401':
+          description: Non autorizzato
+        '404':
+          description: Utente non trovato
+        '500':
+          description: Errore interno del server
+
+  /ordini:
+    get:
+      summary: Ottiene tutti gli ordini dell'utente
+      tags:
+        - Ricevente Account
+      responses:
+        '200':
+          description: Lista di tutti gli ordini
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          description: Non autorizzato
+        '500':
+          description: Errore interno del server
+
+  /editprofile:
+    put:
+      summary: Modifica il profilo dell'utente
+      tags:
+        - Ricevente Account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                city:
+                  type: string
+                cap:
+                  type: string
+                province:
+                  type: string
+                address:
+                  type: string
+      responses:
+        '200':
+          description: Profilo aggiornato con successo
+        '401':
+          description: Non autorizzato
+        '404':
+          description: Utente non trovato
+        '500':
+          description: Errore interno del server
+
+  /forms:
+    get:
+      summary: Ottiene i moduli dell'utente
+      tags:
+        - Ricevente Account
+      responses:
+        '200':
+          description: Lista dei moduli dell'utente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Form'
+        '401':
+          description: Non autorizzato
+        '500':
+          description: Errore interno del server
+  
+  /drugs:
+    get:
+      summary: Ottiene una lista di farmaci
+      tags:
+        - Drugs
+      responses:
+        '200':
+          description: Lista di farmaci
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  drugs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Drug'
+                  isLoggedIn:
+                    type: boolean
+        '500':
+          description: Errore durante il recupero dei farmaci
+
+  /drugs/search:
+    get:
+      summary: Cerca un farmaco
+      tags:
+        - Drugs
+      parameters:
+        - name: farmaco
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista di farmaci trovati
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  drugs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Drug'
+                  isLoggedIn:
+                    type: boolean
+        '500':
+          description: Errore durante la ricerca dei farmaci
+
+  /cart:
+    get:
+      summary: Ottiene i dettagli del carrello
+      tags:
+        - Cart
+      responses:
+        '200':
+          description: Dettagli del carrello
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        quantity:
+                          type: integer
+                        price:
+                          type: number
+        '401':
+          description: Non autorizzato
+        '500':
+          description: Errore durante il recupero del carrello
+
+  /cart/remove:
+    post:
+      summary: Rimuove un articolo dal carrello
+      tags:
+        - Cart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+      responses:
+        '200':
+          description: Articolo rimosso dal carrello
+        '401':
+          description: Non autorizzato
+        '404':
+          description: Carrello non trovato
+        '500':
+          description: Errore durante la rimozione dell'articolo
+
+  /cart/change:
+    post:
+      summary: Cambia la quantità di un articolo nel carrello
+      tags:
+        - Cart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                change:
+                  type: integer
+      responses:
+        '200':
+          description: Quantità aggiornata
+        '401':
+          description: Non autorizzato
+        '404':
+          description: Prodotto non trovato nel carrello
+        '500':
+          description: Errore durante la modifica della quantità
+
+  /cart/add:
+    post:
+      summary: Aggiunge un articolo al carrello
+      tags:
+        - Cart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                quantity:
+                  type: integer
+                price:
+                  type: number
+      responses:
+        '200':
+          description: Articolo aggiunto al carrello
+        '401':
+          description: Non autorizzato
+        '404':
+          description: Carrello non trovato
+        '500':
+          description: Errore durante l'aggiunta dell'articolo
+  
+
+  /user/address:
+    get:
+      summary: Ottiene l'indirizzo dell'utente
+      tags:
+        - Order Checkout
+      responses:
+        '200':
+          description: Indirizzo dell'utente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nome:
+                    type: string
+                  cognome:
+                    type: string
+                  città:
+                    type: string
+                  cap:
+                    type: string
+                  provincia:
+                    type: string
+                  via:
+                    type: string
+        '401':
+          description: Non autorizzato
+        '404':
+          description: Utente non trovato
+        '500':
+          description: Errore interno del server
+
+  /cart/details:
+    get:
+      summary: Ottiene i dettagli del carrello
+      tags:
+        - Order Checkout
+      responses:
+        '200':
+          description: Dettagli del carrello
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        nome:
+                          type: string
+                        quantità:
+                          type: integer
+                        prezzo:
+                          type: number
+                  totalPrice:
+                    type: number
+        '401':
+          description: Non autorizzato
+        '404':
+          description: Carrello non trovato
+        '500':
+          description: Errore interno del server
+
+  /farmacie:
+    get:
+      summary: Ottiene la lista delle farmacie
+      tags:
+        - Order Checkout
+      responses:
+        '200':
+          description: Lista delle farmacie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  farmacie:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Farmacia'
+        '500':
+          description: Errore nel recuperare la lista delle farmacie
+
+  /order/create:
+    post:
+      summary: Crea un ordine
+      tags:
+        - Order Checkout
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                farmaciaId:
+                  type: string
+      responses:
+        '200':
+          description: Ordine creato con successo
+        '400':
+          description: Il carrello è vuoto o la farmacia non è stata trovata
+        '401':
+          description: Non autorizzato
+        '500':
+          description: Errore tecnico nella creazione dell'ordine
+  /payment:
+    post:
+      summary: Simula il pagamento di un ordine
+      tags:
+        - Payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+      responses:
+        '200':
+          description: Pagamento simulato con successo
+        '404':
+          description: Ordine non trovato
+        '500':
+          description: Errore durante il pagamento simulato
+  /ordini/{orderId}:
+    get:
+      summary: Ottiene i dettagli di un ordine
+      tags:
+        - Payment
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dettagli dell'ordine
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Ordine non trovato
+        '500':
+          description: Errore interno del server
+
+  /ordini/{orderId}/cancella:
+    post:
+      summary: Annulla un ordine
+      tags:
+        - Payment
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ordine annullato con successo
+        '404':
+          description: Ordine non trovato
+        '500':
+          description: Errore durante l'annullamento dell'ordine
+          
+  /orders:
+    get:
+      summary: Recupera tutti gli ordini
+      tags:
+        - Rider Account
+      responses:
+        '200':
+          description: Lista di tutti gli ordini
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          description: Non autorizzato
+        '500':
+          description: Errore durante il recupero degli ordini
+
+  /orders/{orderId}:
+    get:
+      summary: Recupera un singolo ordine
+      tags:
+        - Rider Account
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dettagli dell'ordine
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          description: Non autorizzato
+        '404':
+          description: Ordine non trovato
+        '500':
+          description: Errore durante il recupero dell'ordine
+
+  
+  /orders/{id}/accept:
+    post:
+      summary: Accetta un ordine
+      tags:
+        - Delivery Management
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ordine accettato con successo
+        '404':
+          description: Ordine non trovato
+        '500':
+          description: Errore durante l'accettazione dell'ordine
+
+  /orders/{id}/cancel:
+    post:
+      summary: Annulla l'accettazione di un ordine
+      tags:
+        - Delivery Management
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Accettazione dell'ordine annullata con successo
+        '404':
+          description: Ordine non trovato
+        '500':
+          description: Errore durante l'annullamento dell'accettazione dell'ordine
+
+  /ordini_f:
+    get:
+      summary: Ottiene gli ordini in base allo stato e alla farmacia
+      tags:
+        - Farmacia Account
+      parameters:
+        - name: stato
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista degli ordini
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '400':
+          description: FarmaciaID mancante o utente non autorizzato
+        '500':
+          description: Errore durante il recupero degli ordini
+
+  /farmaci/{id}:
+    get:
+      summary: Ottiene i dettagli di un farmaco
+      tags:
+        - Farmacia Account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dettagli del farmaco
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Drug'
+        '404':
+          description: Farmaco non trovato
+        '500':
+          description: Errore durante il recupero del farmaco
+
+  /profile_f:
+    get:
+      summary: Ottiene le informazioni del profilo
+      tags:
+        - Farmacia Account
+      responses:
+        '200':
+          description: Informazioni del profilo utente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  email:
+                    type: string
+                  type:
+                    type: string
+                  farmaciaID:
+                    type: string
+        '401':
+          description: Non autenticato
+
+  /farmacia/{id}:
+    get:
+      summary: Ottiene le informazioni della farmacia
+      tags:
+        - Farmacia Account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Informazioni della farmacia
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Farmacia'
+        '404':
+          description: Farmacia non trovata
+        '500':
+          description: Errore durante il recupero delle informazioni della farmacia
+
+  /ordini_f/candidati:
+    get:
+      summary: Ottiene gli ordini candidati (inviato)
+      tags:
+        - Farmacia Account
+      responses:
+        '200':
+          description: Lista degli ordini candidati
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '400':
+          description: FarmaciaID mancante o utente non autorizzato
+        '500':
+          description: Errore durante il recupero degli ordini candidati
+
+  /ordini_f/incorso:
+    get:
+      summary: Ottiene gli ordini in corso (attesa)
+      tags:
+        - Farmacia Account
+      responses:
+        '200':
+          description: Lista degli ordini in corso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '400':
+          description: FarmaciaID mancante o utente non autorizzato
+        '500':
+          description: Errore durante il recupero degli ordini in corso
+
+  /ordini_f/storico:
+    get:
+      summary: Ottiene lo storico ordini (inconsegna o consegnato)
+      tags:
+        - Farmacia Account
+      responses:
+        '200':
+          description: Lista dello storico ordini
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '400':
+          description: FarmaciaID mancante o utente non autorizzato
+        '500':
+          description: Errore durante il recupero dello storico ordini
+
+  /ordini_f/{id}:
+    get:
+      summary: Ottiene i dettagli di un ordine
+      tags:
+        - Farmacia Account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dettagli dell'ordine
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Ordine non trovato
+        '500':
+          description: Errore durante il recupero dell'ordine
+
+  /ordini_f/{id}/aggiornaPrezzo:
+    post:
+      summary: Aggiorna il prezzo dell'ordine
+      tags:
+        - Farmacia Account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prezzoFinale:
+                  type: number
+      responses:
+        '200':
+          description: Prezzo aggiornato con successo
+        '404':
+          description: Ordine non trovato
+        '500':
+          description: Errore durante l'aggiornamento del prezzo dell'ordine
+
+  /ordini_f/{id}/cambiaStato:
+    post:
+      summary: Cambia lo stato di un ordine
+      tags:
+        - Farmacia Account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stato:
+                  type: string
+      responses:
+        '200':
+          description: Stato aggiornato con successo
+        '404':
+          description: Ordine non trovato
+        '500':
+          description: Errore durante l'aggiornamento dello stato dell'ordine
+
+  /ordini_f/{orderId}/verifyCode:
+    post:
+      summary: Verifica il codice di un ordine
+      tags:
+        - Farmacia Account
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                verificationCode:
+                  type: string
+      responses:
+        '200':
+          description: Codice verificato con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+        '404':
+          description: Ordine non trovato
+        '500':
+          description: Errore durante la verifica del codice
+
+  /contact:
+    post:
+      summary: Invia un messaggio di contatto
+      tags:
+        - FormRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                orderNumber:
+                  type: string
+                message:
+                  type: string
+                createdAt:
+                  type: string
+      responses:
+        '200':
+          description: Messaggio inviato con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '500':
+          description: Errore durante il salvataggio dei dati
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+
+
+  /check-login:
+    get:
+      summary: Verifica lo stato di login dell'utente
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: Stato di login dell'utente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isLoggedIn:
+                    type: boolean
+                  userRole:
+                    type: string
+        '403':
+          description: Accesso proibito
+
+
+components:
+  schemas:
+    Order:
+      type: object
+      properties:
+        _id:
+          type: string
+        utenteID:
+          type: string
+        farmaciaID:
+          type: string
+        prezzoFinale:
+          type: number
+        prodotti:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                description: ID del farmaco
+              quantita:
+                type: integer
+              prezzo:
+                type: number
+        riderID:
+          type: string
+        stato:
+          type: string
+          enum: [inviato, accettato, rifiutato, confermato, cancellato, attesa, in consegna, consegnato]
+        secretcode:
+          type: string
+        indirizzoCliente:
+          type: object
+          properties:
+            nome:
+              type: string
+            cognome:
+              type: string
+            città:
+              type: string
+            cap:
+              type: string
+            provincia:
+              type: string
+            via:
+              type: string
+        indirizzoFarmacia:
+          type: object
+          properties:
+            via:
+              type: string
+            cap:
+              type: string
+            provincia:
+              type: string
+  
+    Form:
+      type: object
+      properties:
+        _id:
+          type: string
+        email:
+          type: string
+        messaggio:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        answeredAt:
+          type: string
+          format: date-time
+        answer:
+          type: string
+
+
+    Drug:
+      type: object
+      properties:
+        _id:
+          type: string
+        PrincipioAttivo:
+          type: string
+        Farmaco:
+          type: string
+        ConfezioneRiferimento:
+          type: string
+        ATC: 
+          type: string
+        AIC:
+          type: string
+        Confezione:
+          type: string
+        Ditta: 
+          type: string
+        PrezzoRiferimentoSSN: 
+          type: string
+        CodiceGruppoEquivalenza: 
+          type: string
+          
+    Farmacia:
+      type: object
+      properties:
+        _id:
+          type: string
+        COD_FARMACIA:
+          type: string
+        FARMACIA:
+          type: string
+        IVA:
+          type: string
+        CAP:
+          type: string
+        COD_COMUNE:
+          type: string
+        COMUNE:
+          type: string
+        FRAZIONE:
+          type: string
+        COD_PROVINCIA:
+          type: string
+        PROVINCIA:
+          type: string
+        COD_REGIONE:
+          type: string
+        REGIONE:
+          type: string
+        DATA_INIZIO:
+          type: string
+          format: date
+        INDIRIZZO:
+          type: string
+        TIPOLOGIA:
+          type: string
+        LATITUDINE_P:
+          type: string
+        LONGITUDINE_P:
+          type: string
+        LATITUDINE_V:
+          type: string
+        LONGITUDINE_V:
+          type: string
+
+

@@ -36,8 +36,7 @@ router.get("/drugs", async (req, res) => {
   }
 });
 
-// Endpoint protetto per la ricerca di farmaci
-// Questa route non dovrebbe richiedere l'autenticazione dell'utente per permettere la ricerca a tutti.
+// Endpoint la ricerca di farmaci
 router.get("/drugs/search", async (req, res) => {
   const searchTerm = req.query.farmaco;
   try {
@@ -55,29 +54,29 @@ router.get("/drugs/search", async (req, res) => {
   }
 });
 
-
+// Endpoint per il recupero dei dettagli di un farmaco
 router.get('/cart', isAuthenticated, async (req, res) => {
-  const clienteId = req.session.user.id; // Assume che l'ID dell'utente sia salvato nella sessione al login
+  const clienteId = req.session.user.id; 
   console.log("clienteId:", clienteId)
   try {
-      // Popola i dettagli del prodotto nel carrello usando il modello Drug
+      
       const cart = await Carrello.findOne({ _id: clienteId })
           .populate({
               path: 'prodotti._id',
               model: 'Drug',
-              select: 'Farmaco PrezzoRiferimentoSSN'  // Seleziona solo i campi necessari per il frontend
+              select: 'Farmaco PrezzoRiferimentoSSN'  
           });
 
       if (!cart || cart.prodotti.length === 0) {
           return res.status(200).json({ success: true, items: [] });
       }
 
-      // Mappa gli articoli del carrello per il frontend
+      
       const items = cart.prodotti.map(item => ({
           id: item.productId._id,
-          name: item.productId.Farmaco,         // Nome del farmaco
-          quantity: item.quantita,              // Quantità
-          price: item.prezzo                   // Prezzo per unità
+          name: item.productId.Farmaco,         
+          quantity: item.quantita,              
+          price: item.prezzo                   
       }));
 
       res.status(200).json({ success: true, items: items });
@@ -110,7 +109,7 @@ router.post('/cart/remove', isAuthenticated, async (req, res) => {
   }
 });
 
-
+// MODIFICA QUANTITA' NEL CARRELLO
 router.post('/cart/change', isAuthenticated, async (req, res) => {
   const { productId, change } = req.body; // change è il delta, può essere 1 o -1
   const userId = req.session.user.id;
@@ -141,7 +140,7 @@ router.post('/cart/change', isAuthenticated, async (req, res) => {
 });
 
 
-
+// AGGIUNTA AL CARRELLO
 router.post('/cart/add', async (req, res) => {
   const { productId, quantity, price } = req.body;
   const clienteId = req.session.user.id; // Utilizzo del codice fiscale

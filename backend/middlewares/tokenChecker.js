@@ -25,7 +25,20 @@ function isAuthenticated(req, res, next) {
     }
   }
 
+
+function checkUserRole(role) {
+    return (req, res, next) => {
   
-  module.exports = { tokenChecker, isAuthenticated };
+      const userRole = req.session.user && req.session.user.type;
+      if (userRole === 'admin' || role.includes(userRole)) {
+  
+        next();
+      } else {
+        res.status(403).send("Accesso negato: non hai i permessi per accedere a questa pagina");
+      }
+    };
+  }
+  
+  module.exports = { tokenChecker, isAuthenticated, checkUserRole };
   
 

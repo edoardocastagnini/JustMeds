@@ -29,11 +29,11 @@
   }
 
   .content {
-      padding-bottom: 100px; /*per non avere la card bloccata sul fondo*/
+      padding-bottom: 100px; 
   }
 
   .card {
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4); /* Aggiunge una lieve ombreggiatura */
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4); 
       transition: transform 0.3s ease, box-shadow 0.3s ease
   }
 

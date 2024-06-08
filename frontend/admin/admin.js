@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Funzione per recuperare e visualizzare le richieste di assistenza
   function fetchFormRequests() {
-    fetch("/api/admin/form_requests")
+    fetch("/api/admin/v1/form_requests")
       .then(response => response.json())
       .then(data => {
         const tableBody = document.querySelector("#requestsTable tbody");
@@ -36,7 +36,7 @@ window.showSection = function(sectionId) {
   // Nascondi la sezione dell'account farmacia quando si cambia sezione
   const accountSection = document.getElementById("accountSection");
   if (accountSection) {
-    accountSection.style.display = "none"; // Usa display:none per nasconderla
+    accountSection.style.display = "none"; 
   }
 
   // Esegui azioni specifiche per ogni sezione
@@ -73,7 +73,7 @@ window.showSection = function(sectionId) {
       `;
       row.parentNode.insertBefore(expandedRow, row.nextSibling);
       if (accountSection) {
-        accountSection.style.display = "none"; // Nascondi la sezione dell'account solo se la riga è stata appena espansa
+        accountSection.style.display = "none"; 
       }
     }
   }
@@ -85,7 +85,7 @@ window.showSection = function(sectionId) {
     const row = button.closest("tr");
     const message = prompt("Inserisci la risposta alla richiesta:");
     if (message) {
-      fetch(`/api/admin/form_requests/answer/${requestId}`, {
+      fetch(`/api/admin/v1/form_requests/answer/${requestId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -95,7 +95,7 @@ window.showSection = function(sectionId) {
       .then(response => {
         if (response.ok) {
           alert("Risposta inviata con successo.");
-          fetchFormRequests(); // Ricarica la tabella dopo aver risposto
+          fetchFormRequests(); 
         } else {
           alert("Errore durante l'invio della risposta.");
         }
@@ -107,13 +107,13 @@ window.showSection = function(sectionId) {
   // Funzione per eliminare una richiesta
   window.deleteRequest = function(requestId, button) {
     if (confirm("Sei sicuro di voler eliminare questa richiesta?")) {
-      fetch(`/api/admin/form_requests/delete/${requestId}`, {
+      fetch(`/api/admin/v1/form_requests/delete/${requestId}`, {
         method: 'DELETE'
       })
       .then(response => {
         if (response.ok) {
           alert("Richiesta eliminata con successo.");
-          fetchFormRequests(); // Ricarica la tabella dopo l'eliminazione
+          fetchFormRequests(); 
         } else {
           alert("Errore durante l'eliminazione della richiesta.");
         }
@@ -125,9 +125,9 @@ window.showSection = function(sectionId) {
   // Funzione per mostrare la sezione per creare un account farmacia
   window.showAccountSection = function(name, email) {
     const accountSection = document.getElementById("accountSection");
-    accountSection.style.display = "block";  // Usa display:block per assicurarti che sia visibile
-    document.getElementById("pharmacyEmail").value = email; // Popola il campo email
-    document.getElementById("pharmacyManagerName").value = name; // Popola il campo nome responsabile
+    accountSection.style.display = "block";  
+    document.getElementById("pharmacyEmail").value = email; 
+    document.getElementById("pharmacyManagerName").value = name; 
   }
   
   // Funzione per gestire la creazione di un nuovo account farmacia
@@ -136,7 +136,7 @@ window.showSection = function(sectionId) {
     const formData = new FormData(this);
     const data = Object.fromEntries(formData.entries());
 
-    fetch("/api/admin/create_pharmacy", {
+    fetch("/api/admin/v1/create_pharmacy", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -183,12 +183,12 @@ function displayPharmacies(pharmacies) {
 
   // Funzione per selezionare una farmacia
 function selectPharmacy(pharmacy) {
-  document.getElementById("pharmacyId").value = pharmacy._id; // Usare _id invece di COD_FARMACIA_OD
+  document.getElementById("pharmacyId").value = pharmacy._id; 
   document.getElementById("pharmacyName").value = pharmacy.FARMACIA;
-  document.getElementById("pharmacyCountry").value = "Italia"; // Assuming country is always Italy
+  document.getElementById("pharmacyCountry").value = "Italia"; // Italia paese predefinito
   document.getElementById("pharmacyCity").value = pharmacy.COMUNE;
   document.getElementById("pharmacyStreet").value = pharmacy.INDIRIZZO;
-  document.getElementById("pharmacyList").innerHTML = ''; // Clear the list after selection
+  document.getElementById("pharmacyList").innerHTML = ''; 
   document.getElementById("pharmacyList").classList.remove("show");
 
   // Rendi i campi non editabili
@@ -202,11 +202,11 @@ function selectPharmacy(pharmacy) {
 
   // Funzione per recuperare e visualizzare le statistiche
   function fetchStats() {
-    fetch("/api/admin/stats")
+    fetch("/api/admin/v1/stats")
       .then(response => response.json())
       .then(stats => {
         const tableBody = document.querySelector("#statsTable tbody");
-        tableBody.innerHTML = ''; // Svuota la tabella prima di riempirla
+        tableBody.innerHTML = ''; 
         for (const [collection, count] of Object.entries(stats)) {
           const row = document.createElement("tr");
           row.innerHTML = `
@@ -233,7 +233,7 @@ function selectPharmacy(pharmacy) {
   });
 
   // Recupera la lista delle farmacie
-  fetch("/api/admin/pharmacies")
+  fetch("/api/admin/v1/pharmacies")
     .then(response => response.json())
     .then(data => {
       pharmacies = data;

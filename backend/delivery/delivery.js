@@ -5,7 +5,8 @@ const Ordine = require("../models/Ordine");
 
 const { isAuthenticated } = require("../middlewares/tokenChecker");
 
-// Endpoint per recuperare tutti gli ordini con stato "confermato"
+
+// Endpoint per recuperare tutti gli ordini
 router.get("/orders", isAuthenticated, async (req, res) => {
     try {
       const orders = await Ordine.find({ stato: "confermato" });
@@ -17,6 +18,7 @@ router.get("/orders", isAuthenticated, async (req, res) => {
 
   });
   
+
   // Endpoint per recuperare un singolo ordine specifico
   router.get("/orders/:orderId", isAuthenticated, async (req, res) => {
     try {

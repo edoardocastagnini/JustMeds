@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 
-// Definisci lo schema e il modello per gli utenti
 const userSchema = new mongoose.Schema({
-  _id: { type: String, required: true, alias: 'CF' }, // Usa _id come CF
+  _id: { type: String, required: true, alias: 'CF' }, 
   nome: String,
   cognome: String,
   email: { type: String, unique: true, required: true },
@@ -14,9 +13,8 @@ const userSchema = new mongoose.Schema({
   provincia: String,
   via: String,
   type: String
-}, { id: false, versionKey: false  }); // Disabilita l'auto-creazione dell'id virtuale
+}, { id: false, versionKey: false  }); 
 
-// Indica a Mongoose di usare il CF come ID primario
 userSchema.set('toJSON', { virtuals: true });
 userSchema.set('toObject', { virtuals: true });
 

@@ -3,7 +3,7 @@ function login(event) {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  fetch("/login", {
+  fetch("/api/v1/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -11,7 +11,6 @@ function login(event) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        // Ridireziona in base al ruolo
         let redirectUrl;
         switch (data.role) {
           case "rider":
@@ -52,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const data = Object.fromEntries(formData.entries());
 
     try {
-      const response = await fetch("/sign_up", {
+      const response = await fetch("/api/v1/sign_up", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

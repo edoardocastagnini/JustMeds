@@ -9,45 +9,45 @@ footer {
     width: 100%;
     background-color: #05ffc5;
     color: #061fff;
-    text-align: center; /* Aggiungi spaziatura al padding sopra e sotto */
+    text-align: center; 
     height: 50pt;
 
 }
 
 main {
-    margin-bottom: 100px; /* Aggiungi più spazio al fondo del <main> */
+    margin-bottom: 100px; 
 }
 
 .container {
-    padding-bottom: 10px; /* Oppure aggiungi spazio al fondo del contenitore */
+    padding-bottom: 10px; 
 }
 
 body {
-    font-family: 'Arial', sans-serif; /* Scegli un font moderno e leggibile */
+    font-family: 'Arial', sans-serif; 
    
 }
 
 
 .navbar {
-    background-color: #f8f9fa; /* Usa colori chiari e freschi per la navbar */
+    background-color: #f8f9fa; 
 }
 
 .main {
     padding: 20px;
-    background-color: #e9ecef; /* Uno sfondo neutro per il contenuto */
+    background-color: #e9ecef; 
 }
 
 .btn-info, .btn-primary {
-    transition: all 0.3s ease; /* Aggiungi transizioni per un effetto hover fluido */
+    transition: all 0.3s ease; 
 }
 
 .btn-info:hover, .btn-primary:hover {
-    transform: scale(1.05); /* Leggero ingrandimento al hover */
+    transform: scale(1.05); 
 }
 
 
 #checkoutButton {
-    margin-top: 20px;  /* Spazio dal totale del carrello */
-    display: block;    /* Assicurati che il bottone si estenda per l'intera larghezza se necessario */
-    width: 100%;       /* Opzionale: rendi il bottone largo quanto il contenitore */
+    margin-top: 20px;  
+    display: block;   
+    width: 100%;      
 }
