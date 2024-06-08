@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (data.userRole === "admin") {
           setupReservedAreaLink_admin();
           hideUnauthenticatedLinks();
+        } else if (data.userRole === "rider") {
+          hideUnauthenticatedLinks();
         }
         setupLogoutLink();
         removeLoginLink();
@@ -24,6 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error checking login status:", error);
     });
 });
+
+
 
 function setupButtons(userRole) {
   const orderNowButton = document.getElementById("orderNowButton");
@@ -75,7 +79,7 @@ function removeLoginLink() {
 }
 
 function fetchLoginStatus() {
-  return fetch("/api/check-login", { credentials: "include" })
+  return fetch("/api/v1/check-login", { credentials: "include" })
     .then(response => response.json())
     .then(data => {
       return data; // Assicurati che data sia l'oggetto che include isLoggedIn e userRole

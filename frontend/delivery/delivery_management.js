@@ -1,5 +1,51 @@
-let isOrderAccepted = false;
-const cancelButton = document.createElement("button");
+document.addEventListener("DOMContentLoaded", () => {
+    fetchLoginStatus().then((data) => {
+      if (data.isLoggedIn) {
+        addAccountIcon();
+        setupLogoutLink();
+      }
+    });
+  });
+  
+  
+  function addAccountIcon(){
+  const navBar = document.querySelector(".navbar-nav");
+    const accountIconLink = document.createElement("a");
+    accountIconLink.className = "nav-link";
+    accountIconLink.href = "./rider_account.html";
+    accountIconLink.id = "accountIconLink";
+    const icon = document.createElement("i");
+    icon.className = "fas fa-user";
+    accountIconLink.appendChild(icon);
+    const accountName = document.createElement("span");
+    accountName.textContent = " Il mio Account";
+    accountIconLink.appendChild(accountName);
+  
+  
+    navBar.appendChild(accountIconLink);
+  }
+  function setupLogoutLink() {
+    const navBar = document.querySelector(".navbar-nav");
+    const logoutLink = document.createElement("a");
+    logoutLink.className = "nav-link";
+    logoutLink.href = "/logout";
+    logoutLink.textContent = "Logout";
+    navBar.appendChild(logoutLink);
+  }
+  
+  function fetchLoginStatus() {
+    return fetch("/api/v1/check-login", { credentials: "include" })
+      .then((response) => response.json())
+      .then((data) => {
+        return data; // Assicurati che data sia l'oggetto che include isLoggedIn e userRole
+      })
+      .catch((error) => {
+        console.error("Error fetching login status:", error);
+        throw error;
+      });
+  }
+  
+
 
 function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);
@@ -15,7 +61,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         console.log("Fetching order...");
-        const response = await fetch(`/api/orders/${orderId}`);
+        const response = await fetch(`/api/v1/orders/${orderId}`);
         if (!response.ok) {
             throw new Error("Network response was not ok");
         }
@@ -124,7 +170,7 @@ function showAlert(message, type = 'success') {
 // ACCETTAZIONE DELL'ORDINE
 async function acceptOrder(orderId, acceptButton) {
     try {
-        const response = await fetch(`/api/orders/${orderId}/accept`, {
+        const response = await fetch(`/api/v1/orders/${orderId}/accept`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

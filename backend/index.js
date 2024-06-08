@@ -40,30 +40,35 @@ const tokenChecker = require("./middlewares/tokenChecker");
 
 
 const deliveryRoutes = require("./delivery/delivery");
-app.use("/api", deliveryRoutes);
+app.use("/api/v1", deliveryRoutes);
+
 const deliveryManagementRoutes = require("./delivery/delivery_management");
-app.use("/api", deliveryManagementRoutes);
+app.use("/api/v1", deliveryManagementRoutes);
+
+const ongoingDeliveryRoutes = require("./delivery/ongoing_delivery");
+app.use("/api/v1", ongoingDeliveryRoutes);
+
+const riderAccountRoutes = require("./delivery/rider_account");
+app.use("/api/v1", riderAccountRoutes);
 
 const drugRoutes = require("./order/order_cart");
-
-app.use("/api", drugRoutes);
+app.use("/api/v1", drugRoutes);
 
 const adminRoutes = require("../backend/admin/admin");
-app.use('/api/admin', adminRoutes);
-
+app.use('/api/admin/v1', adminRoutes);
 
 const contattaciRouter = require("./form_request/contattaci");
-app.use('/api', contattaciRouter);
+app.use('/api/v1', contattaciRouter);
 
 
 const clientRouter = require("./client_account/client");
-app.use('/api',clientRouter);
+app.use('/api/v1',clientRouter);
 
 const farmaciaRoutes = require("../backend/farmacia/farmacia");
-app.use('/api', farmaciaRoutes);
+app.use('/api/v1', farmaciaRoutes);
 
 const pagamentoRoutes = require("../backend/pagamento/pagamento");
-app.use('/api', pagamentoRoutes);
+app.use('/api/v1', pagamentoRoutes);
 
 
 

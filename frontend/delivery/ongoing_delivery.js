@@ -1,3 +1,52 @@
+document.addEventListener("DOMContentLoaded", () => {
+    fetchLoginStatus().then((data) => {
+      if (data.isLoggedIn) {
+        addAccountIcon();
+        setupLogoutLink();
+      }
+    });
+  });
+  
+  
+  function addAccountIcon(){
+  const navBar = document.querySelector(".navbar-nav");
+    const accountIconLink = document.createElement("a");
+    accountIconLink.className = "nav-link";
+    accountIconLink.href = "./rider_account.html";
+    accountIconLink.id = "accountIconLink";
+    const icon = document.createElement("i");
+    icon.className = "fas fa-user";
+    accountIconLink.appendChild(icon);
+    const accountName = document.createElement("span");
+    accountName.textContent = " Il mio Account";
+    accountIconLink.appendChild(accountName);
+  
+  
+    navBar.appendChild(accountIconLink);
+  }
+  function setupLogoutLink() {
+    const navBar = document.querySelector(".navbar-nav");
+    const logoutLink = document.createElement("a");
+    logoutLink.className = "nav-link";
+    logoutLink.href = "/logout";
+    logoutLink.textContent = "Logout";
+    navBar.appendChild(logoutLink);
+  }
+  
+  function fetchLoginStatus() {
+    return fetch("/api/v1/check-login", { credentials: "include" })
+      .then((response) => response.json())
+      .then((data) => {
+        return data; // Assicurati che data sia l'oggetto che include isLoggedIn e userRole
+      })
+      .catch((error) => {
+        console.error("Error fetching login status:", error);
+        throw error;
+      });
+  }
+  
+
+
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         console.log("Fetching rider's accepted orders...");
@@ -9,7 +58,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function fetchRiderAcceptedOrders() {
     try {
-        const response = await fetch('/api/rider/ongoing_order'); // URL della nuova API
+        const response = await fetch('/api/v1/rider/ongoing_order'); // URL della nuova API
         if (!response.ok) {
             throw new Error("Network response was not ok");
         }
@@ -86,7 +135,8 @@ function createOrderCard(order) {
     // Bottone "Mostra Codice Segreto" che appare solo se l'ordine è in stato "attesa"
     const secretCodeButton = document.createElement("button");
     secretCodeButton.classList.add("btn", "btn-primary", "me-2");
-    secretCodeButton.textContent = "Mostra Codice Segreto";
+    secretCodeButton.textContent = "Mostra Codice Segreto (Max 5 min)";
+
     secretCodeButton.style.display = order.stato === "attesa" ? "block" : "none";
     secretCodeButton.addEventListener("click", () => {
         showSecretCode(order._id, order.secretcode, secretCodeButton);
@@ -121,7 +171,7 @@ function createOrderCard(order) {
 
 async function confirmOrderDelivery(orderId, deliveryButton) {
     try {
-        const response = await fetch(`/api/orders/${orderId}/complete`, {
+        const response = await fetch(`/api/v1/orders/${orderId}/complete`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -134,7 +184,7 @@ async function confirmOrderDelivery(orderId, deliveryButton) {
     deliveryButton.style.display = "none";
     showAlert("Consegna effettuata con successo!");
     //reindirizza alla pagina principale
-    window.location.href = '/delivery/delivery.html';
+    window.location.href = '/delivery/rider_account.html';
     
 }
 
@@ -173,7 +223,7 @@ function showSecretCode(orderId, secretCode, button) {
 
 async function cancelOrderAcceptance(orderId, cancelButton, secretCodeButton, deliveryButton) {
     try {
-        const response = await fetch(`/api/orders/${orderId}/cancel`, {
+        const response = await fetch(`/api/v1/orders/${orderId}/cancel`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
