@@ -245,7 +245,7 @@ function removeFromCart(id) {
           if (item.quantity === 1 && change === -1) {
               removeFromCart(productId); // Chiama una funzione per rimuovere l'articolo
           } else {
-      fetch(`/api/cart/change`, {
+      fetch(`/api/v1/cart/change`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
