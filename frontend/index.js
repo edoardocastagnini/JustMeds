@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (data.userRole === "admin") {
           setupReservedAreaLink_admin();
           hideUnauthenticatedLinks();
+        } else if (data.userRole === "rider") {
+          hideUnauthenticatedLinks();
         }
         setupLogoutLink();
         removeLoginLink();
@@ -24,6 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error checking login status:", error);
     });
 });
+
+
 
 function setupButtons(userRole) {
   const orderNowButton = document.getElementById("orderNowButton");

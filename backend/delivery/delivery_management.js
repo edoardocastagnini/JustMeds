@@ -3,9 +3,8 @@ const router = express.Router();
 
 const Ordine = require("../models/Ordine");
 
-const { isAuthenticated } = require("../middlewares/tokenChecker");
 
-// Endpoint per aggiornare lo stato dell'ordine
+// Endpoint per aggiornare lo stato dell'ordine a "attesa"
 router.post('/orders/:id/accept', async (req, res) => {
     const orderId = req.params.id;
     console.log(`POST /api/orders/${orderId}/accept`);
@@ -30,24 +29,5 @@ router.post('/orders/:id/accept', async (req, res) => {
     }
   });
   
-  // Endpoint per annullare l'accettazione dell'ordine
-  router.post('/orders/:id/cancel', async (req, res) => {
-    const orderId = req.params.id;
-    console.log(`POST /api/orders/${orderId}/cancel`);
-  
-    try {
-        const order = await Ordine.findById(orderId);
-        if (order) {
-            order.stato = 'confermato'; 
-            await order.save();
-            res.status(200).json({ message: 'Accettazione dell\'incarico annullata' });
-        } else {
-            res.status(404).json({ message: 'Ordine non trovato' });
-        }
-    } catch (error) {
-        console.error('Errore durante l\'annullamento dell\'accettazione dell\'incarico:', error);
-        res.status(500).json({ message: 'Errore durante l\'annullamento dell\'accettazione dell\'incarico', error });
-    }
-  });
 
   module.exports = router;

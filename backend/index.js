@@ -40,8 +40,15 @@ app.use("/api/v1", loginRoutes);
 
 const deliveryRoutes = require("./delivery/delivery");
 app.use("/api/v1", deliveryRoutes);
+
 const deliveryManagementRoutes = require("./delivery/delivery_management");
 app.use("/api/v1", deliveryManagementRoutes);
+
+const ongoingDeliveryRoutes = require("./delivery/ongoing_delivery");
+app.use("/api/v1", ongoingDeliveryRoutes);
+
+const riderAccountRoutes = require("./delivery/rider_account");
+app.use("/api/v1", riderAccountRoutes);
 
 const drugRoutes = require("./order/order_cart");
 app.use("/api/v1", drugRoutes);
@@ -49,11 +56,11 @@ app.use("/api/v1", drugRoutes);
 const adminRoutes = require("../backend/admin/admin");
 app.use('/api/admin/v1', adminRoutes);
 
-const authGoogleRoutes = require("./auth/authGoogleRoutes"); // Aggiungi questa riga
-app.use("/api", authGoogleRoutes); // Aggiungi questa riga
-
 const contattaciRouter = require("./form_request/contattaci");
 app.use('/api/v1', contattaciRouter);
+
+const authGoogleRoutes = require("./auth/authGoogleRoutes"); 
+app.use("/api", authGoogleRoutes); 
 
 const clientRouter = require("./client_account/client");
 app.use('/api/v1',clientRouter);
@@ -63,6 +70,7 @@ app.use('/api/v1', farmaciaRoutes);
 
 const pagamentoRoutes = require("../backend/pagamento/pagamento");
 app.use('/api/v1', pagamentoRoutes);
+
 
 const Carrello = require("./models/Carrello");
 

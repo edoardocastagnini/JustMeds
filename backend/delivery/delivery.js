@@ -9,15 +9,17 @@ const { isAuthenticated } = require("../middlewares/tokenChecker");
 // Endpoint per recuperare tutti gli ordini
 router.get("/orders", isAuthenticated, async (req, res) => {
     try {
-      const orders = await Ordine.find().populate('prodotti._id');
+      const orders = await Ordine.find({ stato: "confermato" });
       res.json(orders);
     } catch (error) {
       console.error("Errore nel recuperare gli ordini:", error);
       res.status(500).json({ success: false, message: "Errore durante il recupero degli ordini" });
     }
+
   });
   
-  // VISUALIZZAZIONE ORDINE SPECIFICO
+
+  // Endpoint per recuperare un singolo ordine specifico
   router.get("/orders/:orderId", isAuthenticated, async (req, res) => {
     try {
       const orderId = req.params.orderId;
@@ -31,6 +33,8 @@ router.get("/orders", isAuthenticated, async (req, res) => {
       res.status(500).json({ success: false, message: "Errore durante il recupero dell'ordine" });
     }
   });
+
+
 
   module.exports = router;
   
