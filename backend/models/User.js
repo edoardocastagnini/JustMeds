@@ -12,7 +12,8 @@ const userSchema = new mongoose.Schema({
   provincia: String,
   via: String,
   type: String,
-  guadagni: Number
+  //default di guadagni è 0
+  guadagni: { type: Number, default: 0 },
 }, { id: false, versionKey: false  }); 
 
 userSchema.set('toJSON', { virtuals: true });

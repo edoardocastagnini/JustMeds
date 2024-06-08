@@ -24,7 +24,7 @@ router.post("/sign_up", async (req, res) => {
         console.log("Cart created successfully");
       }
       
-      res.redirect("../auth/SignupSuccess.html");
+      res.redirect("../../auth/SignupSuccess.html");
     } catch (err) {
       console.error(err);
       
