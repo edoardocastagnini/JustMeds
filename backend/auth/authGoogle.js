@@ -1,7 +1,7 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const User = require('../models/User'); // Assicurati che questo sia il percorso corretto del modello User
-require("dotenv").config(); // Assicurati di caricare il file .env
+const User = require('../models/User'); 
+require("dotenv").config(); 
 
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
@@ -31,7 +31,7 @@ async function(accessToken, refreshToken, profile, done) {
 }));
 
 passport.serializeUser(function(user, done) {
-  done(null, user._id); // Passa solo l'ID dell'utente
+  done(null, user._id); 
 });
 
 passport.deserializeUser(async function(id, done) {

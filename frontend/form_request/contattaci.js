@@ -12,13 +12,11 @@ document.addEventListener('DOMContentLoaded', function() {
                   navBar.appendChild(reservedAreaLink);
               }
               if(data.userRole === 'ricevente'){
-                  // ICONA CARRELLO
                   const cartIcon = document.getElementById('cartIcon');
                   cartIcon.style.display = 'block';
                   const cartName = document.createElement("span");
                   cartName.textContent = " Carrello";
                   cartIcon.appendChild(cartName);
-                  // ICONA ACCOUNT con " Il mio account"
                   const accountIcon = document.getElementById('accountIcon');
                   accountIcon.style.display = 'block';
                   const accountName = document.createElement("span");

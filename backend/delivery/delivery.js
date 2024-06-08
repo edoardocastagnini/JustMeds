@@ -5,7 +5,7 @@ const Ordine = require("../models/Ordine");
 
 const { isAuthenticated } = require("../middlewares/tokenChecker");
 
-// VISUALIZZAZIONE ORDINI
+
 // Endpoint per recuperare tutti gli ordini
 router.get("/orders", isAuthenticated, async (req, res) => {
     try {
@@ -18,7 +18,6 @@ router.get("/orders", isAuthenticated, async (req, res) => {
   });
   
   // VISUALIZZAZIONE ORDINE SPECIFICO
-  // Endpoint per recuperare un singolo ordine
   router.get("/orders/:orderId", isAuthenticated, async (req, res) => {
     try {
       const orderId = req.params.orderId;

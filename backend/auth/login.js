@@ -5,7 +5,9 @@ const path = require('path');
 const Carrello = require("../models/Carrello");
 const { isAuthenticated } = require("../middlewares/tokenChecker");
 const { checkUserRole } = require("../middlewares/tokenChecker");
-// Rotte per la registrazione e il login
+
+
+//Registrazione
 router.post("/sign_up", async (req, res) => {
     try {
       const user = new User(req.body);
@@ -36,6 +38,7 @@ router.post("/sign_up", async (req, res) => {
     }
   });
   
+  //Login
   router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -66,10 +69,10 @@ router.post("/sign_up", async (req, res) => {
   });
   
 
-// Rotte per le pagine statiche
+// statiche
 router.use(express.static(path.join(__dirname, '../frontend')));
 
-// Rotte protette per le pagine HTML
+
 router.get('/farmacia/farmacia.html', isAuthenticated, checkUserRole(['farmacia']), (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/farmacia/farmacia.html'));
 });
@@ -85,7 +88,7 @@ router.get("/logout", (req, res) => {
       if (err) {
         return res.status(500).send("Failed to log out.");
       } else {
-        return res.redirect("/"); // or your login page
+        return res.redirect("/"); 
       }
     });
   } else {

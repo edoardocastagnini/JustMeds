@@ -11,7 +11,6 @@ function login(event) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        // Ridireziona in base al ruolo
         let redirectUrl;
         switch (data.role) {
           case "rider":

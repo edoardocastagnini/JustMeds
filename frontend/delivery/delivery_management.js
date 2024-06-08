@@ -19,7 +19,7 @@ let isOrderAccepted = false;
                 if (!response.ok) {
                     throw new Error("Network response was not ok");
                 }
-                const order = await response.json(); // Ottieni direttamente l'ordine anziché un array di ordini
+                const order = await response.json(); 
                 console.log("Order fetched:", order);
                 const waitingOrdersContainer = document.getElementById("waitingOrders");
 
@@ -33,7 +33,6 @@ let isOrderAccepted = false;
                 const orderCard = createOrderCard(order);
                 waitingOrdersContainer.appendChild(orderCard);
 
-                // Geocode addresses and initialize maps in parallel
                 const geocodePromises = [
                     geocodeAddress(order.indirizzoFarmacia, 'pickupMap', "Indirizzo di ritiro"),
                     geocodeAddress(order.indirizzoCliente, 'deliveryMap', "Indirizzo di consegna")

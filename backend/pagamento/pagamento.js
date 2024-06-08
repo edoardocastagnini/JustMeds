@@ -5,7 +5,6 @@ const moongose = require("mongoose");
 const Ordine = require("../models/Ordine");
 const { isAuthenticated } = require("../middlewares/tokenChecker");
 
-// Aggiungi questo endpoint per ottenere i dettagli dell'ordine
 router.get('/ordini/:orderId', isAuthenticated, async (req, res) => {
     try {
       const { orderId } = req.params;

@@ -37,7 +37,7 @@ function addAccountIcon(){
     return fetch("/api/check-login", { credentials: "include" })
       .then((response) => response.json())
       .then((data) => {
-        return data; // Assicurati che data sia l'oggetto che include isLoggedIn e userRole
+        return data; 
       })
       .catch((error) => {
         console.error("Error fetching login status:", error);
@@ -45,7 +45,6 @@ function addAccountIcon(){
       });
   }
 
-  // CODICE PER VISUALIZZARE IL CARRELLO
   document.addEventListener("DOMContentLoaded", function () {
     fetchCartItems();
   });
@@ -59,11 +58,11 @@ function addAccountIcon(){
         return response.json();
       })
       .then((data) => {
-        console.log(data); // Log dei dati per verificare la struttura
+        console.log(data); 
         if (data && data.items && data.items.length > 0) {
           updateCartUI(data.items);
         } else {
-          updateCartUI([]); // Se non ci sono articoli nel carrello, passa un array vuoto
+          updateCartUI([]); 
           document.getElementById("cartItems").innerHTML =
             "<p>Il tuo carrello è vuoto.</p>";
         }
@@ -82,7 +81,7 @@ function addAccountIcon(){
   function updateCartUI(items) {
     const container = document.getElementById("cartItems");
     container.innerHTML = "";
-    let total = 0; // Inizializza il totale a zero
+    let total = 0; 
     items.forEach((item) => {
       const itemTotal = item.price * item.quantity; // Calcola il totale per ogni articolo
       total += itemTotal; // Aggiungi al totale generale
@@ -137,7 +136,7 @@ function addAccountIcon(){
       .then((data) => {
         if (data.success) {
           alert("Articolo rimosso dal carrello!");
-          fetchCartItems(); // Aggiorna la visualizzazione del carrello
+          fetchCartItems(); 
           updateCheckoutButton();
         } else {
           alert("Errore nella rimozione dell'articolo.");
@@ -150,7 +149,7 @@ function addAccountIcon(){
   }
 
   function changeItemQuantity(productId, change) {
-    fetch(`/api/cart`, { method: "GET", credentials: "include" }) // Ottieni i dettagli correnti del carrello
+    fetch(`/api/cart`, { method: "GET", credentials: "include" }) 
       .then((response) => response.json())
       .then((cart) => {
         const item = cart.items.find((item) => item.id === productId);

@@ -6,13 +6,13 @@
   background-color: #4285f4;
   border: none;
   border-radius: 4px;
-  padding: 5px 10px; /* Riduci i valori di padding */
-  font-size: 14px;   /* Riduci la dimensione del font */
+  padding: 5px 10px; 
+  font-size: 14px;   
   cursor: pointer;
   text-decoration: none;
 }
 .google-btn img {
-  margin-right: 5px; /* Riduci lo spazio tra l'icona e il testo */
-  width: 18px;       /* Riduci la dimensione dell'icona */
-  height: 18px;      /* Mantieni la proporzione dell'icona */
+  margin-right: 5px; 
+  width: 18px;       
+  height: 18px;     
 }

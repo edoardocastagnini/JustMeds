@@ -287,7 +287,7 @@ function fetchLoginStatus() {
   return fetch("/api/check-login", { credentials: "include" })
     .then((response) => response.json())
     .then((data) => {
-      return data; // Assicurati che data sia l'oggetto che include isLoggedIn e userRole
+      return data; 
     })
     .catch((error) => {
       console.error("Error fetching login status:", error);

@@ -1,5 +1,5 @@
 const express = require('express');
-const passport = require('./authGoogle'); // Assicurati che questo sia il percorso corretto del file authGoogle
+const passport = require('./authGoogle'); 
 const router = express.Router();
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));

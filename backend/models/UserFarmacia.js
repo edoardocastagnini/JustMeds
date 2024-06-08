@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('./User');
 
-// Definisci lo schema per le farmacie
 const farmaciaSchema = new mongoose.Schema({
   nomeFarmacia: { type: String, required: true },
   indirizzo: {
@@ -16,7 +15,6 @@ const farmaciaSchema = new mongoose.Schema({
   }
 });
 
-// Aggiungi il discriminatore per il modello User
 const Farmacia = User.discriminator('farmacia', farmaciaSchema);
 
 module.exports = Farmacia;

@@ -36,8 +36,7 @@ router.get("/drugs", async (req, res) => {
   }
 });
 
-// Endpoint protetto per la ricerca di farmaci
-// Questa route non dovrebbe richiedere l'autenticazione dell'utente per permettere la ricerca a tutti.
+// Endpoint la ricerca di farmaci
 router.get("/drugs/search", async (req, res) => {
   const searchTerm = req.query.farmaco;
   try {
@@ -57,22 +56,22 @@ router.get("/drugs/search", async (req, res) => {
 
 
 router.get('/cart', isAuthenticated, async (req, res) => {
-  const clienteId = req.session.user.id; // Assume che l'ID dell'utente sia salvato nella sessione al login
+  const clienteId = req.session.user.id; 
   console.log("clienteId:", clienteId)
   try {
-      // Popola i dettagli del prodotto nel carrello usando il modello Drug
+      
       const cart = await Carrello.findOne({ _id: clienteId })
           .populate({
               path: 'prodotti._id',
               model: 'Drug',
-              select: 'Farmaco PrezzoRiferimentoSSN'  // Seleziona solo i campi necessari per il frontend
+              select: 'Farmaco PrezzoRiferimentoSSN'  
           });
 
       if (!cart || cart.prodotti.length === 0) {
           return res.status(200).json({ success: true, items: [] });
       }
 
-      // Mappa gli articoli del carrello per il frontend
+      
       const items = cart.prodotti.map(item => ({
           id: item.productId._id,
           name: item.productId.Farmaco,         // Nome del farmaco

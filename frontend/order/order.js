@@ -24,13 +24,13 @@ function updateNavigation() {
                     navBar.appendChild(reservedAreaLink);
                 }
                 if(data.userRole === 'ricevente'){
-                    // ICONA CARRELLO
+                    
                     const cartIcon = document.getElementById('cartIcon');
                     cartIcon.style.display = 'block';
                     const cartName = document.createElement("span");
                     cartName.textContent = " Carrello";
                     cartIcon.appendChild(cartName);
-                    // ICONA ACCOUNT con " Il mio account"
+                    
                     const accountIcon = document.getElementById('accountIcon');
                     accountIcon.style.display = 'block';
                     const accountName = document.createElement("span");
@@ -43,7 +43,7 @@ function updateNavigation() {
                 logoutLink.textContent = 'Logout';
                 navBar.appendChild(logoutLink);
         
-                //navBar.insertBefore(logoutLink, cartIcon);  //ICONA PRIMA DI LOGOUT
+                
             }else{
                 const navBar = document.querySelector('#navbarNavAltMarkup .navbar-nav');
                 const loginLink = document.createElement('a');
@@ -56,7 +56,7 @@ function updateNavigation() {
         .catch(error => console.error('Error checking login status:', error));
 }
 function fetchDrugs() {
-    fetch('/api/drugs', { method: 'GET', credentials: 'include' }) // Assicurati di includere le credenziali per gestire la sessione
+    fetch('/api/drugs', { method: 'GET', credentials: 'include' }) 
     .then(response => {
         if (!response.ok) {
             throw new Error('HTTP error, status = ' + response.status);
@@ -64,7 +64,7 @@ function fetchDrugs() {
         return response.json();
     })
     .then(data => {
-        const isLoggedIn = data.isLoggedIn; // Assumi che il backend invii questa informazione
+        const isLoggedIn = data.isLoggedIn; 
         updateDrugCards(data.drugs, isLoggedIn);
     })
     .catch(error => {
@@ -87,7 +87,7 @@ function updateDrugCards(drugs, isLoggedIn) {
 function searchDrugs(searchTerm) {
     fetch(`/api/drugs/search?farmaco=${encodeURIComponent(searchTerm)}`, { method: 'GET', credentials: 'include' })
         .then(handleResponse)
-        .then(data => updateDrugCards(data.drugs, data.isLoggedIn, searchTerm)) // Pass searchTerm here
+        .then(data => updateDrugCards(data.drugs, data.isLoggedIn, searchTerm)) 
         .catch(error => {
             console.error('Error searching the drugs:', error);
             alert('Error searching drugs: ' + error.message);
@@ -101,7 +101,7 @@ function handleResponse(response) {
     return response.json();
 }
 
-function updateDrugCards(drugs, isLoggedIn, searchTerm) { // Accept searchTerm as a parameter
+function updateDrugCards(drugs, isLoggedIn, searchTerm) { 
     const container = document.querySelector('#card-container');
     container.innerHTML = '';
 
@@ -110,7 +110,7 @@ function updateDrugCards(drugs, isLoggedIn, searchTerm) { // Accept searchTerm a
             container.innerHTML += generateDrugCard(drug, isLoggedIn);
         });
     } else {
-        container.innerHTML = `<p>No drugs found for the search term: "${searchTerm}".</p>`; // Use searchTerm correctly here
+        container.innerHTML = `<p>No drugs found for the search term: "${searchTerm}".</p>`; 
     }
 }
 
@@ -196,7 +196,7 @@ function generateCartItemHTML(item) {
     `;
 }
 
-const cartContent = document.getElementById('cartContent'); // Assicurati che questo ID sia corretto e presente nel tuo HTML
+const cartContent = document.getElementById('cartContent'); 
 cartContent.addEventListener('click', function(event) {
     if (event.target.classList.contains('increment')) {
         const productId = event.target.dataset.id;

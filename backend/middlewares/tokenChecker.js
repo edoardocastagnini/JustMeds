@@ -25,7 +25,7 @@ function isAuthenticated(req, res, next) {
     }
   }
 
-  // Middleware di autorizzazione
+
 function checkUserRole(role) {
     return (req, res, next) => {
   

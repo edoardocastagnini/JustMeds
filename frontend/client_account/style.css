@@ -1,0 +1,35 @@
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+  .wrapper {
+    display: flex;
+    flex: 1;
+  }
+  #sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    background-color: #00e7b9;
+    color: #fff;
+    padding-top: 20px;
+    height: 100vh;
+  }
+
+  #sidebar a {
+    color: #fff;
+    text-decoration: none;
+    padding: 15px;
+    display: block;
+  }
+  #sidebar a:hover {
+    background-color: #00e7b9;
+  }
+  #content {
+    flex: 1;
+    padding: 20px;
+  }
+  .hidden {
+    display: none;
+  }
+  

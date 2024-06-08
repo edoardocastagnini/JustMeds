@@ -10,7 +10,7 @@ const { isAuthenticated } = require("../middlewares/tokenChecker.js");
 
 
 router.get('/user/address', isAuthenticated, async (req, res) => {
-    const userId = req.session.user.id;  // Assicurati che l'ID utente sia salvato nella sessione al login
+    const userId = req.session.user.id;  
     try {
         const user = await User.findById(userId);
         if (!user) {
@@ -39,7 +39,7 @@ router.get('/cart/details', isAuthenticated, async (req, res) => {
             return res.status(404).json({ message: 'Carrello non trovato' });
         }
         const items = cart.prodotti.map(item => ({
-            nome: item._id.Farmaco, // Assumendo che 'nome' sia un campo del documento a cui il prodotto è collegato
+            nome: item._id.Farmaco, 
             quantità: item.quantita,
             prezzo: item.prezzo
         }));
@@ -63,7 +63,7 @@ router.get('/farmacie', async (req, res) => {
 
 
 router.post('/order/create', isAuthenticated, async (req, res) => {
-  const userId = req.session.user.id; // ID utente dalla sessione
+  const userId = req.session.user.id; 
   const userAddress = await User.findById(userId).select('nome cognome città cap provincia via');
   const cart = await Carrello.findOne({ _id: userId }).populate('prodotti._id');
 
