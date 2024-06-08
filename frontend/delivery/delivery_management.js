@@ -77,23 +77,24 @@ let isOrderAccepted = false;
             }, 1000);
         }
 
+        // CREA VISUALIZZATORE ORDINE
         function createOrderCard(order) {
             const orderCard = document.createElement("div");
             orderCard.classList.add("card", "mb-3");
-
+        
             const cardBody = document.createElement("div");
             cardBody.classList.add("card-body");
-
+        
             const title = document.createElement("h5");
             title.classList.add("card-title");
             title.textContent = `Ordine #${order._id}`;
             cardBody.appendChild(title);
-
+        
             const productList = document.createElement("ul");
             productList.classList.add("list-group", "list-group-flush");
-
+        
             let productCounter = 1;
-
+        
             order.prodotti.forEach((product) => {
                 const productItem = document.createElement("li");
                 productItem.classList.add("list-group-item");
@@ -101,55 +102,59 @@ let isOrderAccepted = false;
                 productList.appendChild(productItem);
                 productCounter++;
             });
-
+        
             cardBody.appendChild(productList);
-
+        
             const totalPrice = document.createElement("p");
             totalPrice.classList.add("card-text", "mt-2");
             totalPrice.innerHTML = `<strong>Prezzo Totale:</strong> €${order.prodotti.reduce((acc, item) => acc + (item.quantita * item.prezzo), 0)}`;
             cardBody.appendChild(totalPrice);
-
+        
             const pickupAddress = document.createElement("p");
             pickupAddress.classList.add("card-text");
             pickupAddress.innerHTML = `<strong>Indirizzo di ritiro:</strong> ${order.indirizzoFarmacia.via}, ${order.indirizzoFarmacia.cap} ${order.indirizzoFarmacia.provincia}`;
             cardBody.appendChild(pickupAddress);
-
+        
             const deliveryAddress = document.createElement("p");
             deliveryAddress.classList.add("card-text");
             deliveryAddress.innerHTML = `<strong>Indirizzo di consegna:</strong> ${order.indirizzoCliente.via}, ${order.indirizzoCliente.cap} ${order.indirizzoCliente.città}`;
             cardBody.appendChild(deliveryAddress);
-
+        
             // Bottone "Mostra Codice Segreto"
             const secretCodeButton = document.createElement("button");
             secretCodeButton.classList.add("btn", "btn-primary", "me-2");
             secretCodeButton.textContent = "Mostra Codice Segreto";
+            secretCodeButton.disabled = true; // Disabilitato all'inizio
             secretCodeButton.addEventListener("click", () => showSecretCode(order._id, order.secretcode, secretCodeButton));
             cardBody.appendChild(secretCodeButton);
-
+        
             // Bottone "Accetta Incarico"
             const acceptButton = document.createElement("button");
             acceptButton.classList.add("btn", "btn-success", "me-2");
             acceptButton.textContent = "Accetta Incarico";
             acceptButton.addEventListener("click", async () => {
                 await acceptOrder(order._id, acceptButton);
+                secretCodeButton.disabled = false; // Dopo che viene accettato l'ordine, abilita il pulsante "Mostra Codice Segreto"
             });
             cardBody.appendChild(acceptButton);
-
+        
             // Bottone "Annulla Accettazione"
             const cancelButton = document.createElement("button");
             cancelButton.classList.add("btn", "btn-danger", "me-2");
             cancelButton.textContent = "Annulla Accettazione";
             cancelButton.style.display = "none";
             cancelButton.addEventListener("click", async () => {
-                await cancelOrderAcceptance(order._id, cancelButton, acceptButton);
+                await cancelOrderAcceptance(order._id, cancelButton, acceptButton, secretCodeButton);
             });
             cardBody.appendChild(cancelButton);
-
+        
             orderCard.appendChild(cardBody);
-
+        
             return orderCard;
         }
+        
 
+        // ACCETTAZIONE DELL'ORDINE
         async function acceptOrder(orderId, acceptButton) {
             try {
                 const response = await fetch(`/api/orders/${orderId}/accept`, {
@@ -178,7 +183,8 @@ let isOrderAccepted = false;
             }
         }
 
-        async function cancelOrderAcceptance(orderId, cancelButton, acceptButton) {
+        // CANCELLAZIONE INCARICO
+        async function cancelOrderAcceptance(orderId, cancelButton, acceptButton, secretCodeButton) {
             try {
                 const response = await fetch(`/api/orders/${orderId}/cancel`, {
                     method: 'POST',
@@ -197,11 +203,15 @@ let isOrderAccepted = false;
                 cancelButton.style.display = "none";
                 acceptButton.classList.remove("disabled");
                 acceptButton.disabled = false;
+
+                secretCodeButton.disabled = true;
+
             } catch (error) {
                 console.error("Errore nell'annullamento dell'accettazione dell'ordine:", error);
             }
         }
 
+        // VISUALIZZAZIONE MAPPA
         async function geocodeAddress(address, mapId, label) {
             const query = `${address.via}, ${address.cap} ${address.provincia} ${address.città}`;
             console.log(`Geocoding for ${label}:`, query); // Log the address being geocoded
