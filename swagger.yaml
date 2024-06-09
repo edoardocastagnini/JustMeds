@@ -308,6 +308,72 @@ paths:
         '500':
           description: Errore interno del server
 
+
+  /editpassword:
+    put:
+      summary: Modifica la password dell'utente
+      tags:
+        - Ricevente Account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                oldPassword:
+                  type: string
+                  example: currentPassword123
+                newPassword:
+                  type: string
+                  example: newPassword123
+      responses:
+        '200':
+          description: Password aggiornata con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password aggiornata con successo
+        '401':
+          description: Password attuale non corretta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password attuale non corretta
+        '404':
+          description: Utente non trovato
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Utente non trovato
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Errore interno del server
+                  error:
+                    type: string
+                    example: dettagli dell'errore
+
+
+
   /editprofile:
     put:
       summary: Modifica il profilo dell'utente
