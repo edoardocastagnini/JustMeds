@@ -70,3 +70,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+document.getElementById('passwordResetForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+  const email = document.getElementById('email').value;
+  setTimeout(() => {
+    alert('Email di ripristino inviata con successo. Controlla la tua casella di posta.');
+    window.location.href = '/index.html'; 
+  }, 1000); 
+});

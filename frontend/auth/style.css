@@ -16,3 +16,12 @@
   width: 18px;       
   height: 18px;     
 }
+
+.btn-link {
+  color: #007bff;
+  text-decoration: underline;
+}
+.btn-link:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
