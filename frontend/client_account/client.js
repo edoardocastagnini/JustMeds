@@ -106,6 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       const profile = await response.json();
       document.getElementById('profileEmail').textContent = profile.email;
+      document.getElementById('profilePassword').textContent = '********';
       document.getElementById('profileName').textContent = profile.name;
       document.getElementById('profileSurname').textContent = profile.surname;
       document.getElementById('profileCity').textContent = profile.city;
@@ -116,6 +117,42 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error('Errore durante il caricamento del profilo:', error);
     }
   }
+
+  function showChangePassword() {
+    document.getElementById('changePasswordSection').classList.remove('hidden');
+}
+
+function changePassword() {
+    const oldPassword = document.getElementById('oldPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+
+    if (oldPassword && newPassword) {
+        fetch('/api/v1/editpassword', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ oldPassword, newPassword })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'Password aggiornata con successo') {
+                alert('Password aggiornata con successo');
+                document.getElementById('changePasswordSection').classList.add('hidden');
+                document.getElementById('profilePassword').innerText = '********';
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Errore durante l\'aggiornamento della password:', error);
+            alert('Errore durante l\'aggiornamento della password');
+        });
+    } else {
+        alert('Inserisci la vecchia e la nuova password.');
+    }
+}
+
 
   async function loadOrders() {
     try {
@@ -229,6 +266,8 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('saveProfileBtn').classList.remove('hidden');
   }
 
+
+
   async function saveProfile() {
     const address = document.getElementById('profileAddress').textContent;
     const city = document.getElementById('profileCity').textContent;
@@ -259,6 +298,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 
+
   function indaga(orderId, farmaciaId, totalPrice, finalPrice) {
     alert(`ID ordine: ${orderId}\nID farmacia: ${farmaciaId}\nPrezzo totale di riferimento: €${totalPrice}\nPrezzo totale finale: €${finalPrice}`);
   }
@@ -270,4 +310,6 @@ document.addEventListener("DOMContentLoaded", function () {
   window.enableEditProfile = enableEditProfile;
   window.saveProfile = saveProfile;
   window.cancelOrder = cancelOrder;
+  window.showChangePassword = showChangePassword;
+  window.changePassword = changePassword;
 });

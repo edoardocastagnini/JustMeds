@@ -20,6 +20,7 @@ router.get('/profile', isAuthenticated, async (req, res) => {
             name: user.nome,
             surname: user.cognome,
             email: user.email,
+            password: user.password,
             address: user.via,
             cap: user.cap,
             province: user.provincia,
@@ -71,6 +72,27 @@ router.put('/editprofile', isAuthenticated, async (req, res) => {
       res.status(500).json({ message: 'Errore interno del server', error });
     }
   });
+
+  router.put('/editpassword', isAuthenticated, async (req, res) => {
+    const userId = req.session.user.id;
+    const { oldPassword, newPassword } = req.body;
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'Utente non trovato' });
+      }
+      if (oldPassword !== user.password) {
+        return res.status(401).json({ message: 'Password attuale non corretta' });
+      }
+      user.password = newPassword;
+      await user.save();
+      res.json({ message: 'Password aggiornata con successo' });
+    } catch (error) {
+      console.error('Errore durante l\'aggiornamento della password:', error);
+      res.status(500).json({ message: 'Errore interno del server', error });
+    }
+  }
+  );
 
 router.get('/forms', isAuthenticated, async (req, res) => {
     const userEmail = req.session.user.email;

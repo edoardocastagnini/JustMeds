@@ -131,6 +131,14 @@
         <div id="profileInfo">
           <h3>Informazioni Profilo</h3>
           <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+          <p><strong>Password:</strong> <span id="profilePassword">********</span>
+            <button class="btn btn-link" onclick="showChangePassword()">Cambia</button>
+          </p>
+          <div id="changePasswordSection" class="hidden">
+            <input type="password" id="oldPassword" placeholder="Vecchia Password" class="form-control mb-2">
+            <input type="password" id="newPassword" placeholder="Nuova Password" class="form-control mb-2">
+            <button class="btn btn-primary" onclick="changePassword()">Salva</button>
+          </div>
           <p><strong>Nome:</strong> <span id="profileName"></span></p>
           <p><strong>Cognome:</strong> <span id="profileSurname"></span></p>
           <p><strong>Città:</strong> <span id="profileCity"></span></p>
@@ -141,6 +149,8 @@
           <button class="btn btn-success hidden" id="saveProfileBtn" onclick="saveProfile()">Salva</button>
         </div>
       </div>
+      
+      
     </div>
     
     <div class="modal fade" id="stateLegendModal" tabindex="-1" aria-labelledby="stateLegendModalLabel" aria-hidden="true">
