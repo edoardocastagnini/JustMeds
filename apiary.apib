@@ -277,6 +277,41 @@ HOST: https://private-c12cbb-justmedsapiv2.apiary-mock.com
     + Attributes (object)
         + message: "Internal server error" (string)
 
+### Edit Password [PUT /api/editpassword]
+
++ Request (application/json)
+    + Headers
+
+            Authorization: 'Bearer {token}'
+
+    + Body
+
+            {
+              "oldPassword": "currentPassword123",
+              "newPassword": "newPassword123"
+            }
+
++ Response 200 (application/json)
+
+    + Attributes (object)
+        + message: "Password aggiornata con successo" (string)
+
++ Response 401 (application/json)
+
+    + Attributes (object)
+        + message: "Password attuale non corretta" (string)
+
++ Response 404 (application/json)
+
+    + Attributes (object)
+        + message: "Utente non trovato" (string)
+
++ Response 500 (application/json)
+
+    + Attributes (object)
+        + message: "Errore interno del server" (string)
+        + error: "dettagli dell'errore" (string)
+
 ### Update Profile [PUT /api/editprofile]
 + Request (application/json)
     + Headers
