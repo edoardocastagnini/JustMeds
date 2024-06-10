@@ -109,3 +109,8 @@ JustMeds/
 │       ├── pagamento.html
 │       └── pagamento.js
 ```
+
+#### Developers
+- [Edoardo Castagnini](https://github.com/edoardocastagnini)
+- [Gianluigi Vazzoler](https://github.com/gvazzolerunitn)
+- [Carlo Zamuner](https://github.com/carlozamu)
